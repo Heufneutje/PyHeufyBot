@@ -52,3 +52,7 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 
+# Python Tools for Visual Studio
+PyHeufyBot.pyproj
+PyHeufyBot.sln
+PyHeufyBot.v11.suo
