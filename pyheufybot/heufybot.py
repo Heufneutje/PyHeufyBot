@@ -1,10 +1,11 @@
 from twisted.words.protocols import irc
 from twisted.internet import reactor, protocol
+from globalvars import version
 
 class HeufyBot(irc.IRCClient):
     nickname = "PyHeufyBot"
     username = "HeufyBot"
-    realname = "PyHeufyBot V0.0.1"
+    realname = "PyHeufyBot IRC Bot V{}".format(version)
 
 class HeufyBotFactory(protocol.ReconnectingClientFactory):
     protocol = HeufyBot
@@ -25,9 +26,3 @@ class HeufyBotFactory(protocol.ReconnectingClientFactory):
     def clientConnectionFailed(self, connector, reason):
        print "*** Connection failed. (Reason: {}".format(reason)
        protocol.ReconnectingClientFactory.clientConnectionFailed(self, connector, reason)
-
-if __name__ == '__main__':
-    heufybot = HeufyBotFactory()
-
-    reactor.connectTCP("localhost", 6667, heufybot)
-    reactor.run()
