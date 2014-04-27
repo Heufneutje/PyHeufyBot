@@ -58,3 +58,6 @@ PyHeufyBot.sln
 PyHeufyBot.v11.suo
 PyHeufyBot.v12.suo
 virtenv/
+
+# Bot
+config/

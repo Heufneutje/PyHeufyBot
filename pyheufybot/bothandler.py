@@ -1,13 +1,15 @@
 import os
 from twisted.internet import reactor
 from heufybot import HeufyBot, HeufyBotFactory
+from config import Config
 
 class BotHandler(object):
     factories = {}
-    globalSettings = {}
+    globalConfig = None
 
     def __init__(self):
-        pass
+        self.globalConfig = Config("globalsettings.yml")
+        self.globalConfig.loadConfig(None)
 
 if __name__ == "__main__":
     # Create folders

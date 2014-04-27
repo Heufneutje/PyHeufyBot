@@ -11,14 +11,17 @@ class Config(object):
         if globalConfig:
             self.settings = globalConfig
 
+        print os.path.join("config", self.filePath)
+
         if not os.path.exists(os.path.join("config", self.filePath)):
-            self.createDefaultConfig()
+            self.createDefaultConfig(os.path.join("config", self.filePath))
         else:
             with open(self.filePath, 'r') as configFile:
-                configData = yaml.safe_load(configFile)
+                configData = yaml.load(configFile)
 
-            for key in configData:
-                self.settings[key] = configData[key]
+            if configData:
+                for key in configData:
+                    self.settings[key] = configData[key]
 
     def createDefaultConfig(self, filePath):
         self.settings["nickname"] = "PyHeufyBot"
@@ -28,8 +31,8 @@ class Config(object):
         self.settings["port"] = 6667
         self.settings["channels"] = []
 
-        with open(self.filePath, 'w') as configFile:
-            configData = yaml.safe_dump(configFile)
+        with open(filePath, 'w') as configFile:
+            configData = yaml.dump(self.settings, configFile)
     
     def getSettingWithDefault(self, setting, defaultValue):
         if setting in self.settings:

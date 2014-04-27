@@ -20,9 +20,9 @@ class HeufyBotFactory(protocol.ReconnectingClientFactory):
         return HeufyBot()
 
     def clientConnectionLost(self, connector, reason):
-        print "*** Connection lost. (Reason: {}".format(reason)
+        print "*** Connection lost. (Reason: {})".format(reason)
         protocol.ReconnectingClientFactory.clientConnectionLost(self, connector, reason)
 
     def clientConnectionFailed(self, connector, reason):
-       print "*** Connection failed. (Reason: {}".format(reason)
+       print "*** Connection failed. (Reason: {})".format(reason)
        protocol.ReconnectingClientFactory.clientConnectionFailed(self, connector, reason)
