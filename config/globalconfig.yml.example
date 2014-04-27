@@ -1,0 +1,31 @@
+#==============#
+#=Bot Settings=#
+#==============#
+
+# -nickname-
+# The nickname the bot will have in chat.
+nickname: "RE_HeufyBot"
+
+# -username-
+# The username the bot will log into the server with.
+username: "RE_HeufyBot"
+
+# -realname-
+# The bot's real name.
+realname: "RE_HeufyBot IRC Bot"
+#=================#
+#=Server Settings=#
+#=================#
+
+# -server-
+# Address of the server the bot is connecting to.
+server: "irc.foo.bar"
+
+# -port-
+# The port on the server the bot is connecting to.
+port: 6667
+
+# -channels-
+# The channels the bot should join on connect. Leave this empty to not
+# join any channels.
+channels: []

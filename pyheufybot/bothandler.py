@@ -8,7 +8,7 @@ class BotHandler(object):
     globalConfig = None
 
     def __init__(self):
-        self.globalConfig = Config("globalsettings.yml")
+        self.globalConfig = Config("globalconfig.yml")
         self.globalConfig.loadConfig(None)
 
 if __name__ == "__main__":
