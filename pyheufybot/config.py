@@ -11,12 +11,10 @@ class Config(object):
         if globalConfig:
             self.settings = globalConfig
 
-        print os.path.join("config", self.filePath)
-
         if not os.path.exists(os.path.join("config", self.filePath)):
             self.createDefaultConfig(os.path.join("config", self.filePath))
         else:
-            with open(self.filePath, 'r') as configFile:
+            with open(os.path.join("config", self.filePath), 'r') as configFile:
                 configData = yaml.load(configFile)
 
             if configData:

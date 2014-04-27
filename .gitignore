@@ -60,5 +60,7 @@ PyHeufyBot.v12.suo
 virtenv/
 
 # Bot
+config/
+!config/globalconfig.yml.example
 logs/
 data/
