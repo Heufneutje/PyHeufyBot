@@ -4,15 +4,15 @@
 
 # -nickname-
 # The nickname the bot will have in chat.
-nickname: "RE_HeufyBot"
+nickname: "PyHeufyBot"
 
 # -username-
 # The username the bot will log into the server with.
-username: "RE_HeufyBot"
+username: "PyHeufyBot"
 
 # -realname-
 # The bot's real name.
-realname: "RE_HeufyBot IRC Bot"
+realname: "PyHeufyBot IRC Bot"
 #=================#
 #=Server Settings=#
 #=================#
