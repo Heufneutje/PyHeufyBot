@@ -1,7 +1,7 @@
 PyHeufyBot
 ==========
 
-After being Java for a very long time, I think the time has finally come to port my HeufyBot project to Python. This project is a rewrite of [RE_HeufyBot](https://github.com/Heufneutje/RE_HeufyBot)'s modules and the core is built on Twisted.
+A rewrite of my Java bot [RE_HeufyBot](https://github.com/Heufneutje/RE_HeufyBot) in Python, using Twisted as IRC library.
 
 Not much to see here yet as the project is very much a WiP. If you wanna play around with it, do the following:
 
