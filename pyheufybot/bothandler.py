@@ -10,7 +10,9 @@ class BotHandler(object):
     def __init__(self):
         print "--- Loading configs..."
         self.globalConfig = Config("globalconfig.yml")
-        self.globalConfig.loadConfig(None)
+        
+        if not self.globalConfig.loadConfig(None):  
+            return
 
         configList = self.getConfigList()
         if len(configList) == 0:
