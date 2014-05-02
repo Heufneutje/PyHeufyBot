@@ -1,7 +1,7 @@
 PyHeufyBot
 ==========
 
-A rewrite of my Java bot [RE_HeufyBot](https://github.com/Heufneutje/RE_HeufyBot) in Python, using Twisted as IRC library.
+A rewrite of my Java IRC bot [RE_HeufyBot](https://github.com/Heufneutje/RE_HeufyBot) in Python, using Twisted as its IRC library.
 
 Not much to see here yet as the project is very much a WiP. If you wanna play around with it, do the following:
 
