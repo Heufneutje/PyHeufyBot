@@ -12,7 +12,8 @@ class Config(object):
             self.settings = globalConfig
 
         if not os.path.exists(os.path.join("config", self.filePath)):
-            self.createDefaultConfig(os.path.join("config", self.filePath))
+            print "ERROR: \"{0}\" was found. Make sure to create it or copy \"{0}.example\" to \"{0}\".".format(self.filePath)
+            return False
         else:
             with open(os.path.join("config", self.filePath), 'r') as configFile:
                 configData = yaml.load(configFile)
@@ -20,18 +21,8 @@ class Config(object):
             if configData:
                 for key in configData:
                     self.settings[key] = configData[key]
-
-    def createDefaultConfig(self, filePath):
-        self.settings["nickname"] = "PyHeufyBot"
-        self.settings["username"] = "PyHeufyBot"
-        self.settings["realname"] = "PyHeufyBot"
-        self.settings["server"] = "irc.example.com"
-        self.settings["port"] = 6667
-        self.settings["channels"] = []
-
-        with open(filePath, 'w') as configFile:
-            configData = yaml.dump(self.settings, configFile)
-    
+            return True
+            
     def getSettingWithDefault(self, setting, defaultValue):
         if setting in self.settings:
             return settings[setting]
