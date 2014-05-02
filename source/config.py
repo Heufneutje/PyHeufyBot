@@ -4,7 +4,7 @@ class Config(object):
     def __init__(self, filePath, globalConfig):
         self.filePath = filePath
         if globalConfig:
-            self.settings = globalConfig
+            self.settings = globalConfig.copy()
         else:
             self.settings = {}
 
