@@ -22,7 +22,7 @@ class BotHandler(object):
         if len(configList) == 0:
             print "*** WARNING: No server configs found. Using the global config instead."
         else:
-            for filename in self.getConfigList():
+            for filename in configList:
                 config = Config(filename, self.globalConfig.settings)
                 config.loadConfig()
                 self.startFactory(config)

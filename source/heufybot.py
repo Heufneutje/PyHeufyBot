@@ -15,16 +15,14 @@ class HeufyBot(irc.IRCClient):
         
         print "--- Connected to {}.".format(self.factory.config.getSettingWithDefault("server", "irc.foo.bar"))
         print "--- Resetting reconnection delay..."
+        print self.factory.config
         self.factory.resetDelay()
 
-    def lineReceived(self, line):
-        #print line
-        pass
-
 class HeufyBotFactory(protocol.ReconnectingClientFactory):
+    protocol = HeufyBot
+    
     def __init__(self, config):
         self.config = config
-        self.protocol = HeufyBot
 
     def startedConnecting(self, connector):
         print "--- Connecting to server {}...".format(self.config.getSettingWithDefault("server", "irc.foo.bar"))
