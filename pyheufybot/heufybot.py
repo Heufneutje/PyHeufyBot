@@ -16,6 +16,15 @@ class HeufyBot(irc.IRCClient):
         self.nickname = self.factory.config.settings["nickname"]
         self.username = self.factory.config.settings["username"]
         self.realname = self.factory.config.settings["realname"]
+        irc.IRCClient.connectionMade(self)
+        
+        print "--- Connected to {}.".format(self.factory.config.getSettingWithDefault("server", "irc.foo.bar"))
+        print "--- Resetting reconnection delay..."
+        self.factory.resetDelay()
+
+    def lineReceived(self, line):
+        #print line
+        pass
 
 class HeufyBotFactory(protocol.ReconnectingClientFactory):
     protocol = HeufyBot
@@ -26,20 +35,16 @@ class HeufyBotFactory(protocol.ReconnectingClientFactory):
         self.config = config
 
     def startedConnecting(self, connector):
-        print "*** Connecting to server..."
+        print "--- Connecting to server {}...".format(self.config.getSettingWithDefault("server", "irc.foo.bar"))
 
     def buildProtocol(self, addr):
-        print "*** Connected."
-        print "*** Resetting reconnection delay..."
-        self.resetDelay()
-
-        bot = HeufyBot(self)
-        return bot
+        self.bot = HeufyBot(self)
+        return self.bot
 
     def clientConnectionLost(self, connector, reason):
         print "*** Connection lost. (Reason: {})".format(reason)
         protocol.ReconnectingClientFactory.clientConnectionLost(self, connector, reason)
 
     def clientConnectionFailed(self, connector, reason):
-       print "*** Connection failed. (Reason: {})".format(reason)
-       protocol.ReconnectingClientFactory.clientConnectionFailed(self, connector, reason)
+        print "*** Connection failed. (Reason: {})".format(reason)
+        protocol.ReconnectingClientFactory.clientConnectionFailed(self, connector, reason)
