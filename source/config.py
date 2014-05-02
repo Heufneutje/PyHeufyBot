@@ -1,8 +1,6 @@
 import os, yaml
 
 class Config(object):
-    filePath = None
-
     def __init__(self, filePath, globalConfig):
         self.filePath = filePath
         if globalConfig:

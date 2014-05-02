@@ -4,11 +4,6 @@ from globalvars import version
 from config import Config
 
 class HeufyBot(irc.IRCClient):
-    nickname = None
-    username = None
-    realname = None
-    factory = None
-
     def __init__(self, factory):
         self.factory = factory
 
@@ -27,12 +22,9 @@ class HeufyBot(irc.IRCClient):
         pass
 
 class HeufyBotFactory(protocol.ReconnectingClientFactory):
-    protocol = HeufyBot
-    bot = None
-    config = None
-
     def __init__(self, config):
         self.config = config
+        self.protocol = HeufyBot
 
     def startedConnecting(self, connector):
         print "--- Connecting to server {}...".format(self.config.getSettingWithDefault("server", "irc.foo.bar"))
