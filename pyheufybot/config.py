@@ -1,4 +1,5 @@
 import os, yaml
+from pyheufybot.logger import log
 
 class Config(object):
     def __init__(self, filePath, globalConfig):
@@ -10,12 +11,12 @@ class Config(object):
 
     def loadConfig(self):
         if not os.path.exists(os.path.join("config", self.filePath)):
-            print "*** ERROR: Config file \"{0}\" was not found. Make sure to create it or copy \"globalconfig.yml.example\" to \"{0}\".".format(self.filePath)
+            log("*** ERROR: Config file \"{0}\" was not found. Make sure to create it or copy \"globalconfig.yml.example\" to \"{0}\".".format(self.filePath), None)
             return False
         else:
             with open(os.path.join("config", self.filePath), 'r') as configFile:
                 configData = yaml.load(configFile)
-            print "--- Loaded {}.".format(self.filePath)
+            log("--- Loaded {}.".format(self.filePath), None)
 
             if configData:
                 for key in configData:

@@ -1,6 +1,7 @@
 import os
 from twisted.internet import reactor
 from heufybot import HeufyBot, HeufyBotFactory
+from pyheufybot.logger import log
 from config import Config
 
 class BotHandler(object):
@@ -8,7 +9,7 @@ class BotHandler(object):
     globalConfig = None    
 
     def __init__(self, configFile):
-        print "--- Loading configs..."
+        log("--- Loading configs...", None)
         self.configFile = configFile
         self.globalConfig = Config(configFile, None)
         
@@ -17,7 +18,7 @@ class BotHandler(object):
 
         configList = self.getConfigList()
         if len(configList) == 0:
-            print "*** WARNING: No server configs found. Using the global config instead."
+            log("*** WARNING: No server configs found. Using the global config instead.", None)
             self.startFactory(self.globalConfig)
         else:
             for filename in configList:
@@ -30,10 +31,10 @@ class BotHandler(object):
         server = config.getSettingWithDefault("server", "irc.foo.bar")
         port = config.getSettingWithDefault("port", 6667)
         if server in self.factories:
-            print "*** WARNING: Can't join server {} because it is already in the server list!".format(server)
+            log("*** WARNING: Can't join server {} because it is already in the server list!".format(server), None)
             return False
         else:
-            print "--- Initiating a connection to {}...".format(server)
+            log("--- Initiating a connection to {}...".format(server), None)
             factory = HeufyBotFactory(config)
             self.factories[server] = factory
             reactor.connectTCP(server, port, factory)

@@ -64,3 +64,4 @@ config/
 !config/globalconfig.yml.example
 logs/
 data/
+.gitattributes

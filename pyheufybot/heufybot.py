@@ -2,6 +2,7 @@ from twisted.words.protocols import irc
 from twisted.internet import reactor, protocol
 from globalvars import version
 from config import Config
+from pyheufybot.logger import log
 
 class HeufyBot(irc.IRCClient):
     def __init__(self, factory):
@@ -13,8 +14,8 @@ class HeufyBot(irc.IRCClient):
         self.realname = self.factory.config.settings["realname"]
         irc.IRCClient.connectionMade(self)
         
-        print "--- Connected to {}.".format(self.factory.config.getSettingWithDefault("server", "irc.foo.bar"))
-        print "--- Resetting reconnection delay..."
+        log("--- Connected to {}.".format(self.factory.config.getSettingWithDefault("server", "irc.foo.bar")), None)
+        log("--- Resetting reconnection delay...", None)
         self.factory.resetDelay()
 
 class HeufyBotFactory(protocol.ReconnectingClientFactory):
@@ -24,16 +25,16 @@ class HeufyBotFactory(protocol.ReconnectingClientFactory):
         self.config = config
 
     def startedConnecting(self, connector):
-        print "--- Connecting to server {}...".format(self.config.getSettingWithDefault("server", "irc.foo.bar"))
+        log("--- Connecting to server {}...".format(self.config.getSettingWithDefault("server", "irc.foo.bar")), None)
 
     def buildProtocol(self, addr):
         self.bot = HeufyBot(self)
         return self.bot
 
     def clientConnectionLost(self, connector, reason):
-        print "*** Connection lost. (Reason: {})".format(reason)
+        log("*** Connection lost. (Reason: {})".format(reason), None)
         protocol.ReconnectingClientFactory.clientConnectionLost(self, connector, reason)
 
     def clientConnectionFailed(self, connector, reason):
-        print "*** Connection failed. (Reason: {})".format(reason)
+        log("*** Connection failed. (Reason: {})".format(reason), None)
         protocol.ReconnectingClientFactory.clientConnectionFailed(self, connector, reason)
