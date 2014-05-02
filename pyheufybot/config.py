@@ -12,7 +12,7 @@ class Config(object):
             self.settings = globalConfig
 
         if not os.path.exists(os.path.join("config", self.filePath)):
-            print "ERROR: \"{0}\" was not found. Make sure to create it or copy \"{0}.example\" to \"{0}\".".format(self.filePath)
+            print "*** ERROR: Config file \"{0}\" was not found. Make sure to create it or copy \"globalconfig.yml.example\" to \"{0}\".".format(self.filePath)
             return False
         else:
             with open(os.path.join("config", self.filePath), 'r') as configFile:
