@@ -8,6 +8,6 @@ Not much to see here yet as the project is very much a WiP. If you wanna play ar
 1. Clone the repository
 2. Create a virtualenv and activate it
 3. Within the virtualenv, run `pip install -r requirements.txt`. Keep in mind that if you're doing this on Windows, you're going to need the VC9 compiler to build Twisted.
-4. Run `python bothandler.py`
+4. Run `python app.py`
 
 Will add more here as time goes on.

@@ -1,19 +1,16 @@
-import os, argparse
+import os
 from twisted.internet import reactor
 from heufybot import HeufyBot, HeufyBotFactory
 from config import Config
-
-parser = argparse.ArgumentParser(description="A modular IRC bot written in Python and Twisted.")
-parser.add_argument("-c", "--config", help="the global config file to use (default globalconfig.yml)", type=str, default="globalconfig.yml")
-cmdArgs = parser.parse_args()
 
 class BotHandler(object):
     factories = {}
     globalConfig = None    
 
-    def __init__(self):
+    def __init__(self, configFile):
         print "--- Loading configs..."
-        self.globalConfig = Config(cmdArgs.config, None)
+        self.configFile = configFile
+        self.globalConfig = Config(configFile, None)
         
         if not self.globalConfig.loadConfig():
             return
@@ -51,16 +48,9 @@ class BotHandler(object):
                 continue
             if not item.endswith(".yml"):
                 continue
-            if item == cmdArgs.config:
+            if item == self.configFile:
                 continue
 
             configs.append(item)
 
         return configs
-
-if __name__ == "__main__":
-    # Create folders
-    if not os.path.exists(os.path.join("config")):
-        os.makedirs("config")
-
-    handler = BotHandler()
