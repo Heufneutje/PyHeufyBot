@@ -15,7 +15,6 @@ class HeufyBot(irc.IRCClient):
         
         print "--- Connected to {}.".format(self.factory.config.getSettingWithDefault("server", "irc.foo.bar"))
         print "--- Resetting reconnection delay..."
-        print self.factory.config
         self.factory.resetDelay()
 
 class HeufyBotFactory(protocol.ReconnectingClientFactory):
