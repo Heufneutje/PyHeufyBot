@@ -13,9 +13,9 @@ class BotHandler(object):
 
     def __init__(self):
         print "--- Loading configs..."
-        self.globalConfig = Config(cmdArgs.config)
+        self.globalConfig = Config(cmdArgs.config, None)
         
-        if not self.globalConfig.loadConfig(None):
+        if not self.globalConfig.loadConfig():
             return
 
         configList = self.getConfigList()
@@ -23,7 +23,23 @@ class BotHandler(object):
             print "*** WARNING: No server configs found. Using the global config instead."
         else:
             for filename in self.getConfigList():
-                config = Config(filename, globalConfig.settings)
+                config = Config(filename, self.globalConfig.settings)
+                config.loadConfig()
+                self.startFactory(config)
+            reactor.run()
+
+    def startFactory(self, config):
+        server = config.getSettingWithDefault("server", "irc.foo.bar")
+        port = config.getSettingWithDefault("port", 6667)
+        if server in self.factories:
+            print "*** WARNING: Can't join server {} because it is already in the server list!".format(server)
+            return False
+        else:
+            print "--- Initiating a connection to {}...".format(server)
+            factory = HeufyBotFactory(config)
+            self.factories[server] = factory
+            reactor.connectTCP(server, port, factory)
+            return True
 
     def getConfigList(self):
         root = os.path.join("config")

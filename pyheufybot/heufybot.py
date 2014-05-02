@@ -4,16 +4,26 @@ from globalvars import version
 from config import Config
 
 class HeufyBot(irc.IRCClient):
-    nickname = "PyHeufyBot"
-    username = "HeufyBot"
-    realname = "PyHeufyBot IRC Bot V{}".format(version)
+    nickname = None
+    username = None
+    realname = None
     factory = None
 
     def __init__(self, factory):
         self.factory = factory
 
+    def connectionMade(self):
+        self.nickname = self.factory.config.settings["nickname"]
+        self.username = self.factory.config.settings["username"]
+        self.realname = self.factory.config.settings["realname"]
+
 class HeufyBotFactory(protocol.ReconnectingClientFactory):
     protocol = HeufyBot
+    bot = None
+    config = None
+
+    def __init__(self, config):
+        self.config = config
 
     def startedConnecting(self, connector):
         print "*** Connecting to server..."
