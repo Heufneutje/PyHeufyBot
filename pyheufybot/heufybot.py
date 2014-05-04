@@ -28,6 +28,22 @@ class HeufyBot(irc.IRCClient):
         for channel in autojoinChannels:
             self.join(channel)
 
+    def privmsg(self, user, channel, msg):
+        messageChannel = self.getChannel(channel)
+        messageUser = self.getUser(user[:user.index("!")])
+
+        if not messageUser:
+            # If this is a PM, the bot will have no knowledge of the user. Create a temporary one just for this message
+            messageUser = IRCUser(user)
+
+        message = IRCMessage("PRIVMSG", messageUser, messageChannel, msg)
+
+        if not message.replyTo == messageUser.nickname:
+            # Don't log PMs
+            # TODO: Make logging PMs a setting
+            # TODO: Add the user's status symbol as a prefix
+            log("<{}{}> {}".format("", messageUser.nickname, msg), message.replyTo)
+
     def irc_JOIN(self, prefix, params):
         user = self.getUser(prefix[:prefix.index("!")])
         if not user:
@@ -73,6 +89,7 @@ class HeufyBot(irc.IRCClient):
             user = IRCUser("{}!{}@{}".format(params[5], params[2], params[3]))
         channel = self.channels[params[1]]
         channel.users[user.nickname] = user
+        # TODO: Parse flags
 
     def irc_RPL_NAMREPLY(self, prefix, params):
         channelUsers = params[3].strip().split(" ")
