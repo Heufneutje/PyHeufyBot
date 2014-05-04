@@ -112,6 +112,43 @@ class HeufyBot(irc.IRCClient):
 
         message = IRCMessage("QUIT", user, None, quitMessage)
 
+    def irc_KICK(self, prefix, params):
+        user = self.getUser(prefix[:prefix.index("!")])
+        channel = self.getChannel(params[0])
+        
+        kickee = params[1]
+        kickMessage = ""
+        if len(params) > 2:
+            kickMessage = params[2]
+
+        if kickee == self.nickname:
+            # The bot is kicked from the channel
+            del self.channels[channel.name]
+        else:
+            # Someone else is kicking someone from the channel
+            del channel.users[kickee]
+
+        message = IRCMessage("KICK", user, channel, kickMessage)
+        log("-- {} was kicked from {} by {} ({})".format(kickee, channel.name, user.nickname, kickMessage), channel.name)
+
+    def irc_NICK(self, prefix, params):
+        user = self.getUser(prefix[:prefix.index("!")])
+
+        oldnick = user.nickname
+        newnick = params[0]
+
+        for channel in self.channels.itervalues():
+            if oldnick in channel.users:
+                channel.users[newnick] = user
+                del channel.users[oldnick]
+                log("-- {} is now known as {}".format(oldnick, newnick), channel.name)
+
+        message = IRCMessage("NICK", user, None, oldnick)
+        user.nickname = newnick
+
+    def nickChanged(self, nick):
+        self.nickname = nick
+
     def irc_RPL_WHOREPLY(self, prefix, params):
         user = self.getUser(params[5])
         if not user:
@@ -120,11 +157,11 @@ class HeufyBot(irc.IRCClient):
             user.username = params[2]
             user.hostname = params[3]
         channel = self.channels[params[1]]
-
-        if user not in channel.users:
-            channel.users[user.nickname] = user
+        channel.users[user.nickname] = user
         # TODO: Parse flags and other WHO reply information
 
+    '''
+    # Will do this later since NAMES prefixes nicknames with their status and the bot doesn't know statuses yet
     def irc_RPL_NAMREPLY(self, prefix, params):
         channelUsers = params[3].strip().split(" ")
         for channelUser in channelUsers:
@@ -132,8 +169,8 @@ class HeufyBot(irc.IRCClient):
             if not user:
                 user = IRCUser("{}!{}@{}".format(channelUser, None, None))
             channel = self.channels[params[2]]
-            if user not in channel.users:
-                channel.users[user.nickname] = user
+            channel.users[user.nickname] = user
+    '''
 
     def getChannel(self, name):
         if name in self.channels:
