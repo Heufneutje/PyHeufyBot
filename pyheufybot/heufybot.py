@@ -75,7 +75,12 @@ class HeufyBot(irc.IRCClient):
             self.sendLine("MODE {}".format(channel.name))
         else:
             # Someone else is joining the channel, add them to that channel's user dictionary
-            channel.users[user.nickname] = user
+            if user.nickname in channel.users:
+                # This will trigger if a desync ever happens. Send WHO to fix it.
+                channel.users = {}
+                self.sendLine("WHO {}".format(channel.name))
+            else:
+                channel.users[user.nickname] = user
 
         message = IRCMessage("JOIN", user, channel, "")
         log(">> {} ({}@{}) has joined {}".format(user.nickname, user.username, user.hostname, channel.name), channel.name)
@@ -93,7 +98,12 @@ class HeufyBot(irc.IRCClient):
             del self.channels[channel.name]
         else:
             # Someone else is leaving the channel
-            del channel.users[user.nickname]
+            if user.nickname not in channel.users:
+                # This will trigger if a desync ever happens. Send WHO to fix it.
+                channel.users = {}
+                self.sendLine("WHO {}".format(channel.name))
+            else:
+                del channel.users[user.nickname]
 
         message = IRCMessage("PART", user, channel, partMessage)
         log("<< {} ({}@{}) has left {} ({})".format(user.nickname, user.username, user.hostname, channel.name, partMessage), channel.name)
