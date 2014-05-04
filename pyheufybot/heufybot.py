@@ -1,7 +1,8 @@
 from twisted.words.protocols import irc
 from twisted.internet import reactor, protocol
-from globalvars import version
-from config import Config
+from pyheufybot.globalvars import version
+from pyheufybot.config import Config
+from pyheufybot.user import IRCUser
 from pyheufybot.logger import log
 
 class HeufyBot(irc.IRCClient):
@@ -17,6 +18,9 @@ class HeufyBot(irc.IRCClient):
         log("--- Connected to {}.".format(self.factory.config.getSettingWithDefault("server", "irc.foo.bar")), None)
         log("--- Resetting reconnection delay...", None)
         self.factory.resetDelay()
+
+    def irc_JOIN(self, prefix, params):
+        user = IRCUser(prefix)
 
 class HeufyBotFactory(protocol.ReconnectingClientFactory):
     protocol = HeufyBot
