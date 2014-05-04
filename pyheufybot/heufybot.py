@@ -23,9 +23,18 @@ class HeufyBot(irc.IRCClient):
         log("--- Resetting reconnection delay...", None)
         self.factory.resetDelay()
 
+    def signedOn(self):
+        autojoinChannels = self.factory.config.getSettingWithDefault("channels", [])
+        for channel in autojoinChannels:
+            self.join(channel)
+
     def irc_JOIN(self, prefix, params):
-        user = IRCUser(prefix)
+        user = self.getUser(prefix[:prefix.index("!")])
+        if not user:
+            user = IRCUser(prefix)
+
         channel = self.getChannel(params[0])
+
         if user.nickname == self.nickname:
             # The bot is joining the channel, do setup
             channel = IRCChannel(params[0])
@@ -40,6 +49,24 @@ class HeufyBot(irc.IRCClient):
         message = IRCMessage("JOIN", user, channel, "")
         log(">> {} ({}@{}) has joined {}".format(user.nickname, user.username, user.hostname, channel.name), channel.name)
 
+    def irc_PART(self, prefix, params):
+        user = self.getUser(prefix[:prefix.index("!")])
+        channel = self.getChannel(params[0])
+
+        partMessage = ""
+        if len(params) > 1:
+            partMessage = params[1]
+
+        if user.nickname == self.nickname:
+            # The bot is leaving the channel
+            del self.channels[channel.name]
+        else:
+            # Someone else is leaving the channel
+            del channel.users[user.nickname]
+
+        message = IRCMessage("PART", user, channel, partMessage)
+        log("<< {} ({}@{}) has left {} ({})".format(user.nickname, user.username, user.hostname, channel.name, partMessage), channel.name)
+
     def getChannel(self, name):
         if name in self.channels:
             return self.channels[name]
@@ -47,9 +74,9 @@ class HeufyBot(irc.IRCClient):
             return None
 
     def getUser(self, nickname):
-        for channel in self.channels:
-            if nickname in channel:
-                return nickname
+        for channel in self.channels.values():
+            if nickname in channel.users:
+                return channel.users[nickname]
         return None
 
 class HeufyBotFactory(protocol.ReconnectingClientFactory):
