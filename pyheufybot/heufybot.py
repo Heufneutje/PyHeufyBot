@@ -44,6 +44,21 @@ class HeufyBot(irc.IRCClient):
             # TODO: Add the user's status symbol as a prefix
             log("<{}{}> {}".format("", messageUser.nickname, msg), message.replyTo)
 
+    def action(self, user, channel, msg):
+        messageChannel = self.getChannel(channel)
+        messageUser = self.getUser(user[:user.index("!")])
+
+        if not messageUser:
+            # If this is a PM, the bot will have no knowledge of the user. Create a temporary one just for this message
+            messageUser = IRCUser(user)
+
+        message = IRCMessage("ACTION", messageUser, messageChannel, msg)
+
+        if not message.replyTo == messageUser.nickname:
+            # Don't log PMs
+            # TODO: Make logging PMs a setting
+            log("* {} {}".format(messageUser.nickname, msg), message.replyTo)
+
     def irc_JOIN(self, prefix, params):
         user = self.getUser(prefix[:prefix.index("!")])
         if not user:
@@ -83,13 +98,32 @@ class HeufyBot(irc.IRCClient):
         message = IRCMessage("PART", user, channel, partMessage)
         log("<< {} ({}@{}) has left {} ({})".format(user.nickname, user.username, user.hostname, channel.name, partMessage), channel.name)
 
+    def irc_QUIT(self, prefix, params): 
+        user = self.getUser(prefix[:prefix.index("!")])
+
+        quitMessage = ""
+        if len(params) > 0:
+            quitMessage = params[0]
+
+        for channel in self.channels.itervalues():
+            if user.nickname in channel.users:
+                log("<< {} ({}@{}) has quit IRC ({})".format(user.nickname, user.username, user.hostname, quitMessage), channel.name)
+                del channel.users[user.nickname]
+
+        message = IRCMessage("QUIT", user, None, quitMessage)
+
     def irc_RPL_WHOREPLY(self, prefix, params):
         user = self.getUser(params[5])
         if not user:
             user = IRCUser("{}!{}@{}".format(params[5], params[2], params[3]))
+        else:
+            user.username = params[2]
+            user.hostname = params[3]
         channel = self.channels[params[1]]
-        channel.users[user.nickname] = user
-        # TODO: Parse flags
+
+        if user not in channel.users:
+            channel.users[user.nickname] = user
+        # TODO: Parse flags and other WHO reply information
 
     def irc_RPL_NAMREPLY(self, prefix, params):
         channelUsers = params[3].strip().split(" ")
@@ -98,7 +132,8 @@ class HeufyBot(irc.IRCClient):
             if not user:
                 user = IRCUser("{}!{}@{}".format(channelUser, None, None))
             channel = self.channels[params[2]]
-            channel.users[user.nickname] = user
+            if user not in channel.users:
+                channel.users[user.nickname] = user
 
     def getChannel(self, name):
         if name in self.channels:
@@ -107,7 +142,7 @@ class HeufyBot(irc.IRCClient):
             return None
 
     def getUser(self, nickname):
-        for channel in self.channels.values():
+        for channel in self.channels.itervalues():
             if nickname in channel.users:
                 return channel.users[nickname]
         return None
