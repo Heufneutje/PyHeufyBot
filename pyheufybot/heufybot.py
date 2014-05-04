@@ -67,6 +67,22 @@ class HeufyBot(irc.IRCClient):
         message = IRCMessage("PART", user, channel, partMessage)
         log("<< {} ({}@{}) has left {} ({})".format(user.nickname, user.username, user.hostname, channel.name, partMessage), channel.name)
 
+    def irc_RPL_WHOREPLY(self, prefix, params):
+        user = self.getUser(params[5])
+        if not user:
+            user = IRCUser("{}!{}@{}".format(params[5], params[2], params[3]))
+        channel = self.channels[params[1]]
+        channel.users[user.nickname] = user
+
+    def irc_RPL_NAMREPLY(self, prefix, params):
+        channelUsers = params[3].strip().split(" ")
+        for channelUser in channelUsers:
+            user = self.getUser(channelUser)
+            if not user:
+                user = IRCUser("{}!{}@{}".format(channelUser, None, None))
+            channel = self.channels[params[2]]
+            channel.users[user.nickname] = user
+
     def getChannel(self, name):
         if name in self.channels:
             return self.channels[name]
