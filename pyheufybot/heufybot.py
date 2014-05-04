@@ -3,11 +3,15 @@ from twisted.internet import reactor, protocol
 from pyheufybot.globalvars import version
 from pyheufybot.config import Config
 from pyheufybot.user import IRCUser
+from pyheufybot.channel import IRCChannel
+from pyheufybot.message import IRCMessage
 from pyheufybot.logger import log
 
 class HeufyBot(irc.IRCClient):
     def __init__(self, factory):
         self.factory = factory
+        self.usermodes = {}
+        self.channels = {}
 
     def connectionMade(self):
         self.nickname = self.factory.config.settings["nickname"]
@@ -21,6 +25,32 @@ class HeufyBot(irc.IRCClient):
 
     def irc_JOIN(self, prefix, params):
         user = IRCUser(prefix)
+        channel = self.getChannel(params[0])
+        if user.nickname == self.nickname:
+            # The bot is joining the channel, do setup
+            channel = IRCChannel(params[0])
+            self.channels[params[0]] = channel
+
+            self.sendLine("WHO {}".format(channel.name))
+            self.sendLine("MODE {}".format(channel.name))
+        else:
+            # Someone else is joining the channel, add them to that channel's user dictionary
+            channel.users[user.nickname] = user
+
+        message = IRCMessage("JOIN", user, channel, "")
+        log(">> {} ({}@{}) has joined {}".format(user.nickname, user.username, user.hostname, channel.name), channel.name)
+
+    def getChannel(self, name):
+        if name in self.channels:
+            return self.channels[name]
+        else:
+            return None
+
+    def getUser(self, nickname):
+        for channel in self.channels:
+            if nickname in channel:
+                return nickname
+        return None
 
 class HeufyBotFactory(protocol.ReconnectingClientFactory):
     protocol = HeufyBot
