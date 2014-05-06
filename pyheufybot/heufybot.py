@@ -16,9 +16,9 @@ class HeufyBot(irc.IRCClient):
         self.serverInfo = ServerInfo()
 
     def connectionMade(self):
-        self.nickname = self.factory.config.settings["nickname"]
-        self.username = self.factory.config.settings["username"]
-        self.realname = self.factory.config.settings["realname"]
+        self.nickname = self.factory.config.getSettingWithDefault("nickname", "PyHeufyBot")
+        self.username = self.factory.config.getSettingWithDefault("username", "PyHeufyBot")
+        self.realname = self.factory.config.getSettingWithDefault("realname", "PyHeufyBot")
         irc.IRCClient.connectionMade(self)
         
         log("--- Connected to {}.".format(self.factory.config.getSettingWithDefault("server", "irc.foo.bar")), None)
