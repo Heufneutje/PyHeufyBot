@@ -182,7 +182,7 @@ class HeufyBot(irc.IRCClient):
                 modeUser = IRCUser(user)
             else:
                 # User doesn't have a username or hostname.
-                modeUser = IRCUser(user, None, None)
+                modeUser = IRCUser("{}!{}@{}".format(user, None, None))
 
         if not modeChannel:
             # Setting a usermode
