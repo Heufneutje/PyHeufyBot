@@ -177,8 +177,12 @@ class HeufyBot(irc.IRCClient):
         modeChannel = self.getChannel(channel)
 
         if not modeUser:
-            # The user is unknown. This is probably setting a usermode. Create a temporary user.
-            modeUser = IRCUser(user)
+            # The user is unknown. This is probably setting a usermode or a service. Create a temporary user.
+            if "!" in user:
+                modeUser = IRCUser(user)
+            else:
+                # User doesn't have a username or hostname.
+                modeUser = IRCUser(user, None, None)
 
         if not modeChannel:
             # Setting a usermode
