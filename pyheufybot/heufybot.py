@@ -318,8 +318,8 @@ class HeufyBot(irc.IRCClient):
                     self.serverInfo.network = option[1]
                 elif option[0] == "PREFIX":
                     prefixes = option[1]
-                    statusModes = prefixes[1:prefixes.find(')')]
-                    statusChars = prefixes[prefixes.find(')') + 1:]
+                    statusModes = prefixes[:prefixes.find(')')]
+                    statusChars = prefixes[prefixes.find(')'):]
                     self.serverInfo.prefixOrder = statusModes
                     for i in range(1, len(statusModes)):
                         self.serverInfo.prefixesModeToChar[statusModes[i]] = statusChars[i]
