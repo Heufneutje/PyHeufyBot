@@ -161,6 +161,46 @@ class HeufyBot(irc.IRCClient):
     def nickChanged(self, nick):
         self.nickname = nick
 
+    def modeChanged(self, user, channel, set, modes, args):
+        modeUser = self.getUser(user)
+        modeChannel = self.getChannel(channel)
+
+        if not modeUser:
+            # The user is unknown. This is probably setting a usermode. Create a temporary user.
+            modeUser = IRCUser(user)
+
+        if not modeChannel:
+            # Setting a usermode
+            for mode, arg in zip(modes, args):
+                if set:
+                    self.usermodes[mode] = arg
+                else:
+                    del self.usermodes[mode]
+        else:
+            # Setting a chanmode
+            for mode, arg in zip(modes, args):
+                if mode in self.serverInfo.prefixesModeToChar:
+                    # Setting a status mode
+                    if set:
+                        if arg not in modeChannel.ranks:
+                            modeChannel.ranks[arg] = mode
+                        else:
+                            modeChannel.ranks[arg] = modeChannel.ranks[arg] + mode
+                    else:
+                        modeChannel.ranks[arg] = modeChannel.ranks[arg].replace(mode, "")
+                else:
+                    # Setting a normal chanmode
+                    if set:
+                        modeChannel.modes[mode] = arg
+                    else:
+                        del modeChannel.modes[mode]
+
+        logArgs = [arg for arg in args if arg is not None]
+        operator = '+' if set else '-'
+        target = modeChannel.name if modeChannel else None
+
+        log("-- {0} sets mode: {1}{2} {3}".format(modeUser.nickname, operator, modes, " ".join(logArgs)), target)
+
     def irc_RPL_NAMREPLY(self, prefix, params):
         channel = self.getChannel(params[2])
 
@@ -172,7 +212,7 @@ class HeufyBot(irc.IRCClient):
 
         channelUsers = params[3].strip().split(" ")
         for channelUser in channelUsers:
-            rank = None
+            rank = ""
 
             if channelUser[0] in self.serverInfo.prefixesCharToMode:
                 rank = self.serverInfo.prefixesCharToMode[channelUser[0]]
@@ -221,6 +261,21 @@ class HeufyBot(irc.IRCClient):
             for flag in statusFlags:
                 statusModes = statusModes + self.serverInfo.prefixesCharToMode[flag]
             channel.ranks[user.nickname] = statusModes
+
+    def irc_RPL_CHANNELMODEIS(self, prefix, params):
+        channel = self.getChannel(params[1])
+        modestring = params[2][1:]
+        modeparams = params[3:]
+
+        for mode in modestring:
+            if self.serverInfo.chanModes[mode] == ModeType.PARAM_SET or self.serverInfo.chanModes[mode] == ModeType.PARAM_SETUNSET:
+                # Mode takes an argument
+                channel.modes[mode] = modeparams[0]
+                del modeparams[0]
+            else:
+                channel.modes[mode] = None
+
+        log("-- Channel modes set: {}".format(params[2]), channel.name)
 
     def irc_RPL_MYINFO(self, prefix, params):
         self.serverInfo.server = params[1]
