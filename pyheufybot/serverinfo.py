@@ -8,7 +8,7 @@ class ServerInfo(object):
         self.network = "UnknownNetwork"
         self.chanTypes = "#"
 
-        # Supported usermodes. These will most likely be overwritten unless the server has USERMODES in 005
+        # Supported usermodes
         self.userModes = {}
         self.userModes["i"] = ModeType.NORMAL
         self.userModes["o"] = ModeType.NORMAL
