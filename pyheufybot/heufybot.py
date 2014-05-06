@@ -172,6 +172,11 @@ class HeufyBot(irc.IRCClient):
         channel.users[user.nickname] = user
         # TODO: Parse flags and other WHO reply information
 
+    def irc_RPL_MYINFO(self, prefix, params):
+        self.serverInfo.server = params[1]
+        self.serverInfo.version = params[2]
+        self.serverInfo.userModes = params[3]
+
     '''
     # Will do this later since NAMES prefixes nicknames with their status and the bot doesn't know statuses yet
     def irc_RPL_NAMREPLY(self, prefix, params):
