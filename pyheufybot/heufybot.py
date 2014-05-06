@@ -6,12 +6,14 @@ from pyheufybot.user import IRCUser
 from pyheufybot.channel import IRCChannel
 from pyheufybot.message import IRCMessage
 from pyheufybot.logger import log
+from pyheufybot.serverinfo import ServerInfo
 
 class HeufyBot(irc.IRCClient):
     def __init__(self, factory):
         self.factory = factory
         self.usermodes = {}
         self.channels = {}
+        self.serverInfo = ServerInfo()
 
     def connectionMade(self):
         self.nickname = self.factory.config.settings["nickname"]
@@ -36,7 +38,7 @@ class HeufyBot(irc.IRCClient):
             # If this is a PM, the bot will have no knowledge of the user. Create a temporary one just for this message
             messageUser = IRCUser(user)
 
-        message = IRCMessage("PRIVMSG", messageUser, messageChannel, msg)
+        message = IRCMessage("PRIVMSG", messageUser, messageChannel, msg, self.serverInfo)
 
         if not message.replyTo == messageUser.nickname:
             # Don't log PMs
@@ -52,7 +54,7 @@ class HeufyBot(irc.IRCClient):
             # If this is a PM, the bot will have no knowledge of the user. Create a temporary one just for this message
             messageUser = IRCUser(user)
 
-        message = IRCMessage("ACTION", messageUser, messageChannel, msg)
+        message = IRCMessage("ACTION", messageUser, messageChannel, msg, self.serverInfo)
 
         if not message.replyTo == messageUser.nickname:
             # Don't log PMs
@@ -82,7 +84,7 @@ class HeufyBot(irc.IRCClient):
             else:
                 channel.users[user.nickname] = user
 
-        message = IRCMessage("JOIN", user, channel, "")
+        message = IRCMessage("JOIN", user, channel, "", self.serverInfo)
         log(">> {} ({}@{}) has joined {}".format(user.nickname, user.username, user.hostname, channel.name), channel.name)
 
     def irc_PART(self, prefix, params):
@@ -105,7 +107,7 @@ class HeufyBot(irc.IRCClient):
             else:
                 del channel.users[user.nickname]
 
-        message = IRCMessage("PART", user, channel, partMessage)
+        message = IRCMessage("PART", user, channel, partMessage, self.serverInfo)
         log("<< {} ({}@{}) has left {} ({})".format(user.nickname, user.username, user.hostname, channel.name, partMessage), channel.name)
 
     def irc_QUIT(self, prefix, params): 
@@ -120,7 +122,7 @@ class HeufyBot(irc.IRCClient):
                 log("<< {} ({}@{}) has quit IRC ({})".format(user.nickname, user.username, user.hostname, quitMessage), channel.name)
                 del channel.users[user.nickname]
 
-        message = IRCMessage("QUIT", user, None, quitMessage)
+        message = IRCMessage("QUIT", user, None, quitMessage, self.serverInfo)
 
     def irc_KICK(self, prefix, params):
         user = self.getUser(prefix[:prefix.index("!")])
@@ -138,7 +140,7 @@ class HeufyBot(irc.IRCClient):
             # Someone else is kicking someone from the channel
             del channel.users[kickee]
 
-        message = IRCMessage("KICK", user, channel, kickMessage)
+        message = IRCMessage("KICK", user, channel, kickMessage, self.serverInfo)
         log("-- {} was kicked from {} by {} ({})".format(kickee, channel.name, user.nickname, kickMessage), channel.name)
 
     def irc_NICK(self, prefix, params):
@@ -153,7 +155,7 @@ class HeufyBot(irc.IRCClient):
                 del channel.users[oldnick]
                 log("-- {} is now known as {}".format(oldnick, newnick), channel.name)
 
-        message = IRCMessage("NICK", user, None, oldnick)
+        message = IRCMessage("NICK", user, None, oldnick, self.serverInfo)
         user.nickname = newnick
 
     def nickChanged(self, nick):

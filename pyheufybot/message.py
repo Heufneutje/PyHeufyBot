@@ -2,11 +2,12 @@ from pyheufybot.user import IRCUser
 from pyheufybot.channel import IRCChannel
 
 class IRCMessage(object):
-    def __init__(self, messageType, user, channel, messageText):
+    def __init__(self, messageType, user, channel, messageText, serverInfo):
         self.messageType = messageType
         self.user = user
         self.channel = channel
         self.messageText = messageText
+        self.serverInfo = serverInfo
         
         self.replyTo = ""
 
