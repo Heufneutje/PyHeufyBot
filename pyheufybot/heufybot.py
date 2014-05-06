@@ -43,7 +43,11 @@ class HeufyBot(irc.IRCClient):
         if not message.replyTo == messageUser.nickname:
             # Don't log PMs
             # TODO: Make logging PMs a setting
-            statusChar = self.serverInfo.prefixesModeToChar[messageChannel.getHighestRankOfUser(messageUser.nickname, self.serverInfo.prefixOrder)] if messageUser.nickname in messageChannel.ranks else ""
+            statusChar = ""
+            if messageChannel.ranks[messageUser.nickname] != "":
+                statusChar = self.serverInfo.prefixesModeToChar[messageChannel.getHighestRankOfUser(messageUser.nickname, self.serverInfo.prefixOrder)]
+            else:
+                statusChar = ""
             log("<{}{}> {}".format(statusChar, messageUser.nickname, msg), message.replyTo)
 
     def action(self, user, channel, msg):
