@@ -9,4 +9,3 @@ class IRCChannel(object):
         self.topicTimestamp = 0
 
         self.namesListComplete = True
-        self.whoListComplete = True

@@ -162,7 +162,7 @@ class HeufyBot(irc.IRCClient):
         self.nickname = nick
 
     def irc_RPL_NAMREPLY(self, prefix, params):
-        channel = self.channels[params[2]]
+        channel = self.getChannel(params[2])
 
         # Rebuild the list if it is complete
         if channel.namesListComplete:
@@ -191,15 +191,36 @@ class HeufyBot(irc.IRCClient):
         channel.namesListComplete = True
 
     def irc_RPL_WHOREPLY(self, prefix, params):
-        user = self.getUser(params[5])
+        channel = self.getChannel(params[1])
+        user = channel.users[params[5]]
+
         if not user:
             user = IRCUser("{}!{}@{}".format(params[5], params[2], params[3]))
         else:
             user.username = params[2]
             user.hostname = params[3]
-        channel = self.channels[params[1]]
-        channel.users[user.nickname] = user
-        # TODO: Parse flags and other WHO reply information
+        
+        user.server = params[4]
+        split = params[7].split(" ") # Work around a bug in Twisted that puts hops and realname in the same parameter
+        user.hops = int(split[0])
+        user.realname = split[1]
+
+        flags = params[6]
+        statusFlags = None
+        if flags[0] == "G":
+            user.away = True
+        if len(flags) > 1:
+            if flags[1] == "*":
+                user.oper = True
+                statusFlags = flags[2:]
+            else:
+                statusFlags = flags[1:]
+        if statusFlags:
+            statusModes = ""
+            del channel.ranks[user.nickname]
+            for flag in statusFlags:
+                statusModes = statusModes + self.serverInfo.prefixesCharToMode[flag]
+            channel.ranks[user.nickname] = statusModes
 
     def irc_RPL_MYINFO(self, prefix, params):
         self.serverInfo.server = params[1]
