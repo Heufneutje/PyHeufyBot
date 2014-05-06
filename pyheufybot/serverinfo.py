@@ -45,8 +45,8 @@ class ServerInfo(object):
         else:
             return None
 
-    class ModeType(Enum):
-        LIST = 1
-        PARAM_SET = 2
-        PARAM_SETUNSET = 3
-        NORMAL = 4
+class ModeType(Enum):
+    LIST = 1
+    PARAM_SET = 2
+    PARAM_SETUNSET = 3
+    NORMAL = 4

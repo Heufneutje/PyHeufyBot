@@ -6,7 +6,7 @@ from pyheufybot.user import IRCUser
 from pyheufybot.channel import IRCChannel
 from pyheufybot.message import IRCMessage
 from pyheufybot.logger import log
-from pyheufybot.serverinfo import ServerInfo
+from pyheufybot.serverinfo import ModeType, ServerInfo
 
 class HeufyBot(irc.IRCClient):
     def __init__(self, factory):
@@ -175,7 +175,12 @@ class HeufyBot(irc.IRCClient):
     def irc_RPL_MYINFO(self, prefix, params):
         self.serverInfo.server = params[1]
         self.serverInfo.version = params[2]
-        self.serverInfo.userModes = params[3]
+
+        for mode in params[3]:
+            if mode == "s":
+                self.serverInfo.userModes[mode] = ModeType.LIST
+            else:
+                self.serverInfo.userModes[mode] = ModeType.NORMAL
 
     '''
     # Will do this later since NAMES prefixes nicknames with their status and the bot doesn't know statuses yet
