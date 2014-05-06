@@ -5,6 +5,7 @@ class ServerInfo(object):
         self.name = None
         self.version = None
         self.motd = ""
+        self.motdComplete = True
         self.network = "UnknownNetwork"
         self.chanTypes = "#"
 

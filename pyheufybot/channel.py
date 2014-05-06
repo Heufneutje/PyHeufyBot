@@ -7,3 +7,6 @@ class IRCChannel(object):
         self.topic = None
         self.topicSetter = None
         self.topicTimestamp = 0
+
+        self.namesListComplete = True
+        self.whoListComplete = True

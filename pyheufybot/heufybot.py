@@ -161,6 +161,35 @@ class HeufyBot(irc.IRCClient):
     def nickChanged(self, nick):
         self.nickname = nick
 
+    def irc_RPL_NAMREPLY(self, prefix, params):
+        channel = self.channels[params[2]]
+
+        # Rebuild the list if it is complete
+        if channel.namesListComplete:
+            channel.namesListComplete = False
+            channel.users.clear()
+            channel.ranks.clear()
+
+        channelUsers = params[3].strip().split(" ")
+        for channelUser in channelUsers:
+            rank = None
+
+            if channelUser[0] in self.serverInfo.prefixesCharToMode:
+                rank = self.serverInfo.prefixesCharToMode[channelUser[0]]
+                channelUser = channelUser[1:]
+
+            user = self.getUser(channelUser)
+            if not user:
+                user = IRCUser("{}!{}@{}".format(channelUser, None, None))
+
+            channel.users[user.nickname] = user
+            channel.ranks[user.nickname] = rank
+
+    def irc_RPL_ENDOFNAMES(self, prefix, params):
+        # The NAMES list is now complete
+        channel = self.channels[params[1]]
+        channel.namesListComplete = True
+
     def irc_RPL_WHOREPLY(self, prefix, params):
         user = self.getUser(params[5])
         if not user:
@@ -208,18 +237,6 @@ class HeufyBot(irc.IRCClient):
                     for i in range(1, len(statusModes)):
                         self.serverInfo.prefixesModeToChar[statusModes[i]] = statusChars[i]
                         self.serverInfo.prefixesCharToMode[statusChars[i]] = statusModes[i]
-
-    '''
-    # Will do this later since NAMES prefixes nicknames with their status and the bot doesn't know statuses yet
-    def irc_RPL_NAMREPLY(self, prefix, params):
-        channelUsers = params[3].strip().split(" ")
-        for channelUser in channelUsers:
-            user = self.getUser(channelUser)
-            if not user:
-                user = IRCUser("{}!{}@{}".format(channelUser, None, None))
-            channel = self.channels[params[2]]
-            channel.users[user.nickname] = user
-    '''
 
     def getChannel(self, name):
         if name in self.channels:
