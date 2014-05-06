@@ -36,6 +36,8 @@ class ServerInfo(object):
         self.prefixesCharToMode["@"] = "o"
         self.prefixesCharToMode["+"] = "v"
 
+        self.prefixOrder = "ov"
+
     def appendMotd(self, motdLine):
         self.motd = self.motd + motdLine
 

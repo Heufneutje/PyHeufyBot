@@ -182,6 +182,33 @@ class HeufyBot(irc.IRCClient):
             else:
                 self.serverInfo.userModes[mode] = ModeType.NORMAL
 
+    def isupport(self, options):
+        for item in options:
+            if "=" in item:
+                option = item.split("=")
+                if option[0] == "CHANTYPES":
+                    self.serverInfo.chanTypes = option[1]
+                elif option[0] == "CHANMODES":
+                    modes = option[1].split(",")
+                    for mode in modes[0]:
+                        self.serverInfo.chanModes[mode] = ModeType.LIST
+                    for mode in modes[1]:
+                        self.serverInfo.chanModes[mode] = ModeType.PARAM_SETUNSET
+                    for mode in modes[2]:
+                        self.serverInfo.chanModes[mode] = ModeType.PARAM_SET
+                    for mode in modes[3]:
+                        self.serverInfo.chanModes[mode] = ModeType.NORMAL
+                elif option[0] == "NETWORK":
+                    self.serverInfo.network = option[1]
+                elif option[0] == "PREFIX":
+                    prefixes = option[1]
+                    statusModes = prefixes[1:prefixes.find(')')]
+                    statusChars = prefixes[prefixes.find(')') + 1:]
+                    self.serverInfo.prefixOrder = statusModes
+                    for i in range(1, len(statusModes)):
+                        self.serverInfo.prefixesModeToChar[statusModes[i]] = statusChars[i]
+                        self.serverInfo.prefixesCharToMode[statusChars[i]] = statusModes[i]
+
     '''
     # Will do this later since NAMES prefixes nicknames with their status and the bot doesn't know statuses yet
     def irc_RPL_NAMREPLY(self, prefix, params):
