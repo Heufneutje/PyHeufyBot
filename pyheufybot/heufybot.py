@@ -106,6 +106,7 @@ class HeufyBot(irc.IRCClient):
                 self.sendLine("WHO {}".format(channel.name))
             else:
                 del channel.users[user.nickname]
+                del channel.ranks[user.nickname]
 
         message = IRCMessage("PART", user, channel, partMessage, self.serverInfo)
         log("<< {} ({}@{}) has left {} ({})".format(user.nickname, user.username, user.hostname, channel.name, partMessage), channel.name)
@@ -121,6 +122,7 @@ class HeufyBot(irc.IRCClient):
             if user.nickname in channel.users:
                 log("<< {} ({}@{}) has quit IRC ({})".format(user.nickname, user.username, user.hostname, quitMessage), channel.name)
                 del channel.users[user.nickname]
+                del channel.ranks[user.nickname]
 
         message = IRCMessage("QUIT", user, None, quitMessage, self.serverInfo)
 
@@ -139,6 +141,7 @@ class HeufyBot(irc.IRCClient):
         else:
             # Someone else is kicking someone from the channel
             del channel.users[kickee]
+            del channel.ranks[kickee]
 
         message = IRCMessage("KICK", user, channel, kickMessage, self.serverInfo)
         log("-- {} was kicked from {} by {} ({})".format(kickee, channel.name, user.nickname, kickMessage), channel.name)
@@ -153,6 +156,11 @@ class HeufyBot(irc.IRCClient):
             if oldnick in channel.users:
                 channel.users[newnick] = user
                 del channel.users[oldnick]
+
+                if oldnick in channel.ranks:
+                    channel.ranks[newnick] = channel.ranks[oldnick]
+                    del channel.ranks[oldnick]
+
                 log("-- {} is now known as {}".format(oldnick, newnick), channel.name)
 
         message = IRCMessage("NICK", user, None, oldnick, self.serverInfo)
