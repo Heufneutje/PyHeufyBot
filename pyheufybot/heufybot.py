@@ -87,6 +87,7 @@ class HeufyBot(irc.IRCClient):
                 self.sendLine("WHO {}".format(channel.name))
             else:
                 channel.users[user.nickname] = user
+                channel.ranks[user.nickname] = ""
 
         message = IRCMessage("JOIN", user, channel, "", self.serverInfo)
         log(">> {} ({}@{}) has joined {}".format(user.nickname, user.username, user.hostname, channel.name), channel.name)
@@ -110,8 +111,7 @@ class HeufyBot(irc.IRCClient):
                 self.sendLine("WHO {}".format(channel.name))
             else:
                 del channel.users[user.nickname]
-                if user.nickname in channel.ranks:
-                    del channel.ranks[user.nickname]
+                del channel.ranks[user.nickname]
 
         message = IRCMessage("PART", user, channel, partMessage, self.serverInfo)
         log("<< {} ({}@{}) has left {} ({})".format(user.nickname, user.username, user.hostname, channel.name, partMessage), channel.name)
@@ -127,8 +127,7 @@ class HeufyBot(irc.IRCClient):
             if user.nickname in channel.users:
                 log("<< {} ({}@{}) has quit IRC ({})".format(user.nickname, user.username, user.hostname, quitMessage), channel.name)
                 del channel.users[user.nickname]
-                if user.nickname in channel.ranks:
-                    del channel.ranks[user.nickname]
+                del channel.ranks[user.nickname]
 
         message = IRCMessage("QUIT", user, None, quitMessage, self.serverInfo)
 
@@ -147,8 +146,7 @@ class HeufyBot(irc.IRCClient):
         else:
             # Someone else is kicking someone from the channel
             del channel.users[kickee]
-            if kickee in channel.ranks:
-                del channel.ranks[kickee]
+            del channel.ranks[kickee]
 
         message = IRCMessage("KICK", user, channel, kickMessage, self.serverInfo)
         log("-- {} was kicked from {} by {} ({})".format(kickee, channel.name, user.nickname, kickMessage), channel.name)
@@ -163,10 +161,8 @@ class HeufyBot(irc.IRCClient):
             if oldnick in channel.users:
                 channel.users[newnick] = user
                 del channel.users[oldnick]
-
-                if oldnick in channel.ranks:
-                    channel.ranks[newnick] = channel.ranks[oldnick]
-                    del channel.ranks[oldnick]
+                channel.ranks[newnick] = channel.ranks[oldnick]
+                del channel.ranks[oldnick]
 
                 log("-- {} is now known as {}".format(oldnick, newnick), channel.name)
 
@@ -201,10 +197,7 @@ class HeufyBot(irc.IRCClient):
                 if mode in self.serverInfo.prefixesModeToChar:
                     # Setting a status mode
                     if set:
-                        if arg not in modeChannel.ranks:
-                            modeChannel.ranks[arg] = mode
-                        else:
-                            modeChannel.ranks[arg] = modeChannel.ranks[arg] + mode
+                        modeChannel.ranks[arg] = modeChannel.ranks[arg] + mode
                     else:
                         modeChannel.ranks[arg] = modeChannel.ranks[arg].replace(mode, "")
                 else:
@@ -274,12 +267,12 @@ class HeufyBot(irc.IRCClient):
                 statusFlags = flags[2:]
             else:
                 statusFlags = flags[1:]
+        statusModes = ""
         if statusFlags:
-            statusModes = ""
             del channel.ranks[user.nickname]
             for flag in statusFlags:
                 statusModes = statusModes + self.serverInfo.prefixesCharToMode[flag]
-            channel.ranks[user.nickname] = statusModes
+        channel.ranks[user.nickname] = statusModes
 
     def irc_RPL_CHANNELMODEIS(self, prefix, params):
         channel = self.getChannel(params[1])
