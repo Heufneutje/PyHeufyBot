@@ -9,3 +9,13 @@ class IRCChannel(object):
         self.topicTimestamp = 0
 
         self.namesListComplete = True
+
+    def getHighestRankOfUser(self, nickname, prefixOrder):
+        if not self.ranks[nickname]:
+            return None
+
+        for mode in prefixOrder:
+            if mode in self.ranks[nickname]:
+                return mode
+
+        return None

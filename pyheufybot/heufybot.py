@@ -43,8 +43,8 @@ class HeufyBot(irc.IRCClient):
         if not message.replyTo == messageUser.nickname:
             # Don't log PMs
             # TODO: Make logging PMs a setting
-            # TODO: Add the user's status symbol as a prefix
-            log("<{}{}> {}".format("", messageUser.nickname, msg), message.replyTo)
+            statusChar = self.serverInfo.prefixesModeToChar[messageChannel.getHighestRankOfUser(messageUser.nickname, self.serverInfo.prefixOrder)]
+            log("<{}{}> {}".format(statusChar, messageUser.nickname, msg), message.replyTo)
 
     def action(self, user, channel, msg):
         messageChannel = self.getChannel(channel)
