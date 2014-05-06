@@ -1,7 +1,7 @@
 class ServerInfo(object):
     def __init__(self):
         self.name = None
-        self.serverVersion = None
+        self.version = None
         self.motd = ""
         self.network = "UnknownNetwork"
         
