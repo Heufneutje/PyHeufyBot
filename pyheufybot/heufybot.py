@@ -84,10 +84,7 @@ class HeufyBot(irc.IRCClient):
             # Someone else is joining the channel, add them to that channel's user dictionary
             if user.nickname in channel.users:
                 # This will trigger if a desync ever happens. Send NAMES and WHO to fix it.
-                channel.users = {}
-                channel.ranks = {}
-                self.sendLine("NAMES {}".format(channel.name))
-                self.sendLine("WHO {}".format(channel.name))
+                self.fixChannelListDesync(channel)
             else:
                 channel.users[user.nickname] = user
                 channel.ranks[user.nickname] = ""
@@ -110,10 +107,7 @@ class HeufyBot(irc.IRCClient):
             # Someone else is leaving the channel
             if user.nickname not in channel.users:
                 # This will trigger if a desync ever happens. Send NAMES and WHO to fix it.
-                channel.users = {}
-                channel.ranks = {}
-                self.sendLine("NAMES {}".format(channel.name))
-                self.sendLine("WHO {}".format(channel.name))
+                self.fixChannelListDesync(channel)
             else:
                 del channel.users[user.nickname]
                 del channel.ranks[user.nickname]
@@ -139,19 +133,22 @@ class HeufyBot(irc.IRCClient):
     def irc_KICK(self, prefix, params):
         user = self.getUser(prefix[:prefix.index("!")])
         channel = self.getChannel(params[0])
-        
         kickee = params[1]
-        kickMessage = ""
-        if len(params) > 2:
-            kickMessage = params[2]
-
-        if kickee == self.nickname:
-            # The bot is kicked from the channel
-            del self.channels[channel.name]
+        
+        if user.nickname not in channel.users or kickee not in channel.users:
+            self.fixChannelListDesync(channel)
         else:
-            # Someone else is kicking someone from the channel
-            del channel.users[kickee]
-            del channel.ranks[kickee]
+            kickMessage = ""
+            if len(params) > 2:
+                kickMessage = params[2]
+    
+            if kickee == self.nickname:
+                # The bot is kicked from the channel
+                del self.channels[channel.name]
+            else:
+                # Someone else is kicking someone from the channel
+                del channel.users[kickee]
+                del channel.ranks[kickee]
 
         message = IRCMessage("KICK", user, channel, kickMessage, self.serverInfo)
         log("-- {} was kicked from {} by {} ({})".format(kickee, channel.name, user.nickname, kickMessage), channel.name)
@@ -367,6 +364,12 @@ class HeufyBot(irc.IRCClient):
             if nickname in channel.users:
                 return channel.users[nickname]
         return None
+    
+    def fixChannelListDesync(self, channel):
+        channel.users = {}
+        channel.ranks = {}
+        self.sendLine("NAMES {}".format(channel.name))
+        self.sendLine("WHO {}".format(channel.name))
 
 class HeufyBotFactory(protocol.ReconnectingClientFactory):
     protocol = HeufyBot
