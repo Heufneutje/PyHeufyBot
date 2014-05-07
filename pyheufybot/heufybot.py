@@ -1,3 +1,4 @@
+import datetime, time
 from twisted.words.protocols import irc
 from twisted.internet import reactor, protocol
 from pyheufybot.globalvars import version
@@ -82,8 +83,10 @@ class HeufyBot(irc.IRCClient):
         else:
             # Someone else is joining the channel, add them to that channel's user dictionary
             if user.nickname in channel.users:
-                # This will trigger if a desync ever happens. Send WHO to fix it.
+                # This will trigger if a desync ever happens. Send NAMES and WHO to fix it.
                 channel.users = {}
+                channel.ranks = {}
+                self.sendLine("NAMES {}".format(channel.name))
                 self.sendLine("WHO {}".format(channel.name))
             else:
                 channel.users[user.nickname] = user
@@ -106,8 +109,10 @@ class HeufyBot(irc.IRCClient):
         else:
             # Someone else is leaving the channel
             if user.nickname not in channel.users:
-                # This will trigger if a desync ever happens. Send WHO to fix it.
+                # This will trigger if a desync ever happens. Send NAMES and WHO to fix it.
                 channel.users = {}
+                channel.ranks = {}
+                self.sendLine("NAMES {}".format(channel.name))
                 self.sendLine("WHO {}".format(channel.name))
             else:
                 del channel.users[user.nickname]
@@ -169,9 +174,6 @@ class HeufyBot(irc.IRCClient):
         message = IRCMessage("NICK", user, None, oldnick, self.serverInfo)
         user.nickname = newnick
 
-    def nickChanged(self, nick):
-        self.nickname = nick
-
     def modeChanged(self, user, channel, set, modes, args):
         modeUser = self.getUser(user)
         modeChannel = self.getChannel(channel)
@@ -211,7 +213,31 @@ class HeufyBot(irc.IRCClient):
         operator = '+' if set else '-'
         target = modeChannel.name if modeChannel else None
 
-        log("-- {0} sets mode: {1}{2} {3}".format(modeUser.nickname, operator, modes, " ".join(logArgs)), target)
+        log("-- {} sets mode: {}{} {}".format(modeUser.nickname, operator, modes, " ".join(logArgs)), target)
+
+    def irc_TOPIC(self, prefix, params):
+        user = self.getUser(prefix[:prefix.index("!")])
+        channel = self.getChannel(params[1])
+        channel.topic = params[2]
+        channel.topicSetter = user.getFullName()
+        channel.topicTimestamp = time.time()
+
+        log("-- {} changes topic to \"{}\"".format(user.nickname, channel.topic), channel.name)
+
+    def irc_RPL_TOPIC(self, prefix, params):
+        channel = self.getChannel(params[1])
+        channel.topic = params[2]
+
+        log("-- Topic is \"{}\"".format(channel.topic), channel.name)
+
+    def irc_unknown(self, prefix, command, params):
+        # Twisted is dumb and doesn't implement RPL_TOPICWHOTIME
+        if command == "333":
+            channel = self.getChannel(params[1])
+            channel.topicSetter = params[2]
+            channel.topicTimestamp = long(params[3])
+
+            log("-- Topic set by {} on {}".format(params[2], datetime.datetime.fromtimestamp(channel.topicTimestamp)), channel.name)
 
     def irc_RPL_NAMREPLY(self, prefix, params):
         channel = self.getChannel(params[2])
