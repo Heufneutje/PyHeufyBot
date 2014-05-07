@@ -4,8 +4,6 @@ class ServerInfo(object):
     def __init__(self):
         self.name = None
         self.version = None
-        self.motd = ""
-        self.motdComplete = True
         self.network = "UnknownNetwork"
         self.chanTypes = "#"
 
@@ -38,9 +36,6 @@ class ServerInfo(object):
         self.prefixesCharToMode["+"] = "v"
 
         self.prefixOrder = "ov"
-
-    def appendMotd(self, motdLine):
-        self.motd = self.motd + motdLine
 
     def getChanModeType(self, mode):
         if mode in self.chanModes:
