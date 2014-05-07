@@ -231,13 +231,17 @@ class HeufyBot(irc.IRCClient):
         log("-- Topic is \"{}\"".format(channel.topic), channel.name)
 
     def irc_unknown(self, prefix, command, params):
-        # Twisted is dumb and doesn't implement RPL_TOPICWHOTIME
         if command == "333":
+            # RPL_TOPICWHOTIME: This is in the RFC but not implemented. Tsk tsk, Twisted.
             channel = self.getChannel(params[1])
             channel.topicSetter = params[2]
             channel.topicTimestamp = long(params[3])
-
             log("-- Topic set by {} on {}".format(params[2], datetime.datetime.fromtimestamp(channel.topicTimestamp)), channel.name)
+        elif command == "329":
+            # RPL_CREATIONTIME: Not RFC, but still used pretty much anywhere
+            channel = self.getChannel(params[1])
+            channel.creationTime = long(params[2])
+            log("-- Channel was created on {}".format(datetime.datetime.fromtimestamp(channel.creationTime)), channel.name)
 
     def irc_RPL_NAMREPLY(self, prefix, params):
         channel = self.getChannel(params[2])
