@@ -11,7 +11,7 @@ class IRCMessage(object):
         
         self.replyTo = ""
 
-        if not user and channel:
+        if not user and not channel:
             # This message does not have a user or a channel. It's probably a server reply
             self.replyTo = ""
         elif not channel:
