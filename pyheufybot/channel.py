@@ -12,7 +12,7 @@ class IRCChannel(object):
         self.namesListComplete = True
 
     def getHighestRankOfUser(self, nickname, prefixOrder):
-        if not self.ranks[nickname]:
+        if nickname not in self.ranks:
             return None
 
         for mode in prefixOrder:
