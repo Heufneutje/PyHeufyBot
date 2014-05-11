@@ -1,6 +1,6 @@
 import datetime, time
 from twisted.words.protocols import irc
-from twisted.internet import reactor, protocol
+from twisted.internet import protocol
 from pyheufybot.user import IRCUser
 from pyheufybot.channel import IRCChannel
 from pyheufybot.message import IRCMessage
@@ -42,7 +42,6 @@ class HeufyBot(irc.IRCClient):
         if not message.replyTo == messageUser.nickname:
             # Don't log PMs
             # TODO: Make logging PMs a setting
-            statusChar = ""
             if messageChannel.ranks[messageUser.nickname] != "":
                 statusChar = self.serverInfo.prefixesModeToChar[messageChannel.getHighestRankOfUser(messageUser.nickname, self.serverInfo.prefixOrder)]
             else:
@@ -132,11 +131,11 @@ class HeufyBot(irc.IRCClient):
         user = self.getUser(prefix[:prefix.index("!")])
         channel = self.getChannel(params[0])
         kickee = params[1]
-        
+        kickMessage = ""
+
         if user.nickname not in channel.users or kickee not in channel.users:
             self.fixChannelListDesync(channel)
         else:
-            kickMessage = ""
             if len(params) > 2:
                 kickMessage = params[2]
     
@@ -278,9 +277,7 @@ class HeufyBot(irc.IRCClient):
             user.hostname = params[3]
         
         user.server = params[4]
-        split = params[7].split(" ") # Work around a bug in Twisted that puts hops and realname in the same parameter
-        user.hops = int(split[0])
-        user.realname = split[1]
+        user.hops, user.realname = params[7].split(" ", 1) #The RFC is weird.
 
         flags = params[6]
         statusFlags = None
