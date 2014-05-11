@@ -1,8 +1,6 @@
 import datetime, time
 from twisted.words.protocols import irc
 from twisted.internet import reactor, protocol
-from pyheufybot.globalvars import version
-from pyheufybot.config import Config
 from pyheufybot.user import IRCUser
 from pyheufybot.channel import IRCChannel
 from pyheufybot.message import IRCMessage
