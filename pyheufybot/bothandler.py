@@ -5,10 +5,10 @@ from pyheufybot.logger import log
 from config import Config
 
 class BotHandler(object):
-    factories = {}
     globalConfig = None    
 
     def __init__(self, configFile):
+        self.factories = {}
         log("--- Loading configs...", None)
         self.configFile = configFile
         self.globalConfig = Config(configFile, None)
