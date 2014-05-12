@@ -20,6 +20,8 @@ class HeufyBot(irc.IRCClient):
         self.nickname = self.factory.config.getSettingWithDefault("nickname", "PyHeufyBot")
         self.username = self.factory.config.getSettingWithDefault("username", "PyHeufyBot")
         self.realname = self.factory.config.getSettingWithDefault("realname", "PyHeufyBot")
+        if self.factory.config.getSettingWithDefault("passwordType", None) == "ServerPass":
+            self.password = self.factory.config.getSettingWithDefault("password", "")
         irc.IRCClient.connectionMade(self)
         
         log("--- Connected to {}.".format(self.factory.config.getSettingWithDefault("server", "irc.foo.bar")), None)
