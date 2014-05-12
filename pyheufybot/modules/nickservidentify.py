@@ -1,5 +1,5 @@
-from module_interface import Module, ModuleType
-from message import IRCResponse, ResponseType
+from pyheufybot.module_interface import Module, ModuleType
+from pyheufybot.message import IRCResponse, ResponseType
 from pyheufybot import globalvars
 
 class NickServIdentify(Module):
@@ -14,6 +14,6 @@ class NickServIdentify(Module):
         password = config.getSettingWithDefault("password", "")
 
         if passwordType == "NickServ":
-            return [ IRCResponse("NickServ", password, responseType.MESSAGE) ]
+            return [ IRCResponse("NickServ", "IDENTIFY " + password, responseType.MESSAGE) ]
         else:
             return []
