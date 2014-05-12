@@ -69,6 +69,11 @@ class HeufyBot(irc.IRCClient):
         user = self.getUser(prefix[:prefix.index("!")])
         if not user:
             user = IRCUser(prefix)
+        else:
+            exclamationIndex = prefix.index("!")
+            atIndex = prefix.index("@")
+            user.username = prefix[exclamationIndex + 1:atIndex]
+            user.hostname = prefix[atIndex + 1:]
 
         channel = self.getChannel(params[0])
 
