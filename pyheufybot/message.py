@@ -1,5 +1,6 @@
 from pyheufybot.user import IRCUser
 from pyheufybot.channel import IRCChannel
+from enum import Enum
 
 class IRCMessage(object):
     def __init__(self, messageType, user, channel, messageText, serverInfo):
@@ -18,3 +19,15 @@ class IRCMessage(object):
             self.replyTo = user.nickname
         else:
             self.replyTo = channel.name
+
+class IRCResponse(object):
+    def __init__(self, target, responseType, responseText):
+        self.target = target
+        self.responseType = responseType
+        self.responseText = responseText
+
+class ResponseType(Enum):
+    MESSAGE = 1
+    ACTION = 2
+    NOTICE = 3
+    RAW = 4
