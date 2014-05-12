@@ -6,6 +6,7 @@ from pyheufybot.channel import IRCChannel
 from pyheufybot.message import IRCMessage
 from pyheufybot.logger import log
 from pyheufybot.serverinfo import ModeType, ServerInfo
+from pyheufybot.module_interface import ModuleInterface
 
 class HeufyBot(irc.IRCClient):
     def __init__(self, factory):
@@ -13,6 +14,7 @@ class HeufyBot(irc.IRCClient):
         self.usermodes = {}
         self.channels = {}
         self.serverInfo = ServerInfo()
+        self.moduleInterface = ModuleInterface(self)
 
     def connectionMade(self):
         self.nickname = self.factory.config.getSettingWithDefault("nickname", "PyHeufyBot")

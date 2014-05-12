@@ -1,6 +1,5 @@
 from pyheufybot.message import IRCMessage
 from pyheufybot.serverinfo import ServerInfo
-from pyheufybot.heufybot import HeufyBot
 from enum import Enum
 
 class Module(object):
@@ -20,7 +19,7 @@ class Module(object):
         pass
 
 class ModuleInterface(object):
-    def __init__(self, bot=HeufyBot):
+    def __init__(self, bot):
         self.bot = bot
         self.modules = []
 
