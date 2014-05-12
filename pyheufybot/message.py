@@ -21,7 +21,7 @@ class IRCMessage(object):
             self.replyTo = channel.name
 
 class IRCResponse(object):
-    def __init__(self, target, responseType, responseText):
+    def __init__(self, target, responseText, responseType):
         self.target = target
         self.responseType = responseType
         self.responseText = responseText

@@ -9,4 +9,4 @@ class Say(Module):
         self.helpText = "Usage: say <message> | Makes the bot say the given line"
 
     def execute(self, message, serverInfo):
-        return [ IRCResponse(message.replyTo, ResponseType.MESSAGE, message.messageText) ]
+        return [ IRCResponse(message.replyTo, message.messageText, responseType.MESSAGE) ]

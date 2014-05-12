@@ -14,6 +14,6 @@ class NickServIdentify(Module):
         password = config.getSettingWithDefault("password", "")
 
         if passwordType == "NickServ":
-            return [ IRCResponse("NickServ", responseType.MESSAGE, password) ]
+            return [ IRCResponse("NickServ", password, responseType.MESSAGE) ]
         else:
             return []
