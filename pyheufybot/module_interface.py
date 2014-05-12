@@ -1,10 +1,12 @@
 from pyheufybot.message import IRCMessage
 from pyheufybot.serverinfo import ServerInfo
 from pyheufybot.heufybot import HeufyBot
+from enum import Enum
 
 class Module(object):
     def __init__(self):
         self.trigger = ""
+        self.moduleType = ModuleType.PASSIVE
         self.messageTypes = []
         self.helpText = "No help available for this module"
 
@@ -33,3 +35,8 @@ class ModuleInterface(object):
 
     def handleMessage(self, message=IRCMessage):
         pass
+
+class ModuleType(Enum):
+    ACTIVE = 1
+    PASSIVE = 2
+    TRIGGERED = 3
