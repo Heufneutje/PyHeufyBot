@@ -3,12 +3,12 @@ from twisted.internet import reactor
 from heufybot import HeufyBot, HeufyBotFactory
 from pyheufybot.logger import log
 from config import Config
+import globalvars
 
 class BotHandler(object):
-    globalConfig = None    
-
     def __init__(self, configFile):
         self.factories = {}
+        globalvars.botHandler = self
         log("--- Loading configs...", None)
         self.configFile = configFile
         self.globalConfig = Config(configFile, None)
