@@ -1,4 +1,5 @@
 from module_interface import Module, ModuleType
+from message import IRCResponse, ResponseType
 
 class Say(Module):
     def __init__(self):
@@ -8,4 +9,4 @@ class Say(Module):
         self.helpText = "Usage: say <message> | Makes the bot say the given line"
 
     def execute(self, message, serverInfo):
-        pass
+        return [ IRCResponse(message.replyTo, ResponseType.MESSAGE, message.messageText) ]
