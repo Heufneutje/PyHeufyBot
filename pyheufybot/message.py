@@ -7,6 +7,7 @@ class IRCMessage(object):
         self.channel = channel
         self.messageText = messageText
         self.serverInfo = serverInfo
+        self.params = messageText.split(" ")
         
         self.replyTo = ""
 

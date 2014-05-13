@@ -67,7 +67,7 @@ class ModuleInterface(object):
                 del sys.modules["pyheufybot.modules.{}".format(moduleName)]
                 for f in glob("pyheufybot/modules/{}.pyc".format(moduleName)):
                     os.remove(f)
-                log("*** Unloaded module \"{}\".".format(module.name), None)
+                log("--- Unloaded module \"{}\".".format(module.name), None)
                 return True
             except Exception as e:
                 log("*** ERROR: An error occurred while unloading module \"{}\" ({}).".format(moduleName, e), None)

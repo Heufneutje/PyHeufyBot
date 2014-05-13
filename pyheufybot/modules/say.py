@@ -10,4 +10,7 @@ class ModuleSpawner(Module):
         self.helpText = "Usage: say <message> | Makes the bot say the given line"
 
     def execute(self, message):
-        return [ IRCResponse(message.replyTo, message.messageText, ResponseType.MESSAGE) ]
+        if len(message.params) == 1:
+            return [ IRCResponse(message.replyTo, "Say what?", ResponseType.MESSAGE) ]
+        else:
+            return [ IRCResponse(message.replyTo, " ".join(message.params[1:]), ResponseType.MESSAGE) ]
