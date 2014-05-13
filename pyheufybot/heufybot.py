@@ -332,7 +332,7 @@ class HeufyBot(irc.IRCClient):
         log("-- Channel modes set: {}".format(params[2]), channel.name)
 
     def irc_RPL_MYINFO(self, prefix, params):
-        self.serverInfo.server = params[1]
+        self.serverInfo.name = params[1]
         self.serverInfo.version = params[2]
 
         for mode in params[3]:
