@@ -1,4 +1,4 @@
-import imp
+import imp, re
 from pyheufybot.logger import log
 from pyheufybot.message import IRCMessage, IRCResponse, ResponseType
 from pyheufybot.serverinfo import ServerInfo
@@ -12,7 +12,7 @@ class Module(object):
         self.messageTypes = []
         self.helpText = "No help available for this module"
 
-    def excecute(self, message, serverInfo):
+    def excecute(self, message):
         pass
 
     def onModuleLoaded(self):
@@ -77,11 +77,29 @@ class ModuleInterface(object):
                 log("*** ERROR: An error occurred while unloading module \"{}\" ({}).".format(moduleName, e), None)
                 return False
 
+    def loadAllModules(self):
+        log("--- Loading modules...", None)
+        modules = self.bot.factory.config.getSettingWithDefault("modules", [])
+        for module in modules:
+            self.loadModule(module)
+
     def shouldExecute(self, module, message):
-        pass
+        if message.messageType in module.messageTypes:
+            if module.moduleType == ModuleType.PASSIVE:
+                return True
+            elif module.moduleType == ModuleType.TRIGGERED:
+                match = re.search(".*{}.*".format(module.trigger), message.messageText, re.IGNORECASE)
+                return match
+            else:
+                commandPrefix = self.bot.config.getSettingWithDefault("commandPrefix", "!")
+                match = re.search("^{}{}.*".format(commandPrefix, module.trigger), message.messageText, re.IGNORECASE)
+                return match
 
     def handleMessage(self, message):
-        pass
+        print "test"
+        for module in self.modules.values():
+            if self.shouldExecute(module, message):
+                module.execute(message)
 
     def sendResponses(self, responses):
         for response in responses:

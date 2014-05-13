@@ -30,3 +30,15 @@ port: 6667
 # The channels the bot should join on connect. Leave this empty to not
 # join any channels.
 channels: []
+
+#=================#
+#=Module Settings=#
+#=================#
+
+# -commandPrefix-
+# The character that has to be used to trigger any modules of type ACTIVE.
+commandPrefix: "!"
+
+# -modules-
+# The modules that should be loaded on startup
+modules: []

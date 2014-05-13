@@ -396,6 +396,7 @@ class HeufyBotFactory(protocol.ReconnectingClientFactory):
 
     def buildProtocol(self, addr):
         self.bot = HeufyBot(self)
+        self.bot.moduleInterface.loadAllModules()
         return self.bot
 
     def clientConnectionLost(self, connector, reason):

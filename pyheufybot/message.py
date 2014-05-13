@@ -1,5 +1,3 @@
-from pyheufybot.user import IRCUser
-from pyheufybot.channel import IRCChannel
 from enum import Enum
 
 class IRCMessage(object):

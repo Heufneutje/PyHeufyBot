@@ -9,12 +9,12 @@ class ModuleSpawner(Module):
         self.messageTypes = ["USER"]
         self.helpText = "Attempts to log into NickServ with the password in the config"
 
-    def execute(self, message, serverInfo):
-        config = globalvars.botHandler.factories[serverInfo.name].config
+    def execute(self, message):
+        config = globalvars.botHandler.factories[message.serverInfo.name].config
         passwordType = config.getSettingWithDefault("passwordType", None)
         password = config.getSettingWithDefault("password", "")
 
         if passwordType == "NickServ":
-            return [ IRCResponse("NickServ", "IDENTIFY " + password, responseType.MESSAGE) ]
+            return [ IRCResponse("NickServ", "IDENTIFY " + password, ResponseType.MESSAGE) ]
         else:
             return []

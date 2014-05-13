@@ -9,5 +9,5 @@ class ModuleSpawner(Module):
         self.messagesTypes = ["PRIVMSG"]
         self.helpText = "Usage: say <message> | Makes the bot say the given line"
 
-    def execute(self, message, serverInfo):
-        return [ IRCResponse(message.replyTo, message.messageText, responseType.MESSAGE) ]
+    def execute(self, message):
+        return [ IRCResponse(message.replyTo, message.messageText, ResponseType.MESSAGE) ]
