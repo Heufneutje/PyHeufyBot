@@ -69,9 +69,9 @@ class ModuleInterface(object):
         if moduleName in self.modules:
             try:
                 module = self.modules[moduleName]
-                name = self.modules[moduleName].name
                 module.onUnloadModule()
                 del self.modules[moduleName]
+                log("*** Loaded module \"{}\".".format(module.name), None)
                 return True
             except Exception as e:
                 log("*** ERROR: An error occurred while unloading module \"{}\" ({}).".format(moduleName, e), None)
