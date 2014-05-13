@@ -1,8 +1,9 @@
 from module_interface import Module, ModuleType
 from message import IRCResponse, ResponseType
 
-class Say(Module):
+class ModuleSpawner(Module):
     def __init__(self):
+        self.name = "Say"
         self.trigger = "say"
         self.moduleType = ModuleType.ACTIVE
         self.messagesTypes = ["PRIVMSG"]

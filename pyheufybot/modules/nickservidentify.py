@@ -2,8 +2,9 @@ from pyheufybot.module_interface import Module, ModuleType
 from pyheufybot.message import IRCResponse, ResponseType
 from pyheufybot import globalvars
 
-class NickServIdentify(Module):
+class ModuleSpawner(Module):
     def __init__(self):
+        self.name = "NickServIdentify"
         self.moduleType = ModuleType.PASSIVE
         self.messageTypes = ["USER"]
         self.helpText = "Attempts to log into NickServ with the password in the config"

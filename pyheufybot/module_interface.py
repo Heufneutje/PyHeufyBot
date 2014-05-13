@@ -4,6 +4,7 @@ from enum import Enum
 
 class Module(object):
     def __init__(self):
+        self.name = None
         self.trigger = ""
         self.moduleType = ModuleType.PASSIVE
         self.messageTypes = []
