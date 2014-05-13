@@ -1,8 +1,9 @@
-import imp, re
+import importlib, os, re, sys
 from pyheufybot.logger import log
 from pyheufybot.message import IRCMessage, IRCResponse, ResponseType
 from pyheufybot.serverinfo import ServerInfo
 from enum import Enum
+from glob import glob
 
 class Module(object):
     def __init__(self):
@@ -35,28 +36,20 @@ class ModuleInterface(object):
             if not self.unloadModule(moduleName):
                 return False
 
-        # Try to find the module.
+        # Try to load the module
         try:
-            search = imp.find_module("pyheufybot/modules/{}".format(moduleName))
-        except ImportError as e:
-            log("*** ERROR: Module \"{}\" could not be found ({}).".format(moduleName, e), None)
-            return False
-        
-        # Module has been found. Let's try to import it.
-        try:
-            load = imp.load_module(moduleName, search[0], search[1], search[2])
+            src = importlib.import_module("pyheufybot.modules." + moduleName)
         except ImportError as e:
             log("*** ERROR: Module \"{}\" could not be loaded ({}).".format(moduleName, e), None)
-            search[0].close()
             return False
         
-        # Module has been imported. Try to load it and add it to the modules dictionary.
-        search[0].close()
+        reload(src)
+
         try:
-            module = load.ModuleSpawner()
+            module = src.ModuleSpawner()
             self.modules[moduleName] = module
             module.onModuleLoaded()
-            log("*** Loaded module \"{}\".".format(module.name), None)
+            log("--- Loaded module \"{}\".".format(module.name), None)
         except Exception as e:
             log("*** ERROR: An error occurred while loading module \"{}\" ({}).".format(moduleName, e), None)
             return False
@@ -71,6 +64,9 @@ class ModuleInterface(object):
                 module = self.modules[moduleName]
                 module.onUnloadModule()
                 del self.modules[moduleName]
+                del sys.modules["pyheufybot.modules.{}".format(moduleName)]
+                for f in glob("pyheufybot/modules/{}.pyc".format(moduleName)):
+                    os.remove(f)
                 log("*** Unloaded module \"{}\".".format(module.name), None)
                 return True
             except Exception as e:
@@ -89,17 +85,16 @@ class ModuleInterface(object):
                 return True
             elif module.moduleType == ModuleType.TRIGGERED:
                 match = re.search(".*{}.*".format(module.trigger), message.messageText, re.IGNORECASE)
-                return match
+                return True if match else False
             else:
-                commandPrefix = self.bot.config.getSettingWithDefault("commandPrefix", "!")
+                commandPrefix = self.bot.factory.config.getSettingWithDefault("commandPrefix", "!")
                 match = re.search("^{}{}.*".format(commandPrefix, module.trigger), message.messageText, re.IGNORECASE)
-                return match
+                return True if match else False
 
     def handleMessage(self, message):
-        print "test"
         for module in self.modules.values():
             if self.shouldExecute(module, message):
-                module.execute(message)
+                self.sendResponses(module.execute(message))
 
     def sendResponses(self, responses):
         for response in responses:

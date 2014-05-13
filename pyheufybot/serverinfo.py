@@ -3,6 +3,7 @@ from enum import Enum
 class ServerInfo(object):
     def __init__(self):
         self.name = None
+        self.address = None
         self.version = None
         self.network = "UnknownNetwork"
         self.chanTypes = "#"

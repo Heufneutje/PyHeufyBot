@@ -10,7 +10,7 @@ class ModuleSpawner(Module):
         self.helpText = "Attempts to log into NickServ with the password in the config"
 
     def execute(self, message):
-        config = globalvars.botHandler.factories[message.serverInfo.name].config
+        config = globalvars.botHandler.factories[message.serverInfo.address].config
         passwordType = config.getSettingWithDefault("passwordType", None)
         password = config.getSettingWithDefault("password", "")
 
