@@ -94,22 +94,6 @@ class ModuleInterface(object):
             elif response.responseType == ResponseType.RAW:
                 self.bot.sendLine(response.responseText)
 
-    def getModuleList(self):
-        root = os.path.join("pyheufybot", "modules")
-        moduleFiles = []
-
-        for item in os.listdir(root):
-            if not os.path.isfile(os.path.join(root, item)):
-                continue
-            if not item.endswith(".py"):
-                continue
-            if item == "__init__.py":
-                continue
-
-            moduleFiles.append(item)
-
-        return moduleFiles
-
 class ModuleType(Enum):
     ACTIVE = 1
     PASSIVE = 2
