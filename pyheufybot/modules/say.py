@@ -1,5 +1,5 @@
-from module_interface import Module, ModuleType
-from message import IRCResponse, ResponseType
+from pyheufybot.module_interface import Module, ModuleType
+from pyheufybot.message import IRCResponse, ResponseType
 
 class ModuleSpawner(Module):
     def __init__(self):

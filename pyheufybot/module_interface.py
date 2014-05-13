@@ -1,3 +1,5 @@
+import imp, os
+from pyheufybot.logger import log
 from pyheufybot.message import IRCMessage, IRCResponse, ResponseType
 from pyheufybot.serverinfo import ServerInfo
 from enum import Enum
@@ -22,10 +24,32 @@ class Module(object):
 class ModuleInterface(object):
     def __init__(self, bot):
         self.bot = bot
-        self.modules = []
+        self.modules = {}
 
     def loadModule(self, moduleName):
-        pass
+        # Try to find the module
+        try:
+            search = imp.find_module("pyheufybot/modules/{}".format(moduleName))
+        except ImportError:
+            log("*** ERROR: Module \"{}\" could not be found.".format(moduleName), None)
+            return False
+        
+        # Module has been found. Let's try to import it
+        try:
+            load = imp.load_module(moduleName, search[0], search[1], search[2])
+        except ImportError:
+            log("*** ERROR: Module \"{}\" could not be loaded.".format(moduleName), None)
+            search[0].close()
+            return False
+        
+        # Module has been imported. Try to load it and add it to the modules dictionary
+        search[0].close()
+        try:
+            module = load.ModuleSpawner()
+            self.modules[moduleName] = module
+        except Exception as e:
+            log("*** ERROR: An error occurred while loading module \"{}\" ({}).".format(moduleName, e), None)
+            return False
 
     def unloadModule(self, moduleName):
         pass
@@ -46,6 +70,22 @@ class ModuleInterface(object):
                 self.bot.notice(response.target, response.responseText)
             elif response.responseType == ResponseType.RAW:
                 self.bot.sendLine(response.responseText)
+
+    def getModuleList(self):
+        root = os.path.join("pyheufybot", "modules")
+        moduleFiles = []
+
+        for item in os.listdir(root):
+            if not os.path.isfile(os.path.join(root, item)):
+                continue
+            if not item.endswith(".py"):
+                continue
+            if item == "__init__.py":
+                continue
+
+            moduleFiles.append(item)
+
+        return moduleFiles
 
 class ModuleType(Enum):
     ACTIVE = 1
