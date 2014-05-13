@@ -15,7 +15,6 @@ class HeufyBot(irc.IRCClient):
         self.channels = {}
         self.serverInfo = ServerInfo()
         self.moduleInterface = ModuleInterface(self)
-        self.moduleInterface.loadModule("say")
 
     def connectionMade(self):
         self.nickname = self.factory.config.getSettingWithDefault("nickname", "PyHeufyBot")

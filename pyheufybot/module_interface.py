@@ -27,18 +27,20 @@ class ModuleInterface(object):
         self.modules = {}
 
     def loadModule(self, moduleName):
+        moduleName = moduleName.lower()
+
         # Try to find the module
         try:
             search = imp.find_module("pyheufybot/modules/{}".format(moduleName))
-        except ImportError:
-            log("*** ERROR: Module \"{}\" could not be found.".format(moduleName), None)
+        except ImportError as e:
+            log("*** ERROR: Module \"{}\" could not be found ({}).".format(moduleName, e), None)
             return False
         
         # Module has been found. Let's try to import it
         try:
             load = imp.load_module(moduleName, search[0], search[1], search[2])
-        except ImportError:
-            log("*** ERROR: Module \"{}\" could not be loaded.".format(moduleName), None)
+        except ImportError as e:
+            log("*** ERROR: Module \"{}\" could not be loaded ({}).".format(moduleName, e), None)
             search[0].close()
             return False
         
@@ -47,9 +49,12 @@ class ModuleInterface(object):
         try:
             module = load.ModuleSpawner()
             self.modules[moduleName] = module
+            log("*** Loaded module \"{}\".".format(module.name), None)
         except Exception as e:
             log("*** ERROR: An error occurred while loading module \"{}\" ({}).".format(moduleName, e), None)
             return False
+
+        return True
 
     def unloadModule(self, moduleName):
         pass
