@@ -49,6 +49,7 @@ class ModuleInterface(object):
         try:
             module = load.ModuleSpawner()
             self.modules[moduleName] = module
+            module.onModuleLoaded()
             log("*** Loaded module \"{}\".".format(module.name), None)
         except Exception as e:
             log("*** ERROR: An error occurred while loading module \"{}\" ({}).".format(moduleName, e), None)
@@ -57,7 +58,18 @@ class ModuleInterface(object):
         return True
 
     def unloadModule(self, moduleName):
-        pass
+        moduleName = moduleName.lower()
+        
+        if moduleName in self.modules:
+            try:
+                module = self.modules[moduleName]
+                name = self.modules[moduleName].name
+                module.onUnloadModule()
+                del self.modules[moduleName]
+                return True
+            except Exception as e:
+                log("*** ERROR: An error occurred while unloading module \"{}\" ({}).".format(moduleName, e), None)
+                return False
 
     def shouldExecute(self, module, message):
         pass
