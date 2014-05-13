@@ -1,4 +1,4 @@
-import imp, os
+import imp
 from pyheufybot.logger import log
 from pyheufybot.message import IRCMessage, IRCResponse, ResponseType
 from pyheufybot.serverinfo import ServerInfo
