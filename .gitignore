@@ -53,12 +53,10 @@ coverage.xml
 docs/_build/
 
 # Python Tools for Visual Studio
-PyHeufyBot.pyproj
-PyHeufyBot.sln
-PyHeufyBot.v11.suo
-PyHeufyBot.v12.suo
+*.pyproj
+*.sln
+*.suo
 .gitattributes
-virtenv/
 
 # Bot
 config/
