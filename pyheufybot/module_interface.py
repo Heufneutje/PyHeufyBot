@@ -84,6 +84,8 @@ class ModuleInterface(object):
         if message.messageType in module.messageTypes:
             if module.moduleType == ModuleType.PASSIVE:
                 return True
+            elif message.user.nickname == self.bot.nickname:
+                return False
             elif module.moduleType == ModuleType.TRIGGER:
                 match = re.search(".*{}.*".format(module.trigger), message.messageText, re.IGNORECASE)
                 return True if match else False
