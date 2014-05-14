@@ -10,6 +10,8 @@ Not much to see here yet as the project is very much a WiP. If you wanna play ar
 3. Within the virtualenv, run `pip install -r requirements.txt`. Keep in mind that if you're doing this on Windows, you're going to need the VC9 compiler to build Twisted.
 4. Run `python app.py`
 
+PyHeufyBot is set up to be very modular. Documentation for the module API can be found [here](https://github.com/Heufneutje/PyHeufyBot/blob/master/docs/API.md).
+
 Will add more here as time goes on.
 
 RE_HeufyBot's flaws
