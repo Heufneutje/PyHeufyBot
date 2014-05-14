@@ -30,7 +30,7 @@ self.helpText = "Usage: say <message> | Makes the bot say the given line"
 Next up we have the `trigger` and the `moduleType`. Modules can have three different types:
 - Passive: Passive modules will receive every message and perform background tasks like channel logging.
 - Trigger: Trigger modules are triggered by certain words said by a user on IRC. The trigger field is important here. The API will perform a regex search on every message and look for this trigger. This trigger can be anywhere in the message
-- Command: Command modules are very much like trigger modules, except the trigger has to be at the start of the message and has to be prefixed with the command prefix. This command prefix can be changed in the configs.
+- Command: Command modules are very much like trigger modules, except the trigger has to be at the start of the message and has to be prefixed with the command prefix or the current nickname of the bot. This command prefix can be changed in the configs.
 ```python
 self.trigger = "say"
 self.moduleType = ModuleType.COMMAND

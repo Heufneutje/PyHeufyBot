@@ -91,7 +91,8 @@ class ModuleInterface(object):
                 return True if match else False
             elif module.moduleType == ModuleType.COMMAND:
                 commandPrefix = self.bot.factory.config.getSettingWithDefault("commandPrefix", "!")
-                match = re.search("^{}{}.*".format(commandPrefix, module.trigger), message.messageText, re.IGNORECASE)
+                prefixRegex = "({}|{}:)".format(commandPrefix, self.bot.nickname)
+                match = re.search("^{}{}.*".format(prefixRegex, module.trigger), message.messageText, re.IGNORECASE)
                 return True if match else False
 
     def handleMessage(self, message):
