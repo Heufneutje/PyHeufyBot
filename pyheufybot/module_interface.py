@@ -1,12 +1,13 @@
 import importlib, os, re, sys
 from pyheufybot.logger import log
-from pyheufybot.message import IRCMessage, IRCResponse, ResponseType
+from pyheufybot.message import IRCMessage
 from pyheufybot.serverinfo import ServerInfo
 from enum import Enum
 from glob import glob
 
 class Module(object):
-    def __init__(self):
+    def __init__(self, bot):
+        self.bot = bot
         self.name = None
         self.trigger = ""
         self.moduleType = ModuleType.PASSIVE
@@ -46,7 +47,7 @@ class ModuleInterface(object):
         reload(src)
 
         try:
-            module = src.ModuleSpawner()
+            module = src.ModuleSpawner(self.bot)
             self.modules[moduleName] = module
             module.onModuleLoaded()
             log("--- Loaded module \"{}\".".format(module.name), None)
@@ -94,18 +95,7 @@ class ModuleInterface(object):
     def handleMessage(self, message):
         for module in self.modules.values():
             if self.shouldExecute(module, message):
-                self.sendResponses(module.execute(message))
-
-    def sendResponses(self, responses):
-        for response in responses:
-            if response.responseType == ResponseType.MESSAGE:
-                self.bot.msg(response.target, response.responseText)
-            elif response.responseType == ResponseType.ACTION:
-                self.bot.msg(response.target, response.responseText)
-            elif response.responseType == ResponseType.NOTICE:
-                self.bot.notice(response.target, response.responseText)
-            elif response.responseType == ResponseType.RAW:
-                self.bot.sendLine(response.responseText)
+                module.execute(message)
 
 class ModuleType(Enum):
     COMMAND = 1

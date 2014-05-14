@@ -34,7 +34,7 @@ class HeufyBot(irc.IRCClient):
         for channel in autojoinChannels:
             self.join(channel)
 
-        message = IRCMessage("USER", None, None, "" ,self.serverInfo)
+        message = IRCMessage("USER", None, None, "")
         self.moduleInterface.handleMessage(message)
 
     def privmsg(self, user, channel, msg):
@@ -45,7 +45,7 @@ class HeufyBot(irc.IRCClient):
             # If this is a PM, the bot will have no knowledge of the user. Create a temporary one just for this message
             messageUser = IRCUser(user)
 
-        message = IRCMessage("PRIVMSG", messageUser, messageChannel, msg, self.serverInfo)
+        message = IRCMessage("PRIVMSG", messageUser, messageChannel, msg)
         self.moduleInterface.handleMessage(message)
 
         if not message.replyTo == messageUser.nickname:
@@ -65,7 +65,7 @@ class HeufyBot(irc.IRCClient):
             # If this is a PM, the bot will have no knowledge of the user. Create a temporary one just for this message
             messageUser = IRCUser(user)
 
-        message = IRCMessage("ACTION", messageUser, messageChannel, msg, self.serverInfo)
+        message = IRCMessage("ACTION", messageUser, messageChannel, msg)
         self.moduleInterface.handleMessage(message)
 
         if not message.replyTo == messageUser.nickname:
@@ -101,7 +101,7 @@ class HeufyBot(irc.IRCClient):
                 channel.users[user.nickname] = user
                 channel.ranks[user.nickname] = ""
 
-        message = IRCMessage("JOIN", user, channel, "", self.serverInfo)
+        message = IRCMessage("JOIN", user, channel, "")
         self.moduleInterface.handleMessage(message)
         log(">> {} ({}@{}) has joined {}".format(user.nickname, user.username, user.hostname, channel.name), channel.name)
 
@@ -125,7 +125,7 @@ class HeufyBot(irc.IRCClient):
                 del channel.users[user.nickname]
                 del channel.ranks[user.nickname]
 
-        message = IRCMessage("PART", user, channel, partMessage, self.serverInfo)
+        message = IRCMessage("PART", user, channel, partMessage)
         self.moduleInterface.handleMessage(message)
         log("<< {} ({}@{}) has left {} ({})".format(user.nickname, user.username, user.hostname, channel.name, partMessage), channel.name)
 
@@ -142,7 +142,7 @@ class HeufyBot(irc.IRCClient):
                 del channel.users[user.nickname]
                 del channel.ranks[user.nickname]
 
-        message = IRCMessage("QUIT", user, None, quitMessage, self.serverInfo)
+        message = IRCMessage("QUIT", user, None, quitMessage)
         self.moduleInterface.handleMessage(message)
 
     def irc_KICK(self, prefix, params):
@@ -165,7 +165,7 @@ class HeufyBot(irc.IRCClient):
                 del channel.users[kickee]
                 del channel.ranks[kickee]
 
-        message = IRCMessage("KICK", user, channel, kickMessage, self.serverInfo)
+        message = IRCMessage("KICK", user, channel, kickMessage)
         self.moduleInterface.handleMessage(message)
         log("-- {} was kicked from {} by {} ({})".format(kickee, channel.name, user.nickname, kickMessage), channel.name)
 
@@ -185,7 +185,7 @@ class HeufyBot(irc.IRCClient):
                 log("-- {} is now known as {}".format(oldnick, newnick), channel.name)
 
         user.nickname = newnick
-        message = IRCMessage("NICK", user, None, oldnick, self.serverInfo)
+        message = IRCMessage("NICK", user, None, oldnick)
         self.moduleInterface.handleMessage(message)
 
     def modeChanged(self, user, channel, set, modes, args):

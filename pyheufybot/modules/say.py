@@ -1,8 +1,8 @@
 from pyheufybot.module_interface import Module, ModuleType
-from pyheufybot.message import IRCResponse, ResponseType
 
 class ModuleSpawner(Module):
-    def __init__(self):
+    def __init__(self, bot):
+        self.bot = bot
         self.name = "Say"
         self.trigger = "say"
         self.moduleType = ModuleType.COMMAND
@@ -11,6 +11,6 @@ class ModuleSpawner(Module):
 
     def execute(self, message):
         if len(message.params) == 1:
-            return [ IRCResponse(message.replyTo, "Say what?", ResponseType.MESSAGE) ]
+            self.bot.msg(message.replyTo, "Say what?")
         else:
-            return [ IRCResponse(message.replyTo, " ".join(message.params[1:]), ResponseType.MESSAGE) ]
+            self.bot.msg(message.replyTo, " ".join(message.params[1:])

@@ -1,12 +1,11 @@
 from enum import Enum
 
 class IRCMessage(object):
-    def __init__(self, messageType, user, channel, messageText, serverInfo):
+    def __init__(self, messageType, user, channel, messageText):
         self.messageType = messageType
         self.user = user
         self.channel = channel
         self.messageText = messageText
-        self.serverInfo = serverInfo
         self.params = messageText.split(" ")
         
         self.replyTo = ""
@@ -18,15 +17,3 @@ class IRCMessage(object):
             self.replyTo = user.nickname
         else:
             self.replyTo = channel.name
-
-class IRCResponse(object):
-    def __init__(self, target, responseText, responseType):
-        self.target = target
-        self.responseType = responseType
-        self.responseText = responseText
-
-class ResponseType(Enum):
-    MESSAGE = 1
-    ACTION = 2
-    NOTICE = 3
-    RAW = 4
