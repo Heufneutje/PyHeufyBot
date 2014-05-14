@@ -83,10 +83,10 @@ class ModuleInterface(object):
         if message.messageType in module.messageTypes:
             if module.moduleType == ModuleType.PASSIVE:
                 return True
-            elif module.moduleType == ModuleType.TRIGGERED:
+            elif module.moduleType == ModuleType.TRIGGER:
                 match = re.search(".*{}.*".format(module.trigger), message.messageText, re.IGNORECASE)
                 return True if match else False
-            else:
+            elif module.moduleType == ModuleType.COMMAND:
                 commandPrefix = self.bot.factory.config.getSettingWithDefault("commandPrefix", "!")
                 match = re.search("^{}{}.*".format(commandPrefix, module.trigger), message.messageText, re.IGNORECASE)
                 return True if match else False
@@ -108,6 +108,6 @@ class ModuleInterface(object):
                 self.bot.sendLine(response.responseText)
 
 class ModuleType(Enum):
-    ACTIVE = 1
+    COMMAND = 1
     PASSIVE = 2
-    TRIGGERED = 3
+    TRIGGER = 3

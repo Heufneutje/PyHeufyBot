@@ -5,7 +5,7 @@ class ModuleSpawner(Module):
     def __init__(self):
         self.name = "Say"
         self.trigger = "say"
-        self.moduleType = ModuleType.ACTIVE
+        self.moduleType = ModuleType.COMMAND
         self.messageTypes = ["PRIVMSG"]
         self.helpText = "Usage: say <message> | Makes the bot say the given line"
 
