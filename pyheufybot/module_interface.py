@@ -33,16 +33,15 @@ class ModuleInterface(object):
 
         # Check if the module is loaded already.
         if moduleName in self.modules:
-            # Module is already loaded. Try to unload it so it can be reloaded.
-            if not self.unloadModule(moduleName):
-                return False
+            return [False, "Module is already loaded"]
 
         # Try to load the module
         try:
             src = importlib.import_module("pyheufybot.modules." + moduleName)
         except ImportError as e:
-            log("*** ERROR: Module \"{}\" could not be loaded ({}).".format(moduleName, e), None)
-            return False
+            errorMsg = Module \"{}\" could not be loaded ({}).".format(moduleName, e)
+            log("*** ERROR: {}".format(errorMsg), None)
+            return [False, errorMsg]
         
         reload(src)
 
@@ -52,10 +51,11 @@ class ModuleInterface(object):
             module.onModuleLoaded()
             log("--- Loaded module \"{}\".".format(module.name), None)
         except Exception as e:
-            log("*** ERROR: An error occurred while loading module \"{}\" ({}).".format(moduleName, e), None)
-            return False
+            errorMsg = "*** ERROR: An error occurred while loading module \"{}\" ({}).".format(moduleName, e)
+            log("*** ERROR: {}".format(errorMsg), None)
+            return [False, errorMsg]
 
-        return True
+        return [True, module.name]
 
     def unloadModule(self, moduleName):
         moduleName = moduleName.lower()
@@ -63,22 +63,46 @@ class ModuleInterface(object):
         if moduleName in self.modules:
             try:
                 module = self.modules[moduleName]
-                module.onUnloadModule()
+                module.onModuleUnloaded()
                 del self.modules[moduleName]
                 del sys.modules["pyheufybot.modules.{}".format(moduleName)]
                 for f in glob("pyheufybot/modules/{}.pyc".format(moduleName)):
                     os.remove(f)
                 log("--- Unloaded module \"{}\".".format(module.name), None)
-                return True
+                return [True, module.name]
             except Exception as e:
-                log("*** ERROR: An error occurred while unloading module \"{}\" ({}).".format(moduleName, e), None)
-                return False
+                errorMsg = "*** ERROR: An error occurred while unloading module \"{}\" ({}).".format(moduleName, e)
+                log("*** ERROR: {}".format(errorMsg), None)
+                return [False, errorMsg]
+        else: 
+            return [False, "Module \"{}\" is not loaded or doesn't exist."]
+
+    def reloadModule(self, moduleName):
+        moduleName = moduleName.lower()
+
+        # Check if the module is loaded already.
+        if moduleName in self.modules:
+            # Module is already loaded. Try to unload it so it can be reloaded.
+            result = self.unloadModule(moduleName)
+            if not result[0]:
+                return [False, result[1]]
+
+            result = self.loadModule(moduleName)
+            if not result[0]:
+                return [False, result[1]]
+
+            return [True, result[1]]
 
     def loadAllModules(self):
         log("--- Loading modules...", None)
         modules = self.bot.factory.config.getSettingWithDefault("modules", [])
         for module in modules:
             self.loadModule(module)
+
+    def unloadAllModules(self):
+        log("--- Unloading modules...", None)
+        for module in self.modules:
+            self.unloadModule(module)
 
     def shouldExecute(self, module, message):
         if message.messageType in module.messageTypes:
