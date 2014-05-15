@@ -38,7 +38,7 @@ class ModuleInterface(object):
 
         # Try to load the module
         try:
-            src = importlib.import_module("pyheufybot.modules." + moduleName)
+            src = importlib.import_module("pyheufybot.modules.{}".format(moduleName))
         except ImportError as e:
             errorMsg = "Module \"{}\" could not be loaded ({}).".format(moduleName, e)
             log("*** ERROR: {}".format(errorMsg), None)
@@ -50,9 +50,9 @@ class ModuleInterface(object):
             module = src.ModuleSpawner(self.bot)
             self.modules[moduleName] = module
             module.onModuleLoaded()
-            log("--- Loaded module \"{}\".".format(module.name), None)
+            log("->- Loaded module \"{}\".".format(module.name), None)
         except Exception as e:
-            errorMsg = "*** ERROR: An error occurred while loading module \"{}\" ({}).".format(moduleName, e)
+            errorMsg = "An exception occurred while loading module \"{}\" ({}).".format(moduleName, e)
             log("*** ERROR: {}".format(errorMsg), None)
             return [False, errorMsg]
 
@@ -69,10 +69,10 @@ class ModuleInterface(object):
                 del sys.modules["pyheufybot.modules.{}".format(moduleName)]
                 for f in glob("pyheufybot/modules/{}.pyc".format(moduleName)):
                     os.remove(f)
-                log("--- Unloaded module \"{}\".".format(module.name), None)
+                log("-<- Unloaded module \"{}\".".format(module.name), None)
                 return [True, module.name]
             except Exception as e:
-                errorMsg = "*** ERROR: An error occurred while unloading module \"{}\" ({}).".format(moduleName, e)
+                errorMsg = "An exception occurred while unloading module \"{}\" ({}).".format(moduleName, e)
                 log("*** ERROR: {}".format(errorMsg), None)
                 return [False, errorMsg]
         else: 
@@ -123,7 +123,7 @@ class ModuleInterface(object):
             if self.shouldExecute(module, message):
                 if module.moduleType == ModuleType.COMMAND:
                     # Strip the command prefix before passing
-                    newMessage = IRCMessage(message.messageType, message.user, message.channel, message.messageText[len(self.commandPrefix)])
+                    newMessage = IRCMessage(message.messageType, message.user, message.channel, message.messageText[len(self.commandPrefix):])
                     module.execute(newMessage)
                 else:
                     module.execute(message)
