@@ -33,7 +33,7 @@ class ModuleInterface(object):
 
         # Check if the module is loaded already.
         if moduleName in self.modules:
-            return [False, "Module is already loaded"]
+            return [False, "Module \"{}\" is already loaded.".format(self.modules[moduleName].name)]
 
         # Try to load the module
         try:
