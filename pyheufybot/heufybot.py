@@ -1,4 +1,5 @@
-import datetime, time
+import datetime, platform, time
+import globalvars
 from twisted.words.protocols import irc
 from twisted.internet import protocol
 from pyheufybot.user import IRCUser
@@ -23,6 +24,12 @@ class HeufyBot(irc.IRCClient):
         self.realname = self.factory.config.getSettingWithDefault("realname", "PyHeufyBot")
         if self.factory.config.getSettingWithDefault("passwordType", None) == "ServerPass":
             self.password = self.factory.config.getSettingWithDefault("password", "")
+        # This stuff should be modular, but might as well do it here since Twisted already handles CTCP
+        self.versionName = "PyHeufyBot"
+        self.versionNum = "V{}".format(globalvars.version)
+        self.versionEnv = platform.platform()
+        self.sourceURL = "https://github.com/Heufneutje/PyHeufyBot/"
+
         irc.IRCClient.connectionMade(self)
         
         log("--- Connected to {}.".format(self.factory.config.getSettingWithDefault("server", "irc.foo.bar")), None)
