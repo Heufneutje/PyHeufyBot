@@ -7,7 +7,7 @@ class ModuleSpawner(Module):
         self.trigger = "load|unload|reload"
         self.moduleType = ModuleType.COMMAND
         self.messageTypes = ["PRIVMSG"]
-        self.helpText = "No help yet"
+        self.helpText = "Usage: load/unload/reload <module> | Loads, unloads or reloads a bot module."
 
     def execute(self, message):
         if len(message.params) == 1:
@@ -19,11 +19,11 @@ class ModuleSpawner(Module):
         result = []
 
         for module in message.params[1:]:
-            if message.params[0] == "load":
+            if message.params[0].lower() == "load":
                 result = self.bot.moduleInterface.loadModule(module)
-            elif message.params[0] == "unload":
+            elif message.params[0].lower() == "unload":
                 result = self.bot.moduleInterface.unloadModule(module)
-            elif message.params[0] == "reload":
+            elif message.params[0].lower() == "reload":
                 result = self.bot.moduleInterface.reloadModule(module)
 
             if result[0]:

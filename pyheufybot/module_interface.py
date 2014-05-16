@@ -1,4 +1,4 @@
-import importlib, os, re, sys
+import importlib, os, re, sys, traceback
 from pyheufybot.logger import log
 from pyheufybot.message import IRCMessage
 from pyheufybot.serverinfo import ServerInfo
@@ -115,7 +115,7 @@ class ModuleInterface(object):
                 match = re.search(".*{}.*".format(module.trigger), message.messageText, re.IGNORECASE)
                 return True if match else False
             elif module.moduleType == ModuleType.COMMAND:
-                match = re.search("^{}({})($| .*)".format(self.commandPrefix, module.trigger), message.messageText, re.IGNORECASE)
+                match = re.search("^{}({})($| .*)".format(self.commandPrefix, module.trigger), message.messageText.lower(), re.IGNORECASE)
                 return True if match else False
 
     def handleMessage(self, message):
@@ -129,8 +129,8 @@ class ModuleInterface(object):
                     else:
                         module.execute(message)
         except:
-            errorMsg = "An error occurred while handling a message \"{}\" ({})".format(message.messageText, sys.exc_info()[0])
-            log("*** ERROR: {}".format(sys.exc_info()), None)
+            errorMsg = "An error occurred while handling message \"{}\" ({})".format(message.messageText, sys.exc_info()[1])
+            traceback.print_tb(sys.exc_info()[2])
             self.bot.msg(message.replyTo, errorMsg)
 
 class ModuleType(Enum):
