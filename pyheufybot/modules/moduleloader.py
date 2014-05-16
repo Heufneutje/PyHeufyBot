@@ -40,3 +40,13 @@ class ModuleSpawner(Module):
 
         if len(failure) > 0:
             self.bot.msg(message.replyTo, "{}.".format(", ".join(failure)))
+
+    def getHelp(self, command):
+        if command == "load":
+            return "Usage: load <module> | Loads a bot module."
+        elif command == "unload":
+            return "Usage: unload <module> | Unloads a loaded bot module."
+        elif command == "reload":
+            return "Usage: reload <module> | Reloads a loaded bot module."
+        else:
+            return self.helpText
