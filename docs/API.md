@@ -41,10 +41,15 @@ The last field a module needs to have is the `messageTypes`. These determine wha
 self.messageTypes = ["PRIVMSG"]
 ```
 
-That does it for the `__init__` function and the fields. Other than this modules will also have at least three extra functions. Two of these are the `onModuleLoaded` and `onModuleUnloaded` functions. These will trigger automatically when the module is loaded or unloaded by the API. In these functions you can initialize data files and save your persistent data for example.
+That does it for the `__init__` function and the fields. Other than this modules will also have at least four extra functions. Two of these are the `onModuleLoaded` and `onModuleUnloaded` functions. These will trigger automatically when the module is loaded or unloaded by the API. In these functions you can initialize data files and save your persistent data for example.
 ```python
 def onModuleLoaded(self):
 def onModuleUnloaded(self):
+```
+
+There is also the `getHelp` function. This normally returns what is defined in the `helpText`, but you can override it. This is useful when you want to specify help for separate commands within the same modules.
+```python
+def getHelp(self, command):
 ```
 
 Lastly modules will need an `execute` function. This function is called by the API when a message is received that meets the requirements set in the module’s fields.
