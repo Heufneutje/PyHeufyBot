@@ -12,7 +12,7 @@ class Module(object):
         self.trigger = ""
         self.moduleType = ModuleType.PASSIVE
         self.messageTypes = []
-        self.helpText = "No help available for this module"
+        self.helpText = "No help available for this module."
 
     def excecute(self, message):
         pass
@@ -22,6 +22,9 @@ class Module(object):
 
     def onModuleUnloaded(self):
         pass
+
+    def getHelp(self, command):
+        return self.helpText
 
 class ModuleInterface(object):
     def __init__(self, bot):
@@ -39,7 +42,7 @@ class ModuleInterface(object):
         # Try to load the module
         try:
             src = importlib.import_module("pyheufybot.modules.{}".format(moduleName))
-        except ImportError as e:
+        except (ImportError, SyntaxError) as e:
             errorMsg = "Module \"{}\" could not be loaded ({}).".format(moduleName, e)
             log("*** ERROR: {}".format(errorMsg), None)
             return [False, errorMsg]
@@ -112,18 +115,23 @@ class ModuleInterface(object):
                 match = re.search(".*{}.*".format(module.trigger), message.messageText, re.IGNORECASE)
                 return True if match else False
             elif module.moduleType == ModuleType.COMMAND:
-                match = re.search("^{}{} .*".format(self.commandPrefix, module.trigger), message.messageText, re.IGNORECASE)
+                match = re.search("^{}({})($| .*)".format(self.commandPrefix, module.trigger), message.messageText, re.IGNORECASE)
                 return True if match else False
 
     def handleMessage(self, message):
-        for module in self.modules.values():
-            if self.shouldExecute(module, message):
-                if module.moduleType == ModuleType.COMMAND:
-                    # Strip the command prefix before passing
-                    newMessage = IRCMessage(message.messageType, message.user, message.channel, message.messageText[len(self.commandPrefix):])
-                    module.execute(newMessage)
-                else:
-                    module.execute(message)
+        try:
+            for module in self.modules.values():
+                if self.shouldExecute(module, message):
+                    if module.moduleType == ModuleType.COMMAND:
+                        # Strip the command prefix before passing
+                        newMessage = IRCMessage(message.messageType, message.user, message.channel, message.messageText[len(self.commandPrefix):])
+                        module.execute(newMessage)
+                    else:
+                        module.execute(message)
+        except:
+            errorMsg = "An error occurred while handling a message \"{}\" ({})".format(message.messageText, sys.exc_info()[0])
+            log("*** ERROR: {}".format(sys.exc_info()), None)
+            self.bot.msg(message.replyTo, errorMsg)
 
 class ModuleType(Enum):
     COMMAND = 1
