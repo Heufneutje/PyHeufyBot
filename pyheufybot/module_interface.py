@@ -76,23 +76,20 @@ class ModuleInterface(object):
                 log("*** ERROR: {}".format(errorMsg), None)
                 return [False, errorMsg]
         else: 
-            return [False, "Module \"{}\" is not loaded or doesn't exist."]
+            return [False, "Module \"{}\" is not loaded or doesn't exist.".format(moduleName)]
 
     def reloadModule(self, moduleName):
         moduleName = moduleName.lower()
 
-        # Check if the module is loaded already.
-        if moduleName in self.modules:
-            # Module is already loaded. Try to unload it so it can be reloaded.
-            result = self.unloadModule(moduleName)
-            if not result[0]:
-                return [False, result[1]]
+        result = self.unloadModule(moduleName)
+        if not result[0]:
+            return [False, result[1]]
 
-            result = self.loadModule(moduleName)
-            if not result[0]:
-                return [False, result[1]]
+        result = self.loadModule(moduleName)
+        if not result[0]:
+            return [False, result[1]]
 
-            return [True, result[1]]
+        return [True, result[1]]
 
     def loadAllModules(self):
         log("--- Loading modules...", None)

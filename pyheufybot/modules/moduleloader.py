@@ -16,17 +16,27 @@ class ModuleSpawner(Module):
         
         success = []
         failure = []
+        result = []
 
-        if message.params[0] == "load":
-           for module in message.params[1:]:
-               result = self.bot.moduleInterface.loadModule(module)
-               if result[0]:
-                   success.append(result[1])
-               else:
-                   failure.append(result[1][:len(result[1]) - 1])
+        for module in message.params[1:]:
+            if message.params[0] == "load":
+                result = self.bot.moduleInterface.loadModule(module)
+            elif message.params[0] == "unload":
+                result = self.bot.moduleInterface.unloadModule(module)
+            elif message.params[0] == "reload":
+                result = self.bot.moduleInterface.reloadModule(module)
 
-           if len(success) > 0:
-               self.bot.msg(message.replyTo, "Module{} \"{}\" {} successfully loaded!".format("s" if len(success) > 1 else "", "\", \"".join(success), "were" if len(success) > 1 else "was"))
+            if result[0]:
+                success.append(result[1])
+            else:
+                failure.append(result[1][:len(result[1]) - 1])
 
-           if len(failure) > 0:
-               self.bot.msg(message.replyTo, "{}.".format(", ".join(failure)))
+        if len(success) > 0:
+            plural = "s" if len(success) > 1 else ""
+            waswere = "were" if len(success) > 1 else "was"
+            command = message.params[0][:2] if len(message.params[0]) > 4 else ""
+
+            self.bot.msg(message.replyTo, "Module{} \"{}\" {} successfully {}loaded!".format(plural, "\", \"".join(success), waswere, command))
+
+        if len(failure) > 0:
+            self.bot.msg(message.replyTo, "{}.".format(", ".join(failure)))
