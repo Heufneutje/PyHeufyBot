@@ -20,11 +20,12 @@ class ModuleSpawner(Module):
                 if module.moduleType != ModuleType.PASSIVE or (module.moduleType == ModuleType.PASSIVE and includePassive):
                     loadedModules.append(module.name)
 
+            loadedModules.sort()
             self.bot.msg(message.replyTo, "{} {}".format(helpPrefix, ", ".join(loadedModules)))
         elif message.params[0].lower() == "help":
             helpMessage = " ".join(message.params[1:]).lower()
             for module in self.bot.moduleInterface.modules.values():
-                match = re.search(module.trigger.lower(), helpMessage.lower(), re.IGNORECASE)
+                match = re.search(module.trigger.lower(), helpMessage.lower(), re.IGNORECASE) if module.moduleType == ModuleType.COMMAND else False
                 if helpMessage.lower() == module.name.lower() or match:
                     self.bot.msg(message.replyTo, module.getHelp(helpMessage))
                     return
