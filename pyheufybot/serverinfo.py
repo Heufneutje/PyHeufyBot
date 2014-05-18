@@ -6,6 +6,7 @@ class ServerInfo(object):
         self.version = None
         self.network = "UnknownNetwork"
         self.chanTypes = "#"
+        self.nicklength = 32
 
         # Supported usermodes
         self.userModes = {"i": ModeType.NORMAL, "o": ModeType.NORMAL, "s": ModeType.LIST, "w": ModeType.NORMAL}

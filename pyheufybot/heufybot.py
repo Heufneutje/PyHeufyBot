@@ -398,6 +398,8 @@ class HeufyBot(irc.IRCClient):
                     for i in range(1, len(statusModes)):
                         self.serverInfo.prefixesModeToChar[statusModes[i]] = statusChars[i]
                         self.serverInfo.prefixesCharToMode[statusChars[i]] = statusModes[i]
+                elif token[0] == "NICKLEN":
+                    self.serverInfo.nicklength = int(token[1])
 
     def getChannel(self, name):
         if name in self.channels:
