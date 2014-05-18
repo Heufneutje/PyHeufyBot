@@ -1,7 +1,6 @@
 import importlib, os, re, sys, traceback
 from pyheufybot.logger import log
 from pyheufybot.message import IRCMessage
-from pyheufybot.serverinfo import ServerInfo
 from enum import Enum
 from glob import glob
 

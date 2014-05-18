@@ -15,7 +15,6 @@ class HeufyBot(irc.IRCClient):
         self.usermodes = {}
         self.channels = {}
         self.serverInfo = ServerInfo()
-        self.serverInfo.address = factory.config.getSettingWithDefault("server", "irc.foo.bar")
         self.moduleInterface = ModuleInterface(self)
 
     def connectionMade(self):
