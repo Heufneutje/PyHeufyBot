@@ -364,11 +364,11 @@ class HeufyBot(irc.IRCClient):
     def isupport(self, options):
         for item in options:
             if "=" in item:
-                option = item.split("=")
-                if option[0] == "CHANTYPES":
-                    self.serverInfo.chanTypes = option[1]
-                elif option[0] == "CHANMODES":
-                    modes = option[1].split(",")
+                token = item.split("=")
+                if token[0] == "CHANTYPES":
+                    self.serverInfo.chanTypes = token[1]
+                elif token[0] == "CHANMODES":
+                    modes = token[1].split(",")
                     for mode in modes[0]:
                         self.serverInfo.chanModes[mode] = ModeType.LIST
                     for mode in modes[1]:
@@ -377,10 +377,10 @@ class HeufyBot(irc.IRCClient):
                         self.serverInfo.chanModes[mode] = ModeType.PARAM_SET
                     for mode in modes[3]:
                         self.serverInfo.chanModes[mode] = ModeType.NORMAL
-                elif option[0] == "NETWORK":
-                    self.serverInfo.network = option[1]
-                elif option[0] == "PREFIX":
-                    prefixes = option[1]
+                elif token[0] == "NETWORK":
+                    self.serverInfo.network = token[1]
+                elif token[0] == "PREFIX":
+                    prefixes = token[1]
                     statusModes = prefixes[:prefixes.find(')')]
                     statusChars = prefixes[prefixes.find(')'):]
                     self.serverInfo.prefixOrder = statusModes
