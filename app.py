@@ -1,4 +1,4 @@
-import os, argparse, site
+import os, argparse
 from pyheufybot.bothandler import BotHandler
 
 parser = argparse.ArgumentParser(description="A modular IRC bot written in Python and Twisted.")
@@ -10,4 +10,5 @@ if __name__ == "__main__":
     if not os.path.exists(os.path.join("config")):
         os.makedirs("config")
     
-    BotHandler(cmdArgs.config)
+    botHandler = BotHandler()
+    botHandler.loadConfigs(cmdArgs.config)

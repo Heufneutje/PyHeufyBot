@@ -1,18 +1,28 @@
 import os
 from twisted.internet import reactor
-from heufybot import HeufyBot, HeufyBotFactory
+from heufybot import HeufyBotFactory
 from pyheufybot.logger import log
 from config import Config
-import globalvars
 
 class BotHandler(object):
-    def __init__(self, configFile):
+    _instance = None
+
+    def __init__(self):
         self.factories = {}
-        globalvars.botHandler = self
-        log("--- Loading configs...", None)
+        self.globalConfig = None
+        self.configFile = None
+
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            cls._instance = super(BotHandler, cls).__new__(
+                                cls, *args, **kwargs)
+        return cls._instance
+
+    def loadConfigs(self, configFile):
         self.configFile = configFile
+        log("--- Loading configs...", None)
         self.globalConfig = Config(configFile, None)
-        
+
         if not self.globalConfig.loadConfig():
             return
 
