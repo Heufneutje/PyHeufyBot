@@ -13,4 +13,4 @@ class ModuleSpawner(Module):
         if len(message.params) == 1:
             self.bot.msg(message.replyTo, "Do what?")
         else:
-            self.bot.action(message.replyTo, " ".join(message.params[1:]))
+            self.bot.describe(message.replyTo, " ".join(message.params[1:]))
