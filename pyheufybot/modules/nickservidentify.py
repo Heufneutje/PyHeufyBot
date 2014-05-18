@@ -6,7 +6,7 @@ class ModuleSpawner(Module):
         self.name = "NickServIdentify"
         self.moduleType = ModuleType.PASSIVE
         self.messageTypes = ["USER"]
-        self.helpText = "Attempts to log into NickServ with the password in the config"
+        self.helpText = "Attempts to log into NickServ with the password in the config."
 
     def execute(self, message):
         config = self.bot.factory.config

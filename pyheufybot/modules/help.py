@@ -8,7 +8,7 @@ class ModuleSpawner(Module):
         self.trigger = "help|modules"
         self.moduleType = ModuleType.COMMAND
         self.messageTypes = ["PRIVMSG"]
-        self.helpText = "Usage: help/modules (<module/command>) | Makes the bot say the given line"
+        self.helpText = "Usage: help/modules (<module/command>) | Shows you all loaded modules or gives you help on a given module or command. \"help\" will only give you trigger modules and command modules, while \"modules\" will show you all loaded modules."
 
     def execute(self, message):
         if len(message.params) == 1:

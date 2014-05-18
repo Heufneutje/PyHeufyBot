@@ -7,7 +7,7 @@ class ModuleSpawner(Module):
         self.trigger = "say"
         self.moduleType = ModuleType.COMMAND
         self.messageTypes = ["PRIVMSG"]
-        self.helpText = "Usage: say <message> | Makes the bot say the given line"
+        self.helpText = "Usage: say <message> | Makes the bot say the given line."
 
     def execute(self, message):
         if len(message.params) == 1:
