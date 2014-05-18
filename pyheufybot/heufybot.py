@@ -52,10 +52,10 @@ class HeufyBot(irc.IRCClient):
             messageUser = IRCUser("{}!{}@{}".format(self.nickname, None, None))
         messageChannel = self.getChannel(user) if user in self.channels else None
 
-        msg = IRCMessage("PRIVMSG", messageUser, messageChannel, message)
+        msg = IRCMessage("PRIVMSG", messageUser, messageChannel, message.encode('utf-8'))
         self.moduleInterface.handleMessage(msg)
 
-        irc.IRCClient.msg(self, user, message, length)
+        irc.IRCClient.msg(self, user, message.encode('utf-8'), length)
 
     def describe(self, channel, action):
         messageUser = self.getUser(self.nickname)
@@ -63,10 +63,10 @@ class HeufyBot(irc.IRCClient):
             messageUser = IRCUser("{}!{}@{}".format(self.nickname, None, None))
         messageChannel = self.getChannel(channel) if channel in self.channels else None
 
-        msg = IRCMessage("ACTION", messageUser, messageChannel, action)
+        msg = IRCMessage("ACTION", messageUser, messageChannel, action.encode('utf-8'))
         self.moduleInterface.handleMessage(msg)
 
-        irc.IRCClient.describe(self, channel, action)
+        irc.IRCClient.describe(self, channel, action.encode('utf-8'))
 
     def privmsg(self, user, channel, msg):
         messageChannel = self.getChannel(channel)
