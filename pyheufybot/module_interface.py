@@ -1,4 +1,4 @@
-import importlib, os, re, sys, traceback
+import importlib, operator, os, re, sys, traceback
 from pyheufybot.logger import log
 from pyheufybot.message import IRCMessage
 from enum import Enum
@@ -10,6 +10,7 @@ class Module(object):
         self.name = None
         self.trigger = ""
         self.moduleType = ModuleType.PASSIVE
+        self.modulePriority = ModulePriority.NORMAL
         self.messageTypes = []
         self.helpText = "No help available for this module."
 
@@ -119,20 +120,31 @@ class ModuleInterface(object):
 
     def handleMessage(self, message):
         try:
-            for module in self.modules.values():
+            noInterrupt = True
+            for module in sorted(self.modules.values(), key=operator.attrgetter("modulePriority")):
+                if not noInterrupt:
+                    break
                 if self.shouldExecute(module, message):
                     if module.moduleType == ModuleType.COMMAND:
                         # Strip the command prefix before passing
                         newMessage = IRCMessage(message.messageType, message.user, message.channel, message.messageText[len(self.commandPrefix):])
-                        module.execute(newMessage)
+                        noInterrupt = module.execute(newMessage)
                     else:
-                        module.execute(message)
-        except:
+                        noInterrupt = module.execute(message)
+        except SyntaxError:
             errorMsg = "An error occurred while handling message \"{}\" ({})".format(message.messageText, sys.exc_info()[1])
             traceback.print_tb(sys.exc_info()[2])
-            self.bot.msg(message.replyTo, errorMsg)
+            # self.bot.msg(message.replyTo, errorMsg)
 
 class ModuleType(Enum):
     COMMAND = 1
     PASSIVE = 2
     TRIGGER = 3
+
+class ModulePriority(object):
+    HIGHEST = -3
+    HIGH = -2
+    ABOVENORMAL = -1
+    NORMAL = 0
+    BELOWNORMAL = -1
+    LOW = -2

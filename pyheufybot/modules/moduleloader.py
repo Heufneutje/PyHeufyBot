@@ -1,4 +1,4 @@
-from pyheufybot.module_interface import Module, ModuleType
+from pyheufybot.module_interface import Module, ModulePriority, ModuleType
 
 class ModuleSpawner(Module):
     def __init__(self, bot):
@@ -6,6 +6,7 @@ class ModuleSpawner(Module):
         self.name = "ModuleLoader"
         self.trigger = "load|unload|reload"
         self.moduleType = ModuleType.COMMAND
+        self.modulePriority = ModulePriority.NORMAL
         self.messageTypes = ["PRIVMSG"]
         self.helpText = "Usage: load/unload/reload <module> | Loads, unloads or reloads a bot module."
 
@@ -40,6 +41,7 @@ class ModuleSpawner(Module):
 
         if len(failure) > 0:
             self.bot.msg(message.replyTo, "{}.".format(", ".join(failure)))
+        return True
 
     def getHelp(self, command):
         if command == "load":

@@ -20,8 +20,8 @@ class HeufyBot(irc.IRCClient):
         self.capHandler = CapHandler(self)
 
     def connectionMade(self):
-        if self.factory.config.getSettingWithDefault("useCapabilities", False):
-            self.sendLine("CAP LS")
+        #if self.factory.config.getSettingWithDefault("useCapabilities", False):
+        #    self.sendLine("CAP LS")
 
         self.nickname = self.factory.config.getSettingWithDefault("nickname", "PyHeufyBot")
         self.username = self.factory.config.getSettingWithDefault("username", "PyHeufyBot")
@@ -57,7 +57,7 @@ class HeufyBot(irc.IRCClient):
             messageUser = IRCUser("{}!{}@{}".format(self.nickname, None, None))
         messageChannel = self.getChannel(user) if user in self.channels else None
 
-        msg = IRCMessage("PRIVMSG", messageUser, messageChannel, message.encode('utf-8'))
+        msg = IRCMessage("SELF-PRIVMSG", messageUser, messageChannel, message.encode('utf-8'))
         self.moduleInterface.handleMessage(msg)
 
         irc.IRCClient.msg(self, user, message.encode('utf-8'), length)
@@ -68,7 +68,7 @@ class HeufyBot(irc.IRCClient):
             messageUser = IRCUser("{}!{}@{}".format(self.nickname, None, None))
         messageChannel = self.getChannel(channel) if channel in self.channels else None
 
-        msg = IRCMessage("ACTION", messageUser, messageChannel, action.encode('utf-8'))
+        msg = IRCMessage("SELF-ACTION", messageUser, messageChannel, action.encode('utf-8'))
         self.moduleInterface.handleMessage(msg)
 
         irc.IRCClient.describe(self, channel, action.encode('utf-8'))
@@ -303,7 +303,6 @@ class HeufyBot(irc.IRCClient):
         else:
             message = IRCMessage(command, None, None, " ".join(params))
             self.moduleInterface.handleMessage(message)
-            log("({}) {}".format(command, " ".join(params)), None)
 
     def irc_RPL_NAMREPLY(self, prefix, params):
         channel = self.getChannel(params[2])

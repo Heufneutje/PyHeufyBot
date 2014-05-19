@@ -1,4 +1,4 @@
-from pyheufybot.module_interface import Module, ModuleType
+from pyheufybot.module_interface import Module, ModulePriority, ModuleType
 
 class ModuleSpawner(Module):
     def __init__(self, bot):
@@ -6,9 +6,11 @@ class ModuleSpawner(Module):
         self.name = "Source"
         self.trigger = "source"
         self.moduleType = ModuleType.COMMAND
+        self.modulePriority = ModulePriority.NORMAL
         self.messageTypes = ["PRIVMSG"]
         self.helpText = "Usage: source | Gives a link to the bot's source code on GitHub."
 
     def execute(self, message):
         if len(message.params) == 1:
             self.bot.msg(message.replyTo, "https://github.com/Heufneutje/PyHeufyBot")
+        return True

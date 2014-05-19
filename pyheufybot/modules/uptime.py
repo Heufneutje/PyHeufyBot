@@ -1,6 +1,6 @@
 from datetime import datetime
 from pyheufybot.utils import stringutils
-from pyheufybot.module_interface import Module, ModuleType
+from pyheufybot.module_interface import Module, ModulePriority, ModuleType
 
 class ModuleSpawner(Module):
     def __init__(self, bot):
@@ -8,6 +8,7 @@ class ModuleSpawner(Module):
         self.name = "Uptime"
         self.trigger = "uptime"
         self.moduleType = ModuleType.COMMAND
+        self.modulePriority = ModulePriority.NORMAL
         self.messageTypes = ["PRIVMSG"]
         self.helpText = "Usage: uptime | Shows you how long the bot has been running."
 
@@ -20,6 +21,7 @@ class ModuleSpawner(Module):
             formattedDate = self.startTime.strftime("%Y-%m-%d %H:%M:%S UTC")
             formattedDelta = stringutils.strfdelta(delta, "{days} day(s), {hours} hour(s), {minutes} minute(s) and {seconds} second(s)")
             self.bot.msg(message.replyTo, "I have been running since {} ({})".format(formattedDate, formattedDelta))
+        return True
 
     def onModuleLoaded(self):
         self.startTime = datetime.utcnow()

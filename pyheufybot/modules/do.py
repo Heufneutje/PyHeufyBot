@@ -1,4 +1,4 @@
-from pyheufybot.module_interface import Module, ModuleType
+from pyheufybot.module_interface import Module, ModulePriority, ModuleType
 
 class ModuleSpawner(Module):
     def __init__(self, bot):
@@ -6,6 +6,7 @@ class ModuleSpawner(Module):
         self.name = "Do"
         self.trigger = "do"
         self.moduleType = ModuleType.COMMAND
+        self.modulePriority = ModulePriority.NORMAL
         self.messageTypes = ["PRIVMSG"]
         self.helpText = "Usage: do <message> | Makes the bot perform the given action."
 
@@ -14,3 +15,4 @@ class ModuleSpawner(Module):
             self.bot.msg(message.replyTo, "Do what?")
         else:
             self.bot.describe(message.replyTo, " ".join(message.params[1:]))
+        return True

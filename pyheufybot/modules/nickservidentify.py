@@ -1,10 +1,11 @@
-from pyheufybot.module_interface import Module, ModuleType
+from pyheufybot.module_interface import Module, ModulePriotity, ModuleType
 
 class ModuleSpawner(Module):
     def __init__(self, bot):
         self.bot = bot
         self.name = "NickServIdentify"
         self.moduleType = ModuleType.PASSIVE
+        self.modulePriority = ModulePriority.NORMAL
         self.messageTypes = ["USER"]
         self.helpText = "Attempts to log into NickServ with the password in the config."
 
@@ -15,3 +16,4 @@ class ModuleSpawner(Module):
 
         if passwordType == "NickServ":
             self.bot.msg("NickServ", "IDENTIFY {}".format(password))
+        return True
