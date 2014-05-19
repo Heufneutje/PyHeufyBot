@@ -1,4 +1,4 @@
-from pyheufybot.module_interface import Module, ModulePriotity, ModuleType
+from pyheufybot.module_interface import Module, ModulePriority, ModuleType
 
 class ModuleSpawner(Module):
     def __init__(self, bot):
