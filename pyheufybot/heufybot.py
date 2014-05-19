@@ -3,6 +3,7 @@ from twisted.words.protocols import irc
 from twisted.internet import protocol
 from pyheufybot import version_major, version_minor, version_patch
 from pyheufybot.user import IRCUser
+from pyheufybot.caphandler import CapHandler
 from pyheufybot.channel import IRCChannel
 from pyheufybot.message import IRCMessage
 from pyheufybot.logger import log
@@ -16,8 +17,12 @@ class HeufyBot(irc.IRCClient):
         self.channels = {}
         self.serverInfo = ServerInfo()
         self.moduleInterface = ModuleInterface(self)
+        self.capHandler = CapHandler(self)
 
     def connectionMade(self):
+        if self.factory.config.getSettingWithDefault("useCapabilities", False):
+            self.sendLine("CAP LS")
+
         self.nickname = self.factory.config.getSettingWithDefault("nickname", "PyHeufyBot")
         self.username = self.factory.config.getSettingWithDefault("username", "PyHeufyBot")
         self.realname = self.factory.config.getSettingWithDefault("realname", "PyHeufyBot")
@@ -29,14 +34,14 @@ class HeufyBot(irc.IRCClient):
         self.versionEnv = platform.platform()
         self.sourceURL = "https://github.com/Heufneutje/PyHeufyBot/"
 
+        message = IRCMessage("CONNECT", None, None, "")
+        self.moduleInterface.handleMessage(message)
+
         irc.IRCClient.connectionMade(self)
         
         log("--- Connected to {}.".format(self.factory.config.getSettingWithDefault("server", "irc.foo.bar")), None)
         log("--- Resetting reconnection delay...", None)
         self.factory.resetDelay()
-
-        message = IRCMessage("CONNECT", None, None, "")
-        self.moduleInterface.handleMessage(message)
 
     def signedOn(self):
         autojoinChannels = self.factory.config.getSettingWithDefault("channels", [])
@@ -287,6 +292,16 @@ class HeufyBot(irc.IRCClient):
             channel = self.getChannel(params[1])
             channel.creationTime = long(params[2])
             log("-- Channel was created on {}".format(datetime.datetime.fromtimestamp(channel.creationTime)), channel.name)
+        elif command == "CAP":
+            if params[1] == "LS":
+               self.capHandler.availableCaps = params[2:]
+            message = IRCMessage("CAP {}".format(params[1]), None, None, " ".join(params[2:]
+            self.moduleInterface.handleMessage(message)
+            log("({}) {}".format(command, " ".join(params)), None)
+        else:
+            message = IRCMessage(command, None, None, " ".join(params)
+            self.moduleInterface.handleMessage(message0
+            log("({}) {}".format(command, " ".join(params)), None)
 
     def irc_RPL_NAMREPLY(self, prefix, params):
         channel = self.getChannel(params[2])

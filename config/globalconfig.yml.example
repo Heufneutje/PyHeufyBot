@@ -31,6 +31,12 @@ port: 6667
 # join any channels.
 channels: []
 
+# -useCapabilities-
+# Enable this to make use of the client capability negotiation mechanism.
+# All modules starting with "ircv3_" need this enabled to run.
+# See http://ircv3.org/ for more information.
+useCapabilities: False
+
 #=================#
 #=Module Settings=#
 #=================#
