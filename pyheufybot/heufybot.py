@@ -295,12 +295,14 @@ class HeufyBot(irc.IRCClient):
         elif command == "CAP":
             if params[1] == "LS":
                self.capHandler.availableCaps = params[2:]
-            message = IRCMessage("CAP {}".format(params[1]), None, None, " ".join(params[2:]
+            message = IRCMessage("CAP {}".format(params[1]), None, None, " ".join(params[2:]))
             self.moduleInterface.handleMessage(message)
+            if not self.capHandler.capEndSent:
+                self.capHandler.checkFinishedCaps()
             log("({}) {}".format(command, " ".join(params)), None)
         else:
-            message = IRCMessage(command, None, None, " ".join(params)
-            self.moduleInterface.handleMessage(message0
+            message = IRCMessage(command, None, None, " ".join(params))
+            self.moduleInterface.handleMessage(message)
             log("({}) {}".format(command, " ".join(params)), None)
 
     def irc_RPL_NAMREPLY(self, prefix, params):
