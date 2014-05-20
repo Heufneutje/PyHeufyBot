@@ -57,7 +57,7 @@ class HeufyBot(irc.IRCClient):
             messageUser = IRCUser("{}!{}@{}".format(self.nickname, None, None))
         messageChannel = self.getChannel(user) if user in self.channels else None
 
-        msg = IRCMessage("SELF-PRIVMSG", messageUser, messageChannel, message.encode('utf-8'))
+        msg = IRCMessage("PRIVMSG", messageUser, messageChannel, message.encode('utf-8'))
         self.moduleInterface.handleMessage(msg)
 
         irc.IRCClient.msg(self, user, message.encode('utf-8'), length)
@@ -68,7 +68,7 @@ class HeufyBot(irc.IRCClient):
             messageUser = IRCUser("{}!{}@{}".format(self.nickname, None, None))
         messageChannel = self.getChannel(channel) if channel in self.channels else None
 
-        msg = IRCMessage("SELF-ACTION", messageUser, messageChannel, action.encode('utf-8'))
+        msg = IRCMessage("ACTION", messageUser, messageChannel, action.encode('utf-8'))
         self.moduleInterface.handleMessage(msg)
 
         irc.IRCClient.describe(self, channel, action.encode('utf-8'))
@@ -108,6 +108,16 @@ class HeufyBot(irc.IRCClient):
             # Don't log PMs
             # TODO: Make logging PMs a setting
             log("* {} {}".format(messageUser.nickname, msg), message.replyTo)
+
+    def noticed(self, user, channel, msg):
+        messageChannel = self.getChannel(channel)
+        messageUser = self.getUser(user[:user.index("!")])
+
+        if not messageUser:
+            messageUser = IRCUser(user)
+
+        message = IRCMessage("NOTICE", messageUser, messageChannel, msg)
+        self.moduleInterface.handleMessage(message)
 
     def irc_JOIN(self, prefix, params):
         user = self.getUser(prefix[:prefix.index("!")])
