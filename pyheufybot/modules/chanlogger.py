@@ -15,13 +15,14 @@ class ModuleSpawner(Module):
         self.logPath = None
 
     def logFile(self, target, messageText):
-        serverFolder = self.bot.serverInfo.network
+        server = self.bot.serverInfo.network
         todayDate = time.strftime("%Y-%m-%d")
         todayTime = time.strftime("%H:%M:%S")
 
-        createDirs(os.path.join(self.logPath, serverFolder, target))
-        path = os.path.join(self.logPath, serverFolder, target, "{}.log".format(todayDate))
+        createDirs(os.path.join(self.logPath, server, target))
+        path = os.path.join(self.logPath, server, target, "{}.log".format(todayDate))
         writeFile(path, "[{}] {}\n".format(todayTime, messageText), True)
+        log(messageText, "{}/{}".format(server, target))
 
     def execute(self, message):
         if message.messageType == "PRIVMSG":
@@ -32,7 +33,7 @@ class ModuleSpawner(Module):
             self.logFile(message.replyTo, logString)
         elif message.messageType == "ACTION":
             logString = "* {} {}".format(message.user.nickname, message.messageText)
-            logFile(message.replyTo, logString)
+            self.logFile(message.replyTo, logString)
         elif message.messageType == "NOTICE":
             logString = "[{}] {}".format(message.replyTo, message.messageText)
             self.logFile(message.replyTo, logString)
