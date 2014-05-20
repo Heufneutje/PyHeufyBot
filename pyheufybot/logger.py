@@ -1,10 +1,12 @@
 import time
+from pyheufybot.utils.fileutils import writeFile
 
-def log(line, target):
+def log(line, path, target=False):
     today = time.strftime("[%H:%M:%S]")
-
-    if target:
+    
+    if channel:
         print "{} {} - {}".format(today, target, line)
     else:
         print "{} {}".format(today, line)
-    #TODO: Logging to file
+
+    writeFile(path, line, True)
