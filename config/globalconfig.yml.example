@@ -37,6 +37,10 @@ channels: []
 # See http://ircv3.org/ for more information.
 useCapabilities: False
 
+# -logPath-
+# The folder where the logs will be saved
+logPath: "logs"
+
 #=================#
 #=Module Settings=#
 #=================#
