@@ -1,4 +1,4 @@
-import re, time
+import json, re, time
 from urllib import urlencode
 from urllib2 import build_opener, Request, urlopen, URLError
 from urlparse import urlparse
@@ -71,4 +71,16 @@ def postURL(url, values, extraHeaders=None):
             reason = "The server couldn't fulfill the request, code: {}".format(e.code)
         print "{} *** ERROR: Post to \"{} \" failed: {}".format(today, url, reason)
 
-print fetchURL("http://heufneutje.net", { "Cache-Control" : "no-cache" }).body
+def pasteEE(data, description, expire):
+    values = { "key" : "public",
+               "description" : description,
+               "paste" : data, 
+               "expiration" : expire,
+               "format" : "json" }
+    result = postURL("http://paste.ee/api", values)
+    if result:
+        jsonResult = json.loads(result.body)
+        if jsonResult["status"] == "success":
+            return jsonResult["paste"]["raw"]
+        elif jsonResult["status"] == "error":
+            return "An error occurred while posting to Paste.ee, code: {}, reason: {}".format(jsonResult["errorcode"], jsonResult["error"])
