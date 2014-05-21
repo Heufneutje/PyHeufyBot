@@ -9,17 +9,17 @@ class URLResponse(object):
         self.domain = domain
 
 def fetchURL(url, extraHeaders=None):
-    headers = [( "User-agent", "Mozilla/5.0" )]
+    headers = [{ "User-agent" , "Mozilla/5.0" }]
     if extraHeaders:
         for header in extraHeaders:
-            headers.append(extraHeaders)
+            # For whatever reason headers are defined in different way in opener than they are in a normal urlopen
+            headers.append({ header, extraHeaders[header] })
     try:
         opener = build_opener()
         opener.addheaders = headers
         response = opener.open(url)
-        urlResponse = URLResponse(response.read(), urlparse(response.geturl()).hostname)
-        return urlResponse
- 
+        return URLResponse(response.read(), urlparse(response.geturl()).hostname)
+
     except URLError as e:
         today = time.strftime("[%H:%M:%S]")
         reason = None
@@ -38,8 +38,8 @@ def postURL(url, values, extraHeaders=None):
     try:
         request = Request(url, data, headers)
         response = urlopen(request)
-        urlResponse = URLResponse(response.read(), urlparse(response.geturl()).hostname)
-        return urlResponse
+        return URLResponse(response.read(), urlparse(response.geturl()).hostname)
+
     except URLError as e:
         today = time.strftime("[%H:%M:%S]")
         reason = None
