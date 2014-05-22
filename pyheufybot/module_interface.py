@@ -142,7 +142,6 @@ class ModuleType(Enum):
     TRIGGER = 3
 
 class ModulePriority(object):
-    HIGHEST = -3
     HIGH = -2
     ABOVENORMAL = -1
     NORMAL = 0
