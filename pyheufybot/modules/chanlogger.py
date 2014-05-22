@@ -67,4 +67,3 @@ class ModuleSpawner(Module):
     def onModuleLoaded(self):
         config = self.bot.factory.config
         self.logPath = config.getSettingWithDefault("logPath", "logs")
-        self.serverFolder = self.bot.serverInfo.network
