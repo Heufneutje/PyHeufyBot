@@ -23,6 +23,9 @@ class Module(object):
     def onModuleUnloaded(self):
         pass
 
+    def reloadData(self):
+        pass
+
     def getHelp(self, command):
         return self.helpText
 
@@ -134,7 +137,13 @@ class ModuleInterface(object):
         except SyntaxError:
             errorMsg = "An error occurred while handling message \"{}\" ({})".format(message.messageText, sys.exc_info()[1])
             traceback.print_tb(sys.exc_info()[2])
-            # self.bot.msg(message.replyTo, errorMsg)
+            self.bot.msg(message.replyTo, errorMsg)
+
+    def reloadModuleData(self, modules):
+        for module in modules:
+            module = module.lower()
+            if module in self.modules:
+                self.modules[module].reloadData()
 
 class ModuleType(Enum):
     COMMAND = 1
