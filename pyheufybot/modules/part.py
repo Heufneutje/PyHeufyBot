@@ -1,4 +1,4 @@
-from pyheufybot.moduleinterface import Module, ModulePriority, ModuleType
+from pyheufybot.moduleinterface import Module, ModuleAccessLevel, ModulePriority, ModuleType
 
 class ModuleSpawner(Module):
     def __init__(self, bot):
@@ -8,6 +8,7 @@ class ModuleSpawner(Module):
         self.trigger = "part"
         self.moduleType = ModuleType.COMMAND
         self.modulePriority = ModulePriority.NORMAL
+        self.accessLevel = ModuleAccessLevel.ADMINS
         self.messageTypes = ["PRIVMSG"]
         self.helpText = "Usage: part <channel> (<message>) | Makes the bot leave the given channel."
 

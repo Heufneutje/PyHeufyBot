@@ -12,6 +12,7 @@ class Module(object):
         self.trigger = ""
         self.moduleType = ModuleType.PASSIVE
         self.modulePriority = ModulePriority.NORMAL
+        self.accessLevel = ModuleAccessLevel.ANYONE
         self.messageTypes = []
         self.helpText = "No help available for this module."
 
@@ -60,7 +61,7 @@ class ModuleInterface(object):
             module = src.ModuleSpawner(self.bot)
 
             # Check if the module has all the required fields.
-            attributes = ["helpText", "messageTypes", "modulePriority", "moduleType", "name", "trigger"]
+            attributes = ["accessLevel", "helpText", "messageTypes", "modulePriority", "moduleType", "name", "trigger"]
             for attr in attributes:
                 if not hasattr(module, attr):
                     errorMsg = "Module \"{}\" is missing the required field \"{}\" and cannot be loaded.".format(moduleName, attr)
@@ -174,3 +175,7 @@ class ModulePriority(object):
     NORMAL = 0
     BELOWNORMAL = -1
     LOW = -2
+
+class ModuleAccessLevel(Enum):
+    ANYONE = 1
+    ADMINS = 2

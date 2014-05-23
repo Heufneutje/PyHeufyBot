@@ -1,5 +1,5 @@
 import os
-from pyheufybot.moduleinterface import Module, ModulePriority, ModuleType
+from pyheufybot.moduleinterface import Module, ModuleAccessLevel, ModulePriority, ModuleType
 from pyheufybot.utils import fileutils
 
 class ModuleSpawner(Module):
@@ -10,6 +10,7 @@ class ModuleSpawner(Module):
         self.trigger = "ignore|unignore"
         self.moduleType = ModuleType.COMMAND
         self.modulePriority = ModulePriority.NORMAL
+        self.accessLevel = ModuleAccessLevel.ADMINS
         self.messageTypes = ["PRIVMSG"]
         self.helpText = "Usage: ignore (<user>), unignore <user>  | Adds the given user to the bot's ignore list. The format is nick!user@host."
 

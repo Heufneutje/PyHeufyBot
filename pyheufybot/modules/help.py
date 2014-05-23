@@ -1,5 +1,5 @@
 import re
-from pyheufybot.moduleinterface import Module, ModulePriority, ModuleType
+from pyheufybot.moduleinterface import Module, ModuleAccessLevel, ModulePriority, ModuleType
 
 class ModuleSpawner(Module):
     def __init__(self, bot):
@@ -9,6 +9,7 @@ class ModuleSpawner(Module):
         self.trigger = "help|modules"
         self.moduleType = ModuleType.COMMAND
         self.modulePriority = ModulePriority.NORMAL
+        self.accessLevel = ModuleAccessLevel.ANYONE
         self.messageTypes = ["PRIVMSG"]
         self.helpText = "Usage: help/modules (<module/command>) | Shows you all loaded modules or gives you help on a given module or command. \"help\" will only give you trigger modules and command modules, while \"modules\" will show you all loaded modules."
 

@@ -1,5 +1,5 @@
 import re
-from pyheufybot.moduleinterface import Module, ModulePriority, ModuleType
+from pyheufybot.moduleinterface import Module, ModuleAccessLevel, ModulePriority, ModuleType
 
 class ModuleSpawner(Module):
     def __init__(self, bot):
@@ -9,6 +9,7 @@ class ModuleSpawner(Module):
         self.trigger = "nick"
         self.moduleType = ModuleType.COMMAND
         self.modulePriority = ModulePriority.NORMAL
+        self.accessLevel = ModuleAccessLevel.ANYONE
         self.messageTypes = ["PRIVMSG"]
         self.helpText = "Usage: nick <message> | Changes the bot's nickname."
 
