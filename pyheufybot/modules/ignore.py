@@ -25,12 +25,23 @@ class ModuleSpawner(Module):
                     self.bot.msg(message.replyTo, "Currently not ignoring any users.")
             else:
                 ignore = " ".join(message.params[1:]).lower()
-                if ignore not in self.ignoreList:
+                if ignore in self.ignoreList:
+                    self.bot.msg(message.replyTo, "\"{}\" is already on the ignore list!".format(ignore))
+                else:
                     self.ignoreList.append(ignore)
                     self.writeData()
                     self.bot.msg(message.replyTo, "\"{}\" was added to the ignore list.".format(ignore))
+        elif message.params[0].lower() == "unignore":
+            if len(message.params) == 1:
+                self.bot.msg(message.replyTo, "Who do you want me to unignore?")
+            else:
+                ignore = " ".join(message.params[1:]).lower()
+                if ignore in self.ignoreList:
+                    self.ignoreList.remove(ignore)
+                    self.writeData()
+                    self.bot.msg(message.replyTo, "\"{}\" was removed from the ignore list.".format(ignore))
                 else:
-                    self.bot.msg(message.replyTo, "\"{}\" is already on the ignore list.".format(ignore))
+                    self.bot.msg(message.replyTo, "\"{}\" is not on the ignore list!".format(ignore))
         return True
 
     def onModuleLoaded(self):
