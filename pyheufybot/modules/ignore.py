@@ -1,5 +1,5 @@
 import os
-from pyheufybot.module_interface import Module, ModulePriority, ModuleType
+from pyheufybot.moduleinterface import Module, ModulePriority, ModuleType
 from pyheufybot.utils import fileutils
 
 class ModuleSpawner(Module):
