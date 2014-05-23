@@ -60,14 +60,12 @@ class ModuleInterface(object):
             module = src.ModuleSpawner(self.bot)
 
             # Check if the module has all the required fields.
-            errorMsg = "Module \"{}\" is missing one or more of the required fields and cannot be loaded.".format(moduleName)
-            if not (hasattr(module, "name") and hasattr(module, "moduleType") and hasattr(module, "modulePriority") and hasattr(module, "messageTypes") and hasattr(module, "helpText")):
-                log("[{}] ERROR: {}".format(self.server, errorMsg), None)
-                return [False, errorMsg]
-                if module.moduleType == ModuleType.COMMAND:
-                    if not hasattr(module, "trigger"):
-                        log("[{}] ERROR: {}".format(self.server, errorMsg), None)
-                        return [False, errorMsg]
+            attributes = ["command", "helpText", "messageTypes", "modulePriority", "moduleType", "name"]
+            for attr in attributes:
+                if not hasattr(module, attr):
+                    errorMsg = "Module \"{}\" is missing the required field \"{}\" and cannot be loaded.".format(moduleName, attr)
+                    log("[{}] ERROR: {}".format(self.server, errorMsg), None)
+                    return [False, errorMsg]
 
             # Module is valid and can be loaded.
             self.modules[moduleName] = module
