@@ -74,7 +74,12 @@ class HeufyBot(irc.IRCClient):
 
     def privmsg(self, user, channel, msg):
         messageChannel = self.getChannel(channel)
-        messageUser = self.getUser(user[:user.index("!")])
+
+        if "!" in user:
+            messageUser = self.getUser(user[:user.index("!")])
+        else:
+            # User doesn't have a hostname
+            messageUser = IRCUser("{}!None@None".format(user))
 
         if not messageUser:
             messageUser = IRCUser(user)
@@ -84,7 +89,6 @@ class HeufyBot(irc.IRCClient):
 
     def action(self, user, channel, msg):
         messageChannel = self.getChannel(channel)
-        messageUser = self.getUser(user[:user.index("!")])
 
         if "!" in user:
             messageUser = self.getUser(user[:user.index("!")])
