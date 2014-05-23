@@ -8,7 +8,7 @@ class ModuleSpawner(Module):
         self.trigger = "load|unload|reload"
         self.moduleType = ModuleType.COMMAND
         self.modulePriority = ModulePriority.NORMAL
-        self.accessLevel = ModuleAccessLevel.ANYONE
+        self.accessLevel = ModuleAccessLevel.ADMINS
         self.messageTypes = ["PRIVMSG"]
         self.helpText = "Usage: load/unload/reload <module> | Loads, unloads or reloads a bot module."
 

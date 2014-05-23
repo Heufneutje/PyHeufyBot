@@ -37,6 +37,7 @@ class ModuleInterface(object):
         self.modules = {}
         self.server = bot.factory.config.getSettingWithDefault("server", "irc.foo.bar")
         self.commandPrefix = bot.factory.config.getSettingWithDefault("commandPrefix", "!")
+        self.adminList = bot.factory.config.getSettingWithDefault("botAdmins", [])
         createDirs(os.path.join("data", self.server))
         self.dataPath = os.path.join("data", self.server)
 
@@ -140,6 +141,18 @@ class ModuleInterface(object):
                 match = re.search("^{}({})($| .*)".format(self.commandPrefix, module.trigger), message.messageText.lower(), re.IGNORECASE)
                 return True if match else False
 
+    def checkCommandAuthorization(self, module, message):
+        if module.accessLevel == ModuleAccessLevel.ANYONE:
+            return True
+
+        if module.accessLevel == ModuleAccessLevel.ADMINS:
+            for admin in self.adminList:
+                match = re.search(admin, message.user.getFullName(), re.IGNORECASE)
+                if match:
+                    return True
+
+        return False
+
     def handleMessage(self, message):
         try:
             noInterrupt = True
@@ -148,9 +161,13 @@ class ModuleInterface(object):
                     break
                 if self.shouldExecute(module, message):
                     if module.moduleType == ModuleType.COMMAND:
-                        # Strip the command prefix before passing
-                        newMessage = IRCMessage(message.messageType, message.user, message.channel, message.messageText[len(self.commandPrefix):])
-                        noInterrupt = module.execute(newMessage)
+                        # Check the access level
+                        if self.checkCommandAuthorization(module, message):
+                            # Strip the command prefix before passing
+                            newMessage = IRCMessage(message.messageType, message.user, message.channel, message.messageText[len(self.commandPrefix):])
+                            noInterrupt = module.execute(newMessage)
+                        else:
+                            self.bot.msg(message.replyTo, "You are not authorized to use the \"{}\" module!".format(module.name))
                     else:
                         noInterrupt = module.execute(message)
         except (Exception, SyntaxError, AttributeError):

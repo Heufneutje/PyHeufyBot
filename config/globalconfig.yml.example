@@ -49,6 +49,10 @@ logPath: "logs"
 # The character that has to be used to trigger any modules of type ACTIVE.
 commandPrefix: "!"
 
+# -botAdmins-
+# The users that are allowed to use modules with ADMINS access level.
+botAdmins: []
+
 # -modules-
 # The modules that should be loaded on startup
 modules: []
