@@ -6,7 +6,7 @@ def readFile(filePath):
             return f.read()
     except Exception as e:
         today = time.strftime("[%H:%M:%S]")
-        print "{} *** ERROR: An exception occurred while reading file \"{}\" ({})".format(today, filePath, e)
+        print "{} [FileUtils] ERROR: An exception occurred while reading file \"{}\" ({})".format(today, filePath, e)
         return None
 
 def writeFile(filePath, line, append=False):
@@ -17,7 +17,7 @@ def writeFile(filePath, line, append=False):
             return True
     except Exception as e:
         today = time.strftime("[%H:%M:%S]")
-        print "{} *** ERROR: An exception occurred while writing file \"{}\" ({})".format(today, filePath, e)
+        print "{} [FileUtils] ERROR: An exception occurred while writing file \"{}\" ({})".format(today, filePath, e)
         return False
 
 def createDirs(path):

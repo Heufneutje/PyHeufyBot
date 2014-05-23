@@ -34,9 +34,10 @@ class ModuleInterface(object):
     def __init__(self, bot):
         self.bot = bot
         self.modules = {}
+        self.server = bot.factory.config.getSettingWithDefault("server", "irc.foo.bar")
         self.commandPrefix = bot.factory.config.getSettingWithDefault("commandPrefix", "!")
-        createDirs(os.path.join("data", bot.factory.config.getSettingWithDefault("server", "irc.foo.bar")))
-        self.dataPath = os.path.join("data", bot.factory.config.getSettingWithDefault("server", "irc.foo.bar"))
+        createDirs(os.path.join("data", self.server))
+        self.dataPath = os.path.join("data", self.server)
 
     def loadModule(self, moduleName):
         moduleName = moduleName.lower()
@@ -50,7 +51,7 @@ class ModuleInterface(object):
             src = importlib.import_module("pyheufybot.modules.{}".format(moduleName))
         except (ImportError, SyntaxError, AttributeError) as e:
             errorMsg = "Module \"{}\" could not be loaded ({}).".format(moduleName, e)
-            log("*** ERROR: {}".format(errorMsg), None)
+            log("[{}] ERROR: {}".format(self.server, errorMsg), None)
             return [False, errorMsg]
         
         reload(src)
@@ -59,10 +60,10 @@ class ModuleInterface(object):
             module = src.ModuleSpawner(self.bot)
             self.modules[moduleName] = module
             module.onModuleLoaded()
-            log("->- Loaded module \"{}\".".format(module.name), None)
+            log("[{}] ->- Loaded module \"{}\".".format(self.server, module.name), None)
         except Exception as e:
             errorMsg = "An exception occurred while loading module \"{}\" ({}).".format(moduleName, e)
-            log("*** ERROR: {}".format(errorMsg), None)
+            log("[{}] ERROR: {}".format(self.server, errorMsg), None)
             return [False, errorMsg]
 
         return [True, module.name]
@@ -78,11 +79,11 @@ class ModuleInterface(object):
                 del sys.modules["pyheufybot.modules.{}".format(moduleName)]
                 for f in glob("pyheufybot/modules/{}.pyc".format(moduleName)):
                     os.remove(f)
-                log("-<- Unloaded module \"{}\".".format(module.name), None)
+                log("[{}] -<- Unloaded module \"{}\".".format(self.server, module.name), None)
                 return [True, module.name]
             except Exception as e:
                 errorMsg = "An exception occurred while unloading module \"{}\" ({}).".format(moduleName, e)
-                log("*** ERROR: {}".format(errorMsg), None)
+                log("[{}] ERROR: {}".format(self.server, errorMsg), None)
                 del self.modules[moduleName]
                 del sys.modules["pyheufybot.modules.{}".format(moduleName)]
                 for f in glob("pyheufybot/modules/{}.pyc".format(moduleName)):
@@ -105,13 +106,13 @@ class ModuleInterface(object):
         return [True, result[1]]
 
     def loadAllModules(self):
-        log("--- Loading modules...", None)
+        log("[{}] --- Loading modules...".format(self.server), None)
         modules = self.bot.factory.config.getSettingWithDefault("modules", [])
         for module in modules:
             self.loadModule(module)
 
     def unloadAllModules(self):
-        log("--- Unloading modules...", None)
+        log("[{}] --- Unloading modules...".format(self.server), None)
         for module in self.modules:
             self.unloadModule(module)
 

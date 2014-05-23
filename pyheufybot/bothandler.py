@@ -20,7 +20,7 @@ class BotHandler(object):
 
     def loadConfigs(self, configFile):
         self.configFile = configFile
-        log("--- Loading configs...", None)
+        log("[BotHandler] --- Loading configs...", None)
         self.globalConfig = Config(configFile, None)
 
         if not self.globalConfig.loadConfig():
@@ -28,7 +28,7 @@ class BotHandler(object):
 
         configList = self.getConfigList()
         if len(configList) == 0:
-            log("*** WARNING: No server configs found. Using the global config instead.", None)
+            log("[BotHandler] WARNING: No server configs found. Using the global config instead.", None)
             self.startFactory(self.globalConfig)
         else:
             for filename in configList:
@@ -41,10 +41,10 @@ class BotHandler(object):
         server = config.getSettingWithDefault("server", "irc.foo.bar")
         port = config.getSettingWithDefault("port", 6667)
         if server in self.factories:
-            log("*** WARNING: Can't join server {} because it is already in the server list!".format(server), None)
+            log("[BotHandler] WARNING: Can't join server {} because it is already in the server list!".format(server), None)
             return False
         else:
-            log("--- Initiating a connection to {}...".format(server), None)
+            log("[BotHandler] --- Initiating a connection to {}...".format(server), None)
             factory = HeufyBotFactory(config)
             self.factories[server] = factory
             reactor.connectTCP(server, port, factory)

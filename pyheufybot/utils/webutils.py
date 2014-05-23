@@ -38,7 +38,7 @@ def fetchURL(url, extraHeaders=None):
             reason = "We failed to reach the server, reason: {}".format(e.reason)
         elif hasattr(e, "code"):
             reason = "The server couldn't fulfill the request, code: {}".format(e.code)
-        print "{} *** ERROR: Fetch from \"{}\" failed: {}".format(today, url, reason)
+        print "{} [WebUtils] ERROR: Fetch from \"{}\" failed: {}".format(today, url, reason)
 
 def postURL(url, values, extraHeaders=None):
     headers = { "User-agent" : "Mozilla/5.0" }
@@ -69,7 +69,7 @@ def postURL(url, values, extraHeaders=None):
             reason = "We failed to reach the server, reason: {}".format(e.reason)
         elif hasattr(e, "code"):
             reason = "The server couldn't fulfill the request, code: {}".format(e.code)
-        print "{} *** ERROR: Post to \"{}\" failed: {}".format(today, url, reason)
+        print "{} [WebUtils] ERROR: Post to \"{}\" failed: {}".format(today, url, reason)
 
 def pasteEE(data, description, expire):
     values = { "key" : "public",

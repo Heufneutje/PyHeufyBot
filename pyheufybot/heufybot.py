@@ -20,9 +20,6 @@ class HeufyBot(irc.IRCClient):
         self.capHandler = CapHandler(self)
 
     def connectionMade(self):
-        #if self.factory.config.getSettingWithDefault("useCapabilities", False):
-        #    self.sendLine("CAP LS")
-
         self.nickname = self.factory.config.getSettingWithDefault("nickname", "PyHeufyBot")
         self.username = self.factory.config.getSettingWithDefault("username", "PyHeufyBot")
         self.realname = self.factory.config.getSettingWithDefault("realname", "PyHeufyBot")
@@ -39,8 +36,9 @@ class HeufyBot(irc.IRCClient):
 
         irc.IRCClient.connectionMade(self)
         
-        log("--- Connected to {}.".format(self.factory.config.getSettingWithDefault("server", "irc.foo.bar")), None)
-        log("--- Resetting reconnection delay...", None)
+        server = self.factory.config.getSettingWithDefault("server", "irc.foo.bar")
+        log("[{0}] --- Connected to {0}.".format(server), None)
+        log("[{}] --- Resetting reconnection delay...".format(server), None)
         self.factory.resetDelay()
 
     def signedOn(self):
@@ -432,7 +430,7 @@ class HeufyBotFactory(protocol.ReconnectingClientFactory):
         self.config = config
 
     def startedConnecting(self, connector):
-        log("--- Connecting to server {}...".format(self.config.getSettingWithDefault("server", "irc.foo.bar")), None)
+        log("[{0}] --- Connecting to server {0}...".format(self.config.getSettingWithDefault("server", "irc.foo.bar")), None)
 
     def buildProtocol(self, addr):
         self.bot = HeufyBot(self)
@@ -440,9 +438,11 @@ class HeufyBotFactory(protocol.ReconnectingClientFactory):
         return self.bot
 
     def clientConnectionLost(self, connector, reason):
-        log("*** Connection lost. (Reason: {})".format(reason), None)
+        server = self.config.getSettingWithDefault("server", "irc.foo.bar")
+        log("[{}] --- Connection lost. (Reason: {})".format(server, reason), None)
         protocol.ReconnectingClientFactory.clientConnectionLost(self, connector, reason)
 
     def clientConnectionFailed(self, connector, reason):
-        log("*** Connection failed. (Reason: {})".format(reason), None)
+        server = self.config.getSettingWithDefault("server", "irc.foo.bar")
+        log("[{}] --- Connection failed. (Reason: {})".format(reason), None)
         protocol.ReconnectingClientFactory.clientConnectionFailed(self, connector, reason)
