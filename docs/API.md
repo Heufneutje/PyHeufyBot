@@ -9,13 +9,14 @@ First of all, every module has to contain a class called `ModuleSpawner`, which 
 class ModuleSpawner(Module):
 ```
 
-Taking a look the `__init__` function, there are six fields that are important.
+Taking a look the `__init__` function, there are seven fields that are important.
 ```python
 def __init__(self, bot):
    self.bot = bot
    self.name = "Say"
    self.trigger = "say"
    self.moduleType = ModuleType.COMMAND
+   self.modulePriority = ModulePriority.NORMAL
    self.messageTypes = ["PRIVMSG"]
    self.helpText = "Usage: say <message> | Makes the bot say the given line"
 ```
@@ -36,12 +37,17 @@ self.trigger = "say"
 self.moduleType = ModuleType.COMMAND
 ```
 
+Next up is the `modulePriority` field. The API will sort modules by priority and pass messages to the modules in order from high to low. Modules can also interrupt the passing of the message to lower priority modules. This is explained later.
+```python
+self.modulePriority = ModulePriority.NORMAL
+```
+
 The last field a module needs to have is the `messageTypes`. These determine what kind of messages the module will trigger on. For these message types IRC commands can be used, as well as numerics.
 ```python
 self.messageTypes = ["PRIVMSG"]
 ```
 
-That does it for the `__init__` function and the fields. Other than this modules will also have at least four extra functions. Two of these are the `onModuleLoaded` and `onModuleUnloaded` functions. These will trigger automatically when the module is loaded or unloaded by the API. In these functions you can initialize data files and save your persistent data for example.
+That does it for the `__init__` function and the fields. Other than this modules will also have at least five extra functions. Two of these are the `onModuleLoaded` and `onModuleUnloaded` functions. These will trigger automatically when the module is loaded or unloaded by the API. In these functions you can initialize data files and save your persistent data for example.
 ```python
 def onModuleLoaded(self):
 def onModuleUnloaded(self):
@@ -52,7 +58,12 @@ There is also the `getHelp` function. This normally returns what is defined in t
 def getHelp(self, command):
 ```
 
-Lastly modules will need an `execute` function. This function is called by the API when a message is received that meets the requirements set in the module’s fields.
+Data management can be done using the `reloadData` function. This is where you make your module reload its data (from a file from example) should another module call for it. This function is called by the API by means of its `reloadModuleData` function, which takes a list of modules names that should reload their data. 
+```python
+def reloadData(self):
+```
+
+Lastly modules will need an `execute` function. This function is called by the API when a message is received that meets the requirements set in the module’s fields. This function MUST end with a `return True` or `return False`. This will determine whether or not the API should continue passing this message to modules with a lower priority.
 ```python
 def execute(self, message):
     if len(message.params) == 1:
