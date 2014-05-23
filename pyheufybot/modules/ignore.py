@@ -29,7 +29,7 @@ class ModuleSpawner(Module):
                     self.writeData()
                     self.bot.msg(message.replyTo, "\"{}\" was added to the ignore list.".format(ignore))
                 else:
-                    self.bot.msg(message.replyTo, "\"{}\" is already on the ignore list.")
+                    self.bot.msg(message.replyTo, "\"{}\" is already on the ignore list.".format(ignore))
         return True
 
     def onModuleLoaded(self):
