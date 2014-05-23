@@ -2,7 +2,8 @@ from pyheufybot.moduleinterface import Module, ModulePriority, ModuleType
 
 class ModuleSpawner(Module):
     def __init__(self, bot):
-        self.bot = bot
+        super(ModuleSpawner, self).__init__(bot)
+
         self.name = "NickServIdentify"
         self.moduleType = ModuleType.PASSIVE
         self.modulePriority = ModulePriority.NORMAL

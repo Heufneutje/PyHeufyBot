@@ -5,7 +5,8 @@ from pyheufybot.utils.fileutils import createDirs, writeFile
 
 class ModuleSpawner(Module):
     def __init__(self, bot):
-        self.bot = bot
+        super(ModuleSpawner, self).__init__(bot)
+
         self.name = "ChanLogger"
         self.moduleType = ModuleType.PASSIVE
         self.modulePriority = ModulePriority.HIGH

@@ -2,7 +2,8 @@ from pyheufybot.moduleinterface import Module, ModulePriority, ModuleType
 
 class ModuleSpawner(Module):
     def __init__(self, bot):
-        self.bot = bot
+        super(ModuleSpawner, self).__init__(bot)
+
         self.name = "Say"
         self.trigger = "say|sayremote"
         self.moduleType = ModuleType.COMMAND
