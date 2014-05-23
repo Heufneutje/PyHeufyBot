@@ -12,7 +12,7 @@ class ModuleSpawner(Module):
         self.messageTypes = ["PRIVMSG"]
         self.helpText = "Usage: ignore (<user>), unignore <user>  | Adds the given user to the bot's ignore list. The format is nick!user@host."
 
-        self.ignorePath = os.path.join("data", self.bot.factory.config.getSettingWithDefault("server", "irc.foo.bar"), "ignores.txt")
+        self.ignorePath = os.path.join(bot.moduleInterface.dataPath, "ignores.txt")
         self.ignoreList = []
 
     def execute(self, message):
@@ -44,9 +44,11 @@ class ModuleSpawner(Module):
         self.loadData()
 
     def loadData(self):
+        print fileutils.readFile(self.ignorePath)
         if os.path.exists(self.ignorePath):
+            print fileutils.readFile(self.ignorePath)
             self.ignoreList = fileutils.readFile(self.ignorePath).split("\n")
 
     def writeData(self):
-        for ignore in self.ignoreList:
-            fileutils.writeFile(self.ignorePath, "{}\n".format(ignore))
+        ignores = "\n".join(self.ignoreList)
+        fileutils.writeFile(self.ignorePath, ignores)
