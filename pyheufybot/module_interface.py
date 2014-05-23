@@ -1,6 +1,7 @@
 import importlib, operator, os, re, sys, traceback
 from pyheufybot.logger import log
 from pyheufybot.message import IRCMessage
+from pyheufybot.utils.fileutils import createDirs
 from enum import Enum
 from glob import glob
 
@@ -34,6 +35,8 @@ class ModuleInterface(object):
         self.bot = bot
         self.modules = {}
         self.commandPrefix = bot.factory.config.getSettingWithDefault("commandPrefix", "!")
+        createDirs(os.path.join("data", bot.factory.config.getSettingWithDefault("server", "irc.foo.bar")))
+        self.dataPath = os.path.join("data", bot.factory.config.getSettingWithDefault("server", "irc.foo.bar"))
 
     def loadModule(self, moduleName):
         moduleName = moduleName.lower()
@@ -45,7 +48,7 @@ class ModuleInterface(object):
         # Try to load the module
         try:
             src = importlib.import_module("pyheufybot.modules.{}".format(moduleName))
-        except (ImportError, SyntaxError) as e:
+        except (ImportError, SyntaxError, AttributeError) as e:
             errorMsg = "Module \"{}\" could not be loaded ({}).".format(moduleName, e)
             log("*** ERROR: {}".format(errorMsg), None)
             return [False, errorMsg]
@@ -80,6 +83,10 @@ class ModuleInterface(object):
             except Exception as e:
                 errorMsg = "An exception occurred while unloading module \"{}\" ({}).".format(moduleName, e)
                 log("*** ERROR: {}".format(errorMsg), None)
+                del self.modules[moduleName]
+                del sys.modules["pyheufybot.modules.{}".format(moduleName)]
+                for f in glob("pyheufybot/modules/{}.pyc".format(moduleName)):
+                    os.remove(f)
                 return [False, errorMsg]
         else: 
             return [False, "Module \"{}\" is not loaded or doesn't exist.".format(moduleName)]
@@ -134,7 +141,7 @@ class ModuleInterface(object):
                         noInterrupt = module.execute(newMessage)
                     else:
                         noInterrupt = module.execute(message)
-        except SyntaxError:
+        except (Exception, SyntaxError, AttributeError):
             errorMsg = "An error occurred while handling message \"{}\" ({})".format(message.messageText, sys.exc_info()[1])
             traceback.print_tb(sys.exc_info()[2])
             self.bot.msg(message.replyTo, errorMsg)
