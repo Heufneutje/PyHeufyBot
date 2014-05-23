@@ -13,7 +13,7 @@ class ModuleSpawner(Module):
     def execute(self, message):
         if len(message.params) == 1:
             self.bot.msg(message.replyTo, "You didn't specify a parameter! Usage: load/unload/reload <module>.")
-            return
+            return True
         
         success = []
         failure = []
