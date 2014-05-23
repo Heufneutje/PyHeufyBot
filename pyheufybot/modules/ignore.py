@@ -6,7 +6,7 @@ class ModuleSpawner(Module):
     def __init__(self, bot):
         self.bot = bot
         self.name = "Ignore"
-        self.trigger = "ignore"
+        self.trigger = "ignore|unignore"
         self.moduleType = ModuleType.COMMAND
         self.modulePriotity = ModulePriority.ABOVENORMAL
         self.messageTypes = ["PRIVMSG"]
@@ -16,10 +16,16 @@ class ModuleSpawner(Module):
         self.ignoreList = []
 
     def execute(self, message):
-        if len(message.params) == 1:
-            self.bot.msg(message.replyTo, "Say what?")
-        else:
-            self.bot.msg(message.replyTo, " ".join(message.params[1:]))
+        if message.params[0].lower() == "ignore":
+            if len(message.params) == 1:
+                if len(self.ignoreList) > 0:
+                    self.bot.msg("Currently ignoring users: {}.".format(", ".join(self.ignoreList)
+                else:
+                    self.bot.msg("Currently not ignoring any users.")
+            else:
+                ignore = message.params[1:].lower()
+                self.ignoreList.append(ignore)
+                self.bot.msg("\"{}\" was added to the ignore list.".format(ignore)
         return True
 
     def onModuleLoaded(self):
@@ -28,6 +34,13 @@ class ModuleSpawner(Module):
     def onModuleUnloaded(self):
         pass
 
+    def reloadData(self):
+        self.loadData()
+
     def loadData(self):
         if os.path.exists(self.ignorePath):
-            pass
+            self.ignoreList = fileutils.readFile(self.ignorePath).split("\n")
+
+    def writeData(self):
+        for ignore in ignoreList:
+            fileutils.writeFile(self.ignorePath, "{}\n".format(ignore), True)
