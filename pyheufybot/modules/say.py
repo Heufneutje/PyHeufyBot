@@ -4,15 +4,21 @@ class ModuleSpawner(Module):
     def __init__(self, bot):
         self.bot = bot
         self.name = "Say"
-        self.trigger = "say"
+        self.trigger = "say|sayremote"
         self.moduleType = ModuleType.COMMAND
-        self.modulePriotity = ModulePriority.NORMAL
+        self.modulePriority = ModulePriority.NORMAL
         self.messageTypes = ["PRIVMSG"]
-        self.helpText = "Usage: say <message> | Makes the bot say the given line."
+        self.helpText = "Usage: say <message>/sayremote <target> <message>  | Makes the bot say the given line."
 
     def execute(self, message):
-        if len(message.params) == 1:
-            self.bot.msg(message.replyTo, "Say what?")
-        else:
-            self.bot.msg(message.replyTo, " ".join(message.params[1:]))
+        if message.params[0].lower() == "say":
+            if len(message.params) == 1:
+                self.bot.msg(message.replyTo, "Say what?")
+            else:
+                self.bot.msg(message.replyTo, " ".join(message.params[1:]))
+        elif message.params[0].lower() == "sayremote":
+            if len(message.params) < 3:
+                self.bot.msg(message.replyTo, "Say what?")
+            else:
+                self.bot.msg(message.params[1], " ".join(message.params[2:]))
         return True
