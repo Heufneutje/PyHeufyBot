@@ -15,5 +15,5 @@ class ModuleSpawner(Module):
         password = config.getSettingWithDefault("password", "")
 
         if passwordType == "NickServ":
-            self.bot.msg("NickServ", "IDENTIFY {}".format(password))
+            self.bot.msg("NickServ", "IDENTIFY {}".format(password), None, False)
         return True

@@ -49,25 +49,26 @@ class HeufyBot(irc.IRCClient):
         message = IRCMessage("USER", None, None, "")
         self.moduleInterface.handleMessage(message)
 
-    def msg(self, user, message, length=None):
+    def msg(self, user, message, length=None, passToModules=True):
         messageUser = self.getUser(self.nickname)
         if not messageUser:
             messageUser = IRCUser("{}!{}@{}".format(self.nickname, None, None))
         messageChannel = self.getChannel(user) if user in self.channels else None
-
-        msg = IRCMessage("PRIVMSG", messageUser, messageChannel, message.encode('utf-8'))
-        self.moduleInterface.handleMessage(msg)
+        if passToModules:
+            msg = IRCMessage("PRIVMSG", messageUser, messageChannel, message.encode('utf-8'))
+            self.moduleInterface.handleMessage(msg)
 
         irc.IRCClient.msg(self, user, message.encode('utf-8'), length)
 
-    def describe(self, channel, action):
+    def describe(self, channel, action, passToModules=True):
         messageUser = self.getUser(self.nickname)
         if not messageUser:
             messageUser = IRCUser("{}!{}@{}".format(self.nickname, None, None))
         messageChannel = self.getChannel(channel) if channel in self.channels else None
-
-        msg = IRCMessage("ACTION", messageUser, messageChannel, action.encode('utf-8'))
-        self.moduleInterface.handleMessage(msg)
+        
+        if passToModules:
+            msg = IRCMessage("ACTION", messageUser, messageChannel, action.encode('utf-8'))
+            self.moduleInterface.handleMessage(msg)
 
         irc.IRCClient.describe(self, channel, action.encode('utf-8'))
 
