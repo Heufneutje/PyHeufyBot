@@ -41,7 +41,7 @@ class ModuleSpawner(Module):
             logString = ">> {} ({}@{}) has joined {}".format(message.user.nickname, message.user.username, message.user.hostname, message.channel.name)
             self.logFile(message.replyTo, logString)
         elif message.messageType == "PART":
-            logString = "<< {} ({}@{}) has left {} ({})".format(message.user.nickname, message.user.username, message.user.hostname, channel.name, message.messageText)
+            logString = "<< {} ({}@{}) has left {} ({})".format(message.user.nickname, message.user.username, message.user.hostname, message.channel.name, message.messageText)
             self.logFile(message.replyTo, logString)
         elif message.messageType == "QUIT":
             logString = "<< {} ({}@{}) has quit IRC ({})".format(message.user.nickname, message.user.username, message.user.hostname, message.messageText)
