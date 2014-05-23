@@ -14,7 +14,7 @@ class ModuleSpawner(Module):
     def execute(self, message):
         if len(message.params) == 1:
             includePassive = False if message.params[0].lower() == "help" else True
-            helpPrefix = "Loaded command/trigger modules: " if message.params[0] .lower() == "help" else "Loaded modules:"
+            helpPrefix = "Loaded command/trigger modules:" if message.params[0] .lower() == "help" else "Loaded modules:"
             loadedModules = []
 
             for module in self.bot.moduleInterface.modules.values():
