@@ -9,21 +9,22 @@ First of all, every module has to contain a class called `ModuleSpawner`, which 
 class ModuleSpawner(Module):
 ```
 
-Taking a look the `__init__` function, there are seven fields that are important.
+Taking a look the `__init__` function, there are seven fields that are important. Other than that there's a call to the superclass. This is important, because it will pass the bot reference. By calling `self.bot` you can perform things like sending messages.
 ```python
 def __init__(self, bot):
-   self.bot = bot
+   super(ModuleSpawner, self).__init__(bot)
+
    self.name = "Say"
    self.trigger = "say"
    self.moduleType = ModuleType.COMMAND
    self.modulePriority = ModulePriority.NORMAL
+   self.accessLevel = ModuleAccessType.ANYONE
    self.messageTypes = ["PRIVMSG"]
    self.helpText = "Usage: say <message> | Makes the bot say the given line"
 ```
 
-These first ones are simple and probably don’t need more than a simple explanation. `bot` is a reference to the bot instance. You want to have this so your module can interact with it and send messages, for example. `name` is what your module will be referred to as internally. It is also the name that will show up in the help command. Lastly you can specify a `helpText`, which will be displayed when the user calls the help for the module.
+These first ones are simple and probably don’t need more than a simple explanation. `name` is what your module will be referred to as internally. It is also the name that will show up in the help command. Lastly you can specify a `helpText`, which will be displayed when the user calls the help for the module.
 ```python
-self.bot = bot
 self.name = "Say"
 self.helpText = "Usage: say <message> | Makes the bot say the given line"
 ```
@@ -40,6 +41,11 @@ self.moduleType = ModuleType.COMMAND
 Next up is the `modulePriority` field. The API will sort modules by priority and pass messages to the modules in order from high to low. Modules can also interrupt the passing of the message to lower priority modules. This is explained later.
 ```python
 self.modulePriority = ModulePriority.NORMAL
+```
+
+The `accessLevel` field determines who can use the module. This only applies to command modules. Access levels are Anyone and Admins. Admins can be defined in the bot's configs.
+```python
+self.accessLevel = ModuleAccessType.ANYONE
 ```
 
 The last field a module needs to have is the `messageTypes`. These determine what kind of messages the module will trigger on. For these message types IRC commands can be used, as well as numerics.
