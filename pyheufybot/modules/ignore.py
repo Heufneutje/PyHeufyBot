@@ -60,3 +60,4 @@ class ModuleSpawner(Module):
     def writeData(self):
         ignores = "\n".join(self.ignoreList)
         fileutils.writeFile(self.ignorePath, ignores)
+        self.bot.moduleInterface.reloadModuleData(["ignoreauto"])
