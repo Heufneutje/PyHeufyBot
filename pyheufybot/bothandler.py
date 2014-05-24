@@ -5,18 +5,10 @@ from pyheufybot.logger import log
 from config import Config
 
 class BotHandler(object):
-    _instance = None
-
     def __init__(self):
         self.factories = {}
         self.globalConfig = None
         self.configFile = None
-
-    def __new__(cls, *args, **kwargs):
-        if not cls._instance:
-            cls._instance = super(BotHandler, cls).__new__(
-                                cls, *args, **kwargs)
-        return cls._instance
 
     def loadConfigs(self, configFile):
         self.configFile = configFile
@@ -45,10 +37,33 @@ class BotHandler(object):
             return False
         else:
             log("[BotHandler] --- Initiating a connection to {}...".format(server), None)
-            factory = HeufyBotFactory(config)
+            factory = HeufyBotFactory(config, self)
             self.factories[server] = factory
             reactor.connectTCP(server, port, factory)
             return True
+
+    def stopFactory(self, server, quitMessage=None, reconnect=False):
+        if server in self.factories:
+            factory = self.factories[server]
+            log("[BotHandler] --- {} connection to {}...".format("Restarting" if reconnect else "Closing" ,server), None)
+            if not quitMessage:
+                if reconnect:
+                    quitMessage = "Reconnecting..."
+                else:
+                    quitMessage = "Disconnecting..."
+
+            factory.shouldReconnect = reconnect
+            factory.bot.quit(quitMessage)
+            if not reconnect:
+                del self.factories[server]
+
+            if len(self.factories) == 0:
+                log("[BotHandler] --- No more open connections found; shutting down...", None)
+                reactor.callLater(3.0, reactor.stop)
+
+            return True
+        else:
+            return False
 
     def getConfigList(self):
         root = os.path.join("config")
