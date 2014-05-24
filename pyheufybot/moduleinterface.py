@@ -3,7 +3,6 @@ from pyheufybot.logger import log
 from pyheufybot.message import IRCMessage
 from pyheufybot.utils.fileutils import createDirs
 from enum import Enum
-from glob import glob
 
 class Module(object):
     def __init__(self, bot):
