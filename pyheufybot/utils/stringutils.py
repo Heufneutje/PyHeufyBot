@@ -10,3 +10,4 @@ def isNumber(string):
         return True
     except ValueError:
         return False
+    
