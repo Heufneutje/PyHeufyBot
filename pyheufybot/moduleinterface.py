@@ -88,18 +88,12 @@ class ModuleInterface(object):
                 module = self.modules[moduleName]
                 module.onModuleUnloaded()
                 del self.modules[moduleName]
-                del sys.modules["pyheufybot.modules.{}".format(moduleName)]
-                for f in glob("pyheufybot/modules/{}.pyc".format(moduleName)):
-                    os.remove(f)
                 log("[{}] -<- Unloaded module \"{}\".".format(self.server, module.name), None)
                 return [True, module.name]
             except Exception as e:
                 errorMsg = "An exception occurred while unloading module \"{}\" ({}).".format(moduleName, e)
                 log("[{}] ERROR: {}".format(self.server, errorMsg), None)
                 del self.modules[moduleName]
-                del sys.modules["pyheufybot.modules.{}".format(moduleName)]
-                for f in glob("pyheufybot/modules/{}.pyc".format(moduleName)):
-                    os.remove(f)
                 return [False, errorMsg]
         else: 
             return [False, "Module \"{}\" is not loaded or doesn't exist.".format(moduleName)]
@@ -194,6 +188,6 @@ class ModulePriority(object):
     BELOWNORMAL = -1
     LOW = -2
 
-class ModuleAccessLevel(Enum):
+class ModuleAccessLevel(object):
     ANYONE = 1
     ADMINS = 2
