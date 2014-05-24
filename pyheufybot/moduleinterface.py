@@ -125,7 +125,8 @@ class ModuleInterface(object):
 
     def unloadAllModules(self):
         log("[{}] --- Unloading modules...".format(self.server), None)
-        for module in self.modules:
+        moduleNames = self.modules.keys()
+        for module in moduleNames:
             self.unloadModule(module)
 
     def shouldExecute(self, module, message):
