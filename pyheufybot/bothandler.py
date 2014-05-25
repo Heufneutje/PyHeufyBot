@@ -1,5 +1,8 @@
+import subprocess
 import os, sys
-from twisted.internet import reactor
+import time
+from twisted.internet import reactor, threads
+from threading import Timer
 from heufybot import HeufyBotFactory
 from pyheufybot.logger import log
 from config import Config
@@ -77,8 +80,7 @@ class BotHandler(object):
         for factoryName in servers:
             self.stopFactory(factoryName, quitMessage, False)
         if restart:
-            python = sys.executable
-            os.execl(python, python, *sys.argv)
+            reactor.callLater(5.0, subprocess.call("python app.py"))
 
     def getConfigList(self):
         root = os.path.join("config")

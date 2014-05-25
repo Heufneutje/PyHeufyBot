@@ -32,4 +32,8 @@ class ModuleSpawner(Module):
             elif len(message.params) > 2:
                 if not botHandler.stopFactory(message.params[1], " ".join(message.params[2:]), True if command == "reconnect" else False):
                     self.bot.msg(message.replyTo, "I'm not connected to that server!")
+        elif command == "quit" or command == "restart":
+            quitMessage = " ".join(message.params[1:]) if len(message.params) > 1 else None
+            restart = True if command == "restart" else False
+            botHandler.quit(quitMessage, restart)
         return True
