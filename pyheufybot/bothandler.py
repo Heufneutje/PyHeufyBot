@@ -1,4 +1,4 @@
-import os
+import os, sys
 from twisted.internet import reactor
 from heufybot import HeufyBotFactory
 from pyheufybot.logger import log
@@ -60,12 +60,25 @@ class BotHandler(object):
                 del self.factories[server]
 
             if len(self.factories) == 0:
-                log("[BotHandler] --- No more open connections found; shutting down...", None)
+                log("[BotHandler] --- No more open connections found; stopping reactor...", None)
                 reactor.callLater(3.0, reactor.stop)
 
             return True
         else:
             return False
+
+    def quit(self, quitMessage=None, restart=False):
+        if not quitMessage:
+            if restart:
+                quitMessage = "Restarting..."
+            else:
+                quitMessage = "Shutting down..."
+        servers = self.factories.keys()
+        for factoryName in servers:
+            self.stopFactory(factoryName, quitMessage, False)
+        if restart:
+            python = sys.executable
+            os.execl(python, python, *sys.argv)
 
     def getConfigList(self):
         root = os.path.join("config")
