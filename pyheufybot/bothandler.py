@@ -1,8 +1,5 @@
-import subprocess
-import os, sys
-import time
+import os, subprocess
 from twisted.internet import reactor, threads
-from threading import Timer
 from heufybot import HeufyBotFactory
 from pyheufybot.logger import log
 from config import Config
@@ -80,7 +77,12 @@ class BotHandler(object):
         for factoryName in servers:
             self.stopFactory(factoryName, quitMessage, False)
         if restart:
-            reactor.callLater(5.0, subprocess.call("python app.py"))
+            threads.deferToThread(self.fullRestart)
+
+    def fullRestart(self):
+        log("[BotHandler] Restarting...", None)
+        reactor.callLater(3.0, subprocess.call("python app.py"))
+        # reactor.callLater(3.0, os.execl, sys.executable, sys.executable, *sys.argv)
 
     def getConfigList(self):
         root = os.path.join("config")
