@@ -7,6 +7,7 @@ from config import Config
 class BotHandler(object):
     def __init__(self):
         self.factories = {}
+        self.configs = []
         self.globalConfig = None
         self.configFile = None
 
@@ -26,6 +27,7 @@ class BotHandler(object):
             for filename in configList:
                 config = Config(filename, self.globalConfig.settings)
                 config.loadConfig()
+                self.configs.append(config)
                 self.startFactory(config)
         reactor.run()
 

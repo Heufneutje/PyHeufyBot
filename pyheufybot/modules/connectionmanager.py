@@ -24,4 +24,9 @@ class ModuleSpawner(Module):
             elif len(message.params) > 2:
                 if not botHandler.stopFactory(message.params[1], " ".join(message.params[2:]), True if command == "reconnect" else False):
                     self.bot.msg(message.replyTo, "I'm not connected to that server!")
+        elif command == "connect":
+            for config in botHandler.configs:
+                if config.getSettingWithDefault("server", "irc.foo.bar").lower() == message.params[1].lower():
+                    if not botHandler.startFactory(config):
+                        self.bot.msg(message.replyTo, "I can't join that server because I'm already on it!")
         return True
