@@ -222,6 +222,7 @@ class HeufyBot(irc.IRCClient):
         user.nickname = newnick
         message = IRCMessage("NICK", user, None, oldnick)
         self.moduleInterface.handleMessage(message)
+        irc.IRCClient.irc_NICK(self, prefix, params)
 
     def modeChanged(self, user, channel, set, modes, args):
         modeUser = self.getUser(user)
