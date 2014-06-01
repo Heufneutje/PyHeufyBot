@@ -30,7 +30,7 @@ class Module(object):
     def getHelp(self, command):
         return self.helpText
 
-class ModuleInterface(object):
+class ModuleHandler(object):
     def __init__(self, bot):
         self.bot = bot
         self.modules = {}

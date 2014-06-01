@@ -23,11 +23,11 @@ class ModuleSpawner(Module):
 
         for module in message.params[1:]:
             if message.params[0].lower() == "load":
-                result = self.bot.moduleInterface.loadModule(module)
+                result = self.bot.moduleHandler.loadModule(module)
             elif message.params[0].lower() == "unload":
-                result = self.bot.moduleInterface.unloadModule(module)
+                result = self.bot.moduleHandler.unloadModule(module)
             elif message.params[0].lower() == "reload":
-                result = self.bot.moduleInterface.reloadModule(module)
+                result = self.bot.moduleHandler.reloadModule(module)
 
             if result[0]:
                 success.append(result[1])

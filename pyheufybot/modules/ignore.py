@@ -14,7 +14,7 @@ class ModuleSpawner(Module):
         self.messageTypes = ["PRIVMSG"]
         self.helpText = "Usage: ignore (<user>), unignore <user>  | Adds the given user to the bot's ignore list. The format is nick!user@host."
 
-        self.ignorePath = os.path.join(bot.moduleInterface.dataPath, "ignores.json")
+        self.ignorePath = os.path.join(bot.moduleHandler.dataPath, "ignores.json")
         self.ignoreList = []
 
     def execute(self, message):
@@ -66,4 +66,4 @@ class ModuleSpawner(Module):
     def writeData(self):
         jsonString = json.dumps(self.ignoreList)
         writeFile(self.ignorePath, jsonString)
-        self.bot.moduleInterface.reloadModuleData(["ignoreauto"])
+        self.bot.moduleHandler.reloadModuleData(["ignoreauto"])

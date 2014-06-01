@@ -8,7 +8,7 @@ from pyheufybot.channel import IRCChannel
 from pyheufybot.message import IRCMessage
 from pyheufybot.logger import log
 from pyheufybot.serverinfo import ModeType, ServerInfo
-from pyheufybot.modulehandler import ModuleInterface
+from pyheufybot.modulehandler import ModuleHandler
 
 class HeufyBot(irc.IRCClient):
     def __init__(self, factory):
@@ -16,7 +16,7 @@ class HeufyBot(irc.IRCClient):
         self.usermodes = {}
         self.channels = {}
         self.serverInfo = ServerInfo()
-        self.moduleInterface = ModuleInterface(self)
+        self.moduleHandler = ModuleHandler(self)
         self.capHandler = CapHandler(self)
 
     def connectionMade(self):
@@ -32,7 +32,7 @@ class HeufyBot(irc.IRCClient):
         self.sourceURL = "https://github.com/Heufneutje/PyHeufyBot/"
 
         message = IRCMessage("CONNECT", None, None, "")
-        self.moduleInterface.handleMessage(message)
+        self.moduleHandler.handleMessage(message)
 
         irc.IRCClient.connectionMade(self)
         
@@ -47,7 +47,7 @@ class HeufyBot(irc.IRCClient):
             self.join(channel)
 
         message = IRCMessage("USER", None, None, "")
-        self.moduleInterface.handleMessage(message)
+        self.moduleHandler.handleMessage(message)
 
     def msg(self, user, message, length=None, passToModules=True):
         messageUser = self.getUser(self.nickname)
@@ -56,7 +56,7 @@ class HeufyBot(irc.IRCClient):
         messageChannel = self.getChannel(user) if user in self.channels else None
         if passToModules:
             msg = IRCMessage("PRIVMSG", messageUser, messageChannel, message.encode('utf-8'))
-            self.moduleInterface.handleMessage(msg)
+            self.moduleHandler.handleMessage(msg)
 
         irc.IRCClient.msg(self, user, message.encode('utf-8'), length)
 
@@ -68,7 +68,7 @@ class HeufyBot(irc.IRCClient):
         
         if passToModules:
             msg = IRCMessage("ACTION", messageUser, messageChannel, action.encode('utf-8'))
-            self.moduleInterface.handleMessage(msg)
+            self.moduleHandler.handleMessage(msg)
 
         irc.IRCClient.describe(self, channel, action.encode('utf-8'))
 
@@ -85,7 +85,7 @@ class HeufyBot(irc.IRCClient):
             messageUser = IRCUser(user)
 
         message = IRCMessage("PRIVMSG", messageUser, messageChannel, msg)
-        self.moduleInterface.handleMessage(message)
+        self.moduleHandler.handleMessage(message)
 
     def action(self, user, channel, msg):
         messageChannel = self.getChannel(channel)
@@ -97,7 +97,7 @@ class HeufyBot(irc.IRCClient):
             messageUser = IRCUser("{}!None@None".format(user))
 
         message = IRCMessage("ACTION", messageUser, messageChannel, msg)
-        self.moduleInterface.handleMessage(message)
+        self.moduleHandler.handleMessage(message)
 
     def noticed(self, user, channel, msg):
         messageChannel = self.getChannel(channel)
@@ -112,7 +112,7 @@ class HeufyBot(irc.IRCClient):
             messageUser = IRCUser(user)
 
         message = IRCMessage("NOTICE", messageUser, messageChannel, msg)
-        self.moduleInterface.handleMessage(message)
+        self.moduleHandler.handleMessage(message)
 
     def irc_JOIN(self, prefix, params):
         user = self.getUser(prefix[:prefix.index("!")])
@@ -143,7 +143,7 @@ class HeufyBot(irc.IRCClient):
                 channel.ranks[user.nickname] = ""
 
         message = IRCMessage("JOIN", user, channel, "")
-        self.moduleInterface.handleMessage(message)
+        self.moduleHandler.handleMessage(message)
 
     def irc_PART(self, prefix, params):
         user = self.getUser(prefix[:prefix.index("!")])
@@ -166,7 +166,7 @@ class HeufyBot(irc.IRCClient):
                 del channel.ranks[user.nickname]
 
         message = IRCMessage("PART", user, channel, partMessage)
-        self.moduleInterface.handleMessage(message)
+        self.moduleHandler.handleMessage(message)
 
     def irc_QUIT(self, prefix, params): 
         user = self.getUser(prefix[:prefix.index("!")])
@@ -176,7 +176,7 @@ class HeufyBot(irc.IRCClient):
             quitMessage = params[0]
 
         message = IRCMessage("QUIT", user, None, quitMessage)
-        self.moduleInterface.handleMessage(message)
+        self.moduleHandler.handleMessage(message)
 
         for channel in self.channels.itervalues():
             if user.nickname in channel.users:
@@ -204,7 +204,7 @@ class HeufyBot(irc.IRCClient):
                 del channel.ranks[kickee]
 
         message = IRCMessage("KICK", user, channel, "{} {}".format(kickee, kickMessage))
-        self.moduleInterface.handleMessage(message)
+        self.moduleHandler.handleMessage(message)
 
     def irc_NICK(self, prefix, params):
         user = self.getUser(prefix[:prefix.index("!")])
@@ -221,7 +221,7 @@ class HeufyBot(irc.IRCClient):
 
         user.nickname = newnick
         message = IRCMessage("NICK", user, None, oldnick)
-        self.moduleInterface.handleMessage(message)
+        self.moduleHandler.handleMessage(message)
         irc.IRCClient.irc_NICK(self, prefix, params)
 
     def modeChanged(self, user, channel, set, modes, args):
@@ -263,7 +263,7 @@ class HeufyBot(irc.IRCClient):
         operator = '+' if set else '-'
 
         message = IRCMessage("MODE", modeUser, modeChannel, "{}{} {}".format(operator, modes, " ".join(logArgs)))
-        self.moduleInterface.handleMessage(message)
+        self.moduleHandler.handleMessage(message)
 
     def irc_TOPIC(self, prefix, params):
         user = self.getUser(prefix[:prefix.index("!")])
@@ -273,14 +273,14 @@ class HeufyBot(irc.IRCClient):
         channel.topicTimestamp = time.time()
 
         message = IRCMessage("TOPIC", user, channel, params[2])
-        self.moduleInterface.handleMessage(message)
+        self.moduleHandler.handleMessage(message)
 
     def irc_RPL_TOPIC(self, prefix, params):
         channel = self.getChannel(params[1])
         channel.topic = params[2]
 
         message = IRCMessage("332", None, channel, channel.topic)
-        self.moduleInterface.handleMessage(message)
+        self.moduleHandler.handleMessage(message)
 
     def irc_unknown(self, prefix, command, params):
         if command == "333":
@@ -289,22 +289,22 @@ class HeufyBot(irc.IRCClient):
             channel.topicSetter = params[2]
             channel.topicTimestamp = long(params[3])
             message = IRCMessage("333", None, channel, "")
-            self.moduleInterface.handleMessage(message)
+            self.moduleHandler.handleMessage(message)
         elif command == "329":
             # RPL_CREATIONTIME: Not RFC, but still used pretty much anywhere
             channel = self.getChannel(params[1])
             message = IRCMessage("329", None, channel, "")
-            self.moduleInterface.handleMessage(message)
+            self.moduleHandler.handleMessage(message)
         elif command == "CAP":
             if params[1] == "LS":
                self.capHandler.availableCaps = params[2:]
             message = IRCMessage("CAP {}".format(params[1]), None, None, " ".join(params[2:]))
-            self.moduleInterface.handleMessage(message)
+            self.moduleHandler.handleMessage(message)
             if not self.capHandler.capEndSent:
                 self.capHandler.checkFinishedCaps()
         else:
             message = IRCMessage(command, None, None, " ".join(params))
-            self.moduleInterface.handleMessage(message)
+            self.moduleHandler.handleMessage(message)
 
     def irc_RPL_NAMREPLY(self, prefix, params):
         channel = self.getChannel(params[2])
@@ -379,7 +379,7 @@ class HeufyBot(irc.IRCClient):
                 channel.modes[mode] = None
 
         message = IRCMessage("324", None, channel, params[2])
-        self.moduleInterface.handleMessage(message)
+        self.moduleHandler.handleMessage(message)
 
     def irc_RPL_MYINFO(self, prefix, params):
         self.serverInfo.name = params[1]
@@ -452,7 +452,7 @@ class HeufyBotFactory(protocol.ReconnectingClientFactory):
 
     def buildProtocol(self, addr):
         self.bot = HeufyBot(self)
-        self.bot.moduleInterface.loadAllModules()
+        self.bot.moduleHandler.loadAllModules()
         return self.bot
 
     def clientConnectionLost(self, connector, reason):
