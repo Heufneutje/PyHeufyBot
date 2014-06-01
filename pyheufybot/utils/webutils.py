@@ -20,7 +20,6 @@ def fetchURL(url, extraHeaders=None):
         opener.addheaders = headers
         response = opener.open(url)
         responseHeaders = response.info().dict
-        print responseHeaders
         pageType = responseHeaders["content-type"]
 
         # Make sure we don't download any unwanted things
