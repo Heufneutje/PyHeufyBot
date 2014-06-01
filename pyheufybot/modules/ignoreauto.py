@@ -1,6 +1,6 @@
-import os, re
+import json, os, re
 from pyheufybot.moduleinterface import Module, ModulePriority, ModuleType
-from pyheufybot.utils import fileutils
+from pyheufybot.utils.fileutils import readFile
 
 class ModuleSpawner(Module):
     def __init__(self, bot):
@@ -12,7 +12,7 @@ class ModuleSpawner(Module):
         self.messageTypes = ["PRIVMSG", "ACTION"]
         self.helpText = "Prevents users that are on the ignore list from executing any commands or triggers."
 
-        self.ignorePath = os.path.join(bot.moduleInterface.dataPath, "ignores.txt")
+        self.ignorePath = os.path.join(bot.moduleInterface.dataPath, "ignores.json")
         self.ignoreList = []
 
     def execute(self, message):
@@ -25,10 +25,16 @@ class ModuleSpawner(Module):
 
     def onModuleLoaded(self):
         self.loadData()
+        print self.ignoreList
 
     def reloadData(self):
         self.loadData()
 
     def loadData(self):
         if os.path.exists(self.ignorePath):
-            self.ignoreList = fileutils.readFile(self.ignorePath).split("\n")
+            try:
+                jsonString = readFile(self.ignorePath)
+                self.ignoreList = json.loads(jsonString)
+            except ValueError:
+                # String read is not JSON, use default instead
+                pass
