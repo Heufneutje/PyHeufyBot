@@ -19,7 +19,7 @@ class ModuleSpawner(Module):
             helpPrefix = "Loaded command/trigger modules:" if message.params[0] .lower() == "help" else "Loaded modules:"
             loadedModules = []
 
-            for module in self.bot.moduleInterface.modules.values():
+            for module in self.bot.moduleHandler.modules.values():
                 if module.moduleType != ModuleType.PASSIVE or (module.moduleType == ModuleType.PASSIVE and includePassive):
                     loadedModules.append(module.name)
 
