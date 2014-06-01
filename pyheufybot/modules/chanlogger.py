@@ -1,5 +1,5 @@
 import os, datetime, time
-from pyheufybot.moduleinterface import Module, ModulePriority, ModuleType
+from pyheufybot.modulehandler import Module, ModulePriority, ModuleType
 from pyheufybot.logger import log
 from pyheufybot.utils.fileutils import createDirs, writeFile
 

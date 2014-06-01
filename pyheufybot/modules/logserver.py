@@ -1,6 +1,6 @@
 import os
 from datetime import datetime, timedelta
-from pyheufybot.moduleinterface import Module, ModuleAccessLevel, ModulePriority, ModuleType
+from pyheufybot.modulehandler import Module, ModuleAccessLevel, ModulePriority, ModuleType
 from pyheufybot.utils.stringutils import isNumber
 
 class ModuleSpawner(Module):

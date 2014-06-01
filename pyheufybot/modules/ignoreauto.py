@@ -1,5 +1,5 @@
 import json, os, re
-from pyheufybot.moduleinterface import Module, ModulePriority, ModuleType
+from pyheufybot.modulehandler import Module, ModulePriority, ModuleType
 from pyheufybot.utils.fileutils import readFile
 
 class ModuleSpawner(Module):

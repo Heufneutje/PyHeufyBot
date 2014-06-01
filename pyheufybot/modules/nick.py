@@ -1,5 +1,5 @@
 import re
-from pyheufybot.moduleinterface import Module, ModuleAccessLevel, ModulePriority, ModuleType
+from pyheufybot.modulehandler import Module, ModuleAccessLevel, ModulePriority, ModuleType
 
 class ModuleSpawner(Module):
     def __init__(self, bot):

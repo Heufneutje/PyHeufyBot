@@ -8,7 +8,7 @@ from pyheufybot.channel import IRCChannel
 from pyheufybot.message import IRCMessage
 from pyheufybot.logger import log
 from pyheufybot.serverinfo import ModeType, ServerInfo
-from pyheufybot.moduleinterface import ModuleInterface
+from pyheufybot.modulehandler import ModuleInterface
 
 class HeufyBot(irc.IRCClient):
     def __init__(self, factory):
