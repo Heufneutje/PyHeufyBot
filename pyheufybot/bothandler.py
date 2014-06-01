@@ -81,8 +81,8 @@ class BotHandler(object):
 
     def fullRestart(self):
         log("[BotHandler] Restarting...", None)
-        reactor.callLater(3.0, subprocess.call("python app.py"))
-        # reactor.callLater(3.0, os.execl, sys.executable, sys.executable, *sys.argv)
+        # reactor.callLater(3.0, subprocess.call("python app.py"))
+        reactor.callLater(3.0, os.execl, sys.executable, sys.executable, *sys.argv)
 
     def getConfigList(self):
         root = os.path.join("config")
