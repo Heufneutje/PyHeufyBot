@@ -1,4 +1,4 @@
-import os, time
+import os, datetime, time
 from pyheufybot.moduleinterface import Module, ModulePriority, ModuleType
 from pyheufybot.logger import log
 from pyheufybot.utils.fileutils import createDirs, writeFile
@@ -10,7 +10,7 @@ class ModuleSpawner(Module):
         self.name = "ChanLogger"
         self.moduleType = ModuleType.PASSIVE
         self.modulePriority = ModulePriority.HIGH
-        self.messageTypes = ["PRIVMSG", "ACTION", "NOTICE", "JOIN", "PART", "NICK", "QUIT", "KICK", "MODE", "TOPIC"]
+        self.messageTypes = ["PRIVMSG", "ACTION", "NOTICE", "JOIN", "PART", "NICK", "QUIT", "KICK", "MODE", "TOPIC", "324", "329", "332", "333"]
         self.helpText = "Logs all IRC events to file."
 
         self.logPath = None
@@ -62,6 +62,18 @@ class ModuleSpawner(Module):
             self.logFile(message.replyTo, logString)
         elif message.messageType == "TOPIC":
             logString = "-- {} changes topic to \"{}\"".format(message.user.nickname, message.messageText)
+            self.logFile(message.replyTo, logString)
+        elif message.messageType == "324":
+            logString = "-- Channel modes set: {}".format(message.messageText)
+            self.logFile(message.replyTo, logString)
+        elif message.messageType == "329":
+            logString = "-- Channel was created on {}".format(datetime.datetime.fromtimestamp(message.channel.creationTime))
+            self.logFile(message.replyTo, logString)
+        elif message.messageType == "332":
+            logString = "-- Topic is \"{}\"".format(message.messageText)
+            self.logFile(message.replyTo, logString)
+        elif message.messageType == "333":
+            logString = "-- Topic set by {} on {}".format(message.channel.topicSetter, datetime.datetime.fromtimestamp(message.channel.topicTimestamp))
             self.logFile(message.replyTo, logString)
         return True
 

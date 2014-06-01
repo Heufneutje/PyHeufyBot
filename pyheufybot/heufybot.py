@@ -279,20 +279,22 @@ class HeufyBot(irc.IRCClient):
         channel = self.getChannel(params[1])
         channel.topic = params[2]
 
-        log("-- Topic is \"{}\"".format(channel.topic), channel.name)
+        message = IRCMessage("332", None, channel, channel.topic)
+        self.moduleInterface.handleMessage(message)
 
     def irc_unknown(self, prefix, command, params):
         if command == "333":
-            # RPL_TOPICWHOTIME: This is in the RFC but not implemented. Tsk tsk, Twisted.
+            # RPL_TOPICWHOTIME: This is in the RFC but not implemented.
             channel = self.getChannel(params[1])
             channel.topicSetter = params[2]
             channel.topicTimestamp = long(params[3])
-            log("-- Topic set by {} on {}".format(params[2], datetime.datetime.fromtimestamp(channel.topicTimestamp)), channel.name)
+            message = IRCMessage("333", None, channel, "")
+            self.moduleInterface.handleMessage(message)
         elif command == "329":
             # RPL_CREATIONTIME: Not RFC, but still used pretty much anywhere
             channel = self.getChannel(params[1])
-            channel.creationTime = long(params[2])
-            log("-- Channel was created on {}".format(datetime.datetime.fromtimestamp(channel.creationTime)), channel.name)
+            message = IRCMessage("329", None, channel, "")
+            self.moduleInterface.handleMessage(message)
         elif command == "CAP":
             if params[1] == "LS":
                self.capHandler.availableCaps = params[2:]
@@ -300,7 +302,6 @@ class HeufyBot(irc.IRCClient):
             self.moduleInterface.handleMessage(message)
             if not self.capHandler.capEndSent:
                 self.capHandler.checkFinishedCaps()
-            log("({}) {}".format(command, " ".join(params)), None)
         else:
             message = IRCMessage(command, None, None, " ".join(params))
             self.moduleInterface.handleMessage(message)
@@ -377,7 +378,8 @@ class HeufyBot(irc.IRCClient):
             else:
                 channel.modes[mode] = None
 
-        log("-- Channel modes set: {}".format(params[2]), channel.name)
+        message = IRCMessage("324", None, channel, params[2])
+        self.moduleInterface.handleMessage(message)
 
     def irc_RPL_MYINFO(self, prefix, params):
         self.serverInfo.name = params[1]
