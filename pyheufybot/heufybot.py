@@ -261,7 +261,6 @@ class HeufyBot(irc.IRCClient):
 
         logArgs = [arg for arg in args if arg is not None]
         operator = '+' if set else '-'
-        target = modeChannel.name if modeChannel else None
 
         message = IRCMessage("MODE", modeUser, modeChannel, "{}{} {}".format(operator, modes, " ".join(logArgs)))
         self.moduleInterface.handleMessage(message)
