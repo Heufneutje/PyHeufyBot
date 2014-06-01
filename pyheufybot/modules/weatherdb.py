@@ -6,11 +6,12 @@ from pyheufybot.utils.webutils import fetchURL
 class ModuleSpawner(Module):
     baseApiAddress = "http://api.worldweatheronline.com/free/v1/weather.ashx?"
     webAddress = "http://www.worldweatheronline.com/v2/weather.aspx?q="
+    chatmapAddress = "http://tsukiakariusagi.net/chatmaplookup.php?nick="
 
     def __init__(self, bot):
         super(ModuleSpawner, self).__init__(bot)
 
-        self.name = "Weather"
+        self.name = "WeatherDB"
         self.trigger = "weather|forecast"
         self.moduleType = ModuleType.COMMAND
         self.modulePriority = ModulePriority.NORMAL
@@ -29,11 +30,39 @@ class ModuleSpawner(Module):
             self.bot.msg(message.replyTo, "API key for WorldWeatherOnline was not found.")
             return True
 
+        if len(message.params) > 2:
+            latString = message.params[1]
+            lngString = message.params[2]
+        else:
+            latString = None
+            lngString = None
+
+        user = None
+        if len(message.params) == 1:
+            user = message.user.nickname
+        else:
+            user = message.params[1]
+
+        url = "{}{}".format(self.chatmapAddress, user)
+        print url
+        chatmapResult = fetchURL(url)
+        if chatmapResult:
+            if chatmapResult.body != ", ":
+                latString, lngString = chatmapResult.body.split(",", 1)
+            else:
+                if len(message.params) == 1:
+                    self.bot.msg(message.replyTo, "You are not on the chatmap.")
+                    return True
+        else:
+            if len(message.params) == 1:
+                    self.bot.msg(message.replyTo, "Chatmap doesn't seem to work right now. Try again later.")
+                    return True
+
         geoLocation = self.bot.moduleHandler.modules["geolocation"]
 
         try:
-            latitude = float(message.params[1])
-            longitude = float(message.params[2])
+            latitude = float(latString)
+            longitude = float(lngString)
 
             result = geoLocation.getGeoLocationFromLatLon(latitude, longitude)
             if result:
