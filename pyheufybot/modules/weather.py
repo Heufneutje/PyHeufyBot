@@ -55,7 +55,7 @@ class ModuleSpawner(Module):
             if not weather:
                 weather = "No weather could be found for this location."
 
-                self.bot.msg(message.replyTo, "Location: {} | {} | More info: {}{},{}".format(result[0], weather, self.webAddress, result[1], result[2]))
+            self.bot.msg(message.replyTo, "Location: {} | {} | More info: {}{},{}".format(result[0], weather, self.webAddress, result[1], result[2]))
             return True
         else:
             self.bot.msg(message.replyTo, "I don't think that's even a location in this multiverse...")
@@ -91,5 +91,5 @@ class ModuleSpawner(Module):
         windSpeedMph = currentCondition["windspeedMiles"]
         windDir = currentCondition["winddir16Point"]
 
-        return "Temp: {} C / {} F | Weather: {} | Humidity: {}% | Wind Speed: {} kmph / {} mph | Wind Direction: {}" \
+        return "Temp: {}C / {}F | Weather: {} | Humidity: {}% | Wind Speed: {} kmph / {} mph | Wind Direction: {}" \
             .format(tempC, tempF, weather, humidity, windSpeedKmph, windSpeedMph, windDir)
