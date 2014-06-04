@@ -14,14 +14,18 @@ class Config(object):
             log("[Config] ERROR: Config file \"{0}\" was not found. Make sure to create it or copy \"globalconfig.yml.example\" to \"{0}\".".format(self.filePath), None)
             return False
         else:
-            with open(os.path.join("config", self.filePath), 'r') as configFile:
-                configData = yaml.load(configFile)
-            log("[Config] --- Loaded {}.".format(self.filePath), None)
+            try:
+                with open(os.path.join("config", self.filePath), 'r') as configFile:
+                    configData = yaml.load(configFile)
+                log("[Config] --- Loaded {}.".format(self.filePath), None)
 
-            if configData:
-                for key in configData:
-                    self.settings[key] = configData[key]
-            return True
+                if configData:
+                    for key in configData:
+                        self.settings[key] = configData[key]
+                return True
+            except yaml.parser.ParserError as e:
+                log("[Config] *** ERROR: Config file \"{}\" could not be loaded, {}".format(self.filePath, e))
+                return False
             
     def getSettingWithDefault(self, setting, defaultValue):
         if setting in self.settings:
