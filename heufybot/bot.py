@@ -8,4 +8,5 @@ class HeufyBot(object):
         reactor.connectTCP("heufneutje.net", 6667, self.connectionFactory)
         reactor.run()
 
+
 heufybot = HeufyBot()
