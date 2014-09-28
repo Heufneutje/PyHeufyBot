@@ -7,6 +7,8 @@ class HeufyBotConnection(irc.IRC):
         self.nick = "PyHeufyBot"  # TODO This will be set by a configuration at some point
         self.ident = "PyHeufyBot"  # TODO This will be set by a configuration at some point
         self.gecos = "PyHeufyBot IRC Bot"  # TODO This will be set by a configuration at some point
+        self.channels = {}
+        self.usermodes = {}
 
     def connectionMade(self):
         self.cmdNICK(self.nick)
