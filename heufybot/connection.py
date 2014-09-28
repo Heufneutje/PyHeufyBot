@@ -31,3 +31,11 @@ class HeufyBotConnection(irc.IRC):
         # RFC2812 allows usermodes to be set, but this isn't implemented much in IRCds at all.
         # Pass 0 for usermodes instead.
         self.sendMessage("USER", ident, "0", "*", ":{}".format(gecos))
+
+    def cmdQUIT(self, reason):
+        self.sendMessage("QUIT", ":{}".format(reason))
+
+    def disconnect(self, reason="Quitting..."):
+        # TODO Make sure full quits don't cause reconnection
+        self.cmdQUIT(reason)
+        self.transport.loseConnection()
