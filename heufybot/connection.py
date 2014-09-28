@@ -17,8 +17,8 @@ class HeufyBotConnection(irc.IRC):
     def connectionLost(self, reason=""):
         print reason
 
-    def dataReceived(self, data):
-        print data
+    def handleCommand(self, command, prefix, params):
+        print prefix, command, " ".join(params)
 
     def sendMessage(self, command, *parameter_list, **prefix):
         print command, " ".join(parameter_list)
