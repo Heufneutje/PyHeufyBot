@@ -1,6 +1,6 @@
 class IRCUser(object):
-    def __init__(self, nickname, ident=None, host=None):
-        self.nickname = nickname
+    def __init__(self, nick, ident=None, host=None):
+        self.nick = nick
         self.ident = ident
         self.host = host
         self.gecos = None
@@ -10,4 +10,4 @@ class IRCUser(object):
         self.isAway = False
 
     def fullUserPrefix(self):
-        return "{}!{}@{}".format(self.nickname, self.ident, self.host)
+        return "{}!{}@{}".format(self.nick, self.ident, self.host)
