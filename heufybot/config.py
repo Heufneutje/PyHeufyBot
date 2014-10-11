@@ -1,6 +1,6 @@
 import yaml
 
-_required = ["nickname"]
+_required = ["nickname", "servers"]
 
 class Config(object):
 
@@ -20,7 +20,7 @@ class Config(object):
     def _validateConfigData(self, configData):
         for item in _required:
             if item not in configData:
-                raise ConfigError(self.configFile, "Required item {} was not found in the config.")
+                raise ConfigError(self.configFile, "Required item \"{}\" was not found in the config.".format(item))
 
     def __len__(self):
         return len(self._configData)
