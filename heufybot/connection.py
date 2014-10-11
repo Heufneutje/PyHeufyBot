@@ -1,4 +1,5 @@
 from twisted.words.protocols import irc
+from twisted.python import log
 
 
 class HeufyBotConnection(irc.IRC):
@@ -11,14 +12,15 @@ class HeufyBotConnection(irc.IRC):
         self.usermodes = {}
 
     def connectionMade(self):
+        self.transport.fullDisconnect = False
         self.cmdNICK(self.nick)
         self.cmdUSER(self.ident, self.gecos)
 
     def handleCommand(self, command, prefix, params):
-        print prefix, command, " ".join(params)
+        log.msg(prefix, command, " ".join(params))
 
     def sendMessage(self, command, *parameter_list, **prefix):
-        print command, " ".join(parameter_list)
+        log.msg(command, " ".join(parameter_list))
         irc.IRC.sendMessage(self, command, *parameter_list, **prefix)
 
     def cmdNICK(self, nick):
