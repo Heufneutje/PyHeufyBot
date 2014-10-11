@@ -39,6 +39,8 @@ class Config(object):
     def serverItemWithDefault(self, server, item, default):
         if item in self._configData["servers"][server]:
             return self._configData["servers"][server][item]
+        if item in self._configData:
+            return self._configData[item]
         return default
 
 class ConfigError(Exception):
