@@ -7,18 +7,24 @@ class HeufyBotConnection(irc.IRC):
     def __init__(self, bot):
         self.bot = bot
         self.name = None
-        self.nick = "PyHeufyBot"  # TODO This will be set by a configuration at some point
-        self.ident = "PyHeufyBot"  # TODO This will be set by a configuration at some point
-        self.gecos = "PyHeufyBot IRC Bot"  # TODO This will be set by a configuration at some point
+        self.nick = None
+        self.ident = None
+        self.gecos = None
         self.channels = {}
         self.usermodes = {}
 
     def connectionMade(self):
+        # Connection finalizing
         self.name = self.transport.addr[0]
         self.log("Connection established.")
         self.transport.fullDisconnect = False
         self.bot.servers[self.name] = self
-        self.log("Logging in as {}!{}...".format(self.nick, self.ident))
+
+        # Start logging in
+        self.nick = self.bot.config.serverItemWithDefault(self.name, "nickname", "HeufyBot")
+        self.ident = self.bot.config.serverItemWithDefault(self.name, "username", self.nick)
+        self.gecos = self.bot.config.serverItemWithDefault(self.name, "realname", self.nick)
+        self.log("Logging in as {}!{} :{}...".format(self.nick, self.ident, self.gecos))
         self.cmdNICK(self.nick)
         self.cmdUSER(self.ident, self.gecos)
 

@@ -1,6 +1,6 @@
 import yaml
 
-_required = ["nickname", "servers"]
+_required = ["servers"]
 
 class Config(object):
 
