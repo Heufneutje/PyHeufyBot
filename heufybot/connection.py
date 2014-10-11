@@ -1,5 +1,6 @@
 from twisted.words.protocols import irc
 from twisted.python import log
+import logging
 
 
 class HeufyBotConnection(irc.IRC):
@@ -17,10 +18,10 @@ class HeufyBotConnection(irc.IRC):
         self.cmdUSER(self.ident, self.gecos)
 
     def handleCommand(self, command, prefix, params):
-        log.msg(prefix, command, " ".join(params))
+        log.msg(prefix, command, " ".join(params), level=logging.DEBUG)
 
     def sendMessage(self, command, *parameter_list, **prefix):
-        log.msg(command, " ".join(parameter_list))
+        log.msg(command, " ".join(parameter_list), level=logging.DEBUG)
         irc.IRC.sendMessage(self, command, *parameter_list, **prefix)
 
     def cmdNICK(self, nick):
