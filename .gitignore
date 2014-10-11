@@ -52,14 +52,5 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 
-# Python Tools for Visual Studio
-*.pyproj
-*.sln
-*.suo
-.gitattributes
-
 # Bot
-config/
-!config/globalconfig.yml.example
-logs/
-data/
+heufybot.yaml
