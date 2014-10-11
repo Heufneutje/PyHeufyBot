@@ -36,6 +36,11 @@ class Config(object):
             return self._configData[item]
         return default
 
+    def serverItemWithDefault(self, server, item, default):
+        if item in self._configData["servers"][server]:
+            return self._configData["servers"][server][item]
+        return default
+
 class ConfigError(Exception):
     def __init__(self, configFile, message):
         self.configFile = configFile
