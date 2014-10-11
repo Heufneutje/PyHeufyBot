@@ -27,4 +27,5 @@ if __name__ == "__main__":
         log.msg("Picked up invalid log level {}; defaulting to INFO.".format(options.loglevel), level=logging.WARNING)
 
     # Start the bot
+    log.msg("Starting bot...")
     heufybot = HeufyBot(options.config)

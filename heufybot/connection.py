@@ -4,8 +4,9 @@ import logging
 
 
 class HeufyBotConnection(irc.IRC):
-    def __init__(self, protocol):
-        self.protocol = protocol
+    def __init__(self, bot):
+        self.bot = bot
+        self.name = None
         self.nick = "PyHeufyBot"  # TODO This will be set by a configuration at some point
         self.ident = "PyHeufyBot"  # TODO This will be set by a configuration at some point
         self.gecos = "PyHeufyBot IRC Bot"  # TODO This will be set by a configuration at some point
@@ -13,7 +14,9 @@ class HeufyBotConnection(irc.IRC):
         self.usermodes = {}
 
     def connectionMade(self):
+        self.name = self.transport.addr[0]
         self.transport.fullDisconnect = False
+        self.bot.servers[self.name] = self
         self.cmdNICK(self.nick)
         self.cmdUSER(self.ident, self.gecos)
 

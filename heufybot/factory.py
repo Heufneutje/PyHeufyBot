@@ -9,7 +9,7 @@ class HeufyBotFactory(ReconnectingClientFactory):
         self.bot = bot
 
     def buildProtocol(self, addr):
-        return self.protocol(self)
+        return self.protocol(self.bot)
 
     def clientConnectionLost(self, connector, reason):
         if connector.transport.fullDisconnect:
