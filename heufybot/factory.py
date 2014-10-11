@@ -12,7 +12,7 @@ class HeufyBotFactory(ReconnectingClientFactory):
         return self.protocol(self.bot)
 
     def clientConnectionLost(self, connector, reason):
-        if connector.transport.fullDisconnect:
+        if hasattr(connector.transport, "fullDisconnect") and connector.transport.fullDisconnect:
             ClientFactory.clientConnectionLost(self, connector, reason)
         else:
             ReconnectingClientFactory.clientConnectionLost(self, connector, reason)
