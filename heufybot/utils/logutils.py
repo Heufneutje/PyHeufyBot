@@ -30,7 +30,8 @@ class LevelLoggingObserver(log.FileLogObserver, log.PythonLoggingObserver):
             "system": eventDict["system"],
             "text": message.replace("\n", "\n\t")
         }
-        messageString = "{} {}".format(logElements["timestamp"], log._safeFormat("%(level)7s:[%(system)s]: %(text)s\n", logElements))
+        messageString = "{} {}".format(logElements["timestamp"],
+                                       log._safeFormat("%(level)7s:[%(system)s]: %(text)s\n", logElements))
         print messageString.replace("\n", "")
         util.untilConcludes(self.write, messageString)
         util.untilConcludes(self.flush)
