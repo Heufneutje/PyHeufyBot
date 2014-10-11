@@ -2,7 +2,7 @@ from twisted.python import log, util
 import logging
 
 
-class LevelLoggingObserver(log.FileLogObserver, log.PythonLoggingObserver):
+class LevelLoggingObserver(log.FileLogObserver):
     def __init__(self, logfile, logLevel):
         log.FileLogObserver.__init__(self, logfile)
         self.logLevel = logLevel
