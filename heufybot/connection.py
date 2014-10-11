@@ -14,9 +14,6 @@ class HeufyBotConnection(irc.IRC):
         self.cmdNICK(self.nick)
         self.cmdUSER(self.ident, self.gecos)
 
-    def connectionLost(self, reason=""):
-        print reason
-
     def handleCommand(self, command, prefix, params):
         print prefix, command, " ".join(params)
 
@@ -35,7 +32,8 @@ class HeufyBotConnection(irc.IRC):
     def cmdQUIT(self, reason):
         self.sendMessage("QUIT", ":{}".format(reason))
 
-    def disconnect(self, reason="Quitting..."):
-        # TODO Make sure full quits don't cause reconnection
+    def disconnect(self, reason="Quitting...", fullDisconnect = False):
+        # TODO: Find a better solution to full disconnects
         self.cmdQUIT(reason)
+        self.transport.fullDisconnect = fullDisconnect
         self.transport.loseConnection()

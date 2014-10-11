@@ -1,4 +1,4 @@
-from twisted.internet.protocol import ReconnectingClientFactory
+from twisted.internet.protocol import ClientFactory, ReconnectingClientFactory
 from heufybot.connection import HeufyBotConnection
 
 
@@ -10,3 +10,9 @@ class HeufyBotFactory(ReconnectingClientFactory):
 
     def buildProtocol(self, addr):
         return self.protocol(self)
+
+    def clientConnectionLost(self, connector, reason):
+        if connector.transport.fullDisconnect:
+            ClientFactory.clientConnectionLost(self, connector, reason)
+        else:
+            ReconnectingClientFactory.clientConnectionLost(self, connector, reason)
