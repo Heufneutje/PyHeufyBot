@@ -3,6 +3,16 @@ PyHeufyBot
 
 A rewrite of my Java IRC bot [RE_HeufyBot](https://github.com/Heufneutje/RE_HeufyBot) in Python, using Twisted as its IRC library.
 
+The project is currently under heavy development and there is not a stable version yet, but if you
+would like to play around with it, do the following:
+
+1. Clone the repository.
+2. Create and activate a virtualenv. You will to download virtualenv for Python 2 if you do not
+already have it. You could also just install the requirements on your machine itself, but a
+virtualenv is easier to work with.
+3. Once the virtualenv is activated, run `pip install -r requirements.txt`.
+4. Create a config file and run `python app.py`.
+
 Will add more here as time goes on.
 
 RE_HeufyBot's flaws
