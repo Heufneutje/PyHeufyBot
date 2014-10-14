@@ -7,7 +7,7 @@ The project is currently under heavy development and there is not a stable versi
 would like to play around with it, do the following:
 
 1. Clone the repository.
-2. Create and activate a virtualenv. You will to download virtualenv for Python 2 if you do not
+2. Create and activate a virtualenv. You will have to download virtualenv for Python 2 if you do not
 already have it. You could also just install the requirements on your machine itself, but a
 virtualenv is easier to work with.
 3. Once the virtualenv is activated, run `pip install -r requirements.txt`.
