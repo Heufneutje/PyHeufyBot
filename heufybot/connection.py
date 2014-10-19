@@ -1,6 +1,7 @@
 from twisted.words.protocols import irc
 from twisted.python import log as twistedlog
 from heufybot.input import InputHandler
+from heufybot.output import OutputHandler
 import logging
 
 
@@ -8,6 +9,7 @@ class HeufyBotConnection(irc.IRC):
     def __init__(self, bot):
         self.bot = bot
         self.inputHandler = InputHandler(self)
+        self.outputHandler = OutputHandler(self)
         self.loggedIn = False
         self.name = None
         self.nick = None
@@ -28,12 +30,12 @@ class HeufyBotConnection(irc.IRC):
         self.ident = self.bot.config.serverItemWithDefault(self.name, "username", self.nick)
         self.gecos = self.bot.config.serverItemWithDefault(self.name, "realname", self.nick)
         self.log("Logging in as {}!{} :{}...".format(self.nick, self.ident, self.gecos))
-        self.cmdNICK(self.nick)
-        self.cmdUSER(self.ident, self.gecos)
+        self.outputHandler.cmdNICK(self.nick)
+        self.outputHandler.cmdUSER(self.ident, self.gecos)
 
     def handleCommand(self, command, prefix, params):
         self.log(prefix, command, " ".join(params), level=logging.DEBUG)
-        self.inputParser.handleCommand(command, prefix, params)
+        self.inputHandler.handleCommand(command, prefix, params)
 
     def sendMessage(self, command, *parameter_list, **prefix):
         self.log(command, " ".join(parameter_list), level=logging.DEBUG)
@@ -45,19 +47,8 @@ class HeufyBotConnection(irc.IRC):
         else:
             twistedlog.msg("[{}] {}".format(self.name, " ".join(message)))
 
-    def cmdNICK(self, nick):
-        self.sendMessage("NICK", nick)
-
-    def cmdUSER(self, ident, gecos):
-        # RFC2812 allows usermodes to be set, but this isn't implemented much in IRCds at all.
-        # Pass 0 for usermodes instead.
-        self.sendMessage("USER", ident, "0", "*", ":{}".format(gecos))
-
-    def cmdQUIT(self, reason):
-        self.sendMessage("QUIT", ":{}".format(reason))
-
     def disconnect(self, reason="Quitting...", fullDisconnect = False):
         # TODO: Find a better solution to full disconnects
-        self.cmdQUIT(reason)
+        self.outputHandler.cmdQUIT(reason)
         self.transport.fullDisconnect = fullDisconnect
         self.transport.loseConnection()
