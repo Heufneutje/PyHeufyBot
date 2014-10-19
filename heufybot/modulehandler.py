@@ -8,7 +8,7 @@ import heufybot.modules, importlib, logging
 class ModuleHandler(object):
     def __init__(self, bot):
         self.bot = bot
-        self.modules = []
+        self.loadedModules = []
         self.actions = {}
 
     def loadModule(self, name):
@@ -24,7 +24,7 @@ class ModuleHandler(object):
         # Make sure the module meets the requirements and is not already loaded
         if not IBotModule.providedBy(module):
             raise ModuleLoaderError("???", "Module doesn't implement the module interface")
-        if module.name in self.modules:
+        if module.name in self.loadedModules:
             raise ModuleLoaderError(module.name, "Module is already loaded")
 
         # We're good at this point so we can start initializing the module now
@@ -49,11 +49,19 @@ class ModuleHandler(object):
                             self.actions[action].append(actionData)
 
         # Add the module to the list of loaded modules and call its load hooks
-        self.modules[module.name] = module
+        self.loadedModules[module.name] = module
         module.load()
 
-    def unloadModule(self, name):
-        pass
+    def unloadModule(self, name, fullUnload=True):
+        if name not in self.loadedModules:
+            raise ModuleLoaderError(name, "The module is not loaded")
+        module = self.loadedModules[name]
+        if module.core and fullUnload:
+            raise ModuleLoaderError(name, "Core modules cannot be unloaded")
+        module.unload()
+        for action in module.actions():
+            self.actions[action[0]].remove((action[2], action[1]))
+        del self.loadedModules[name]
 
     def reloadModule(self, name):
         pass
@@ -61,12 +69,12 @@ class ModuleHandler(object):
     def _loadAllModules(self):
         requestedModules = self.bot.config.itemWithDefault("modules", [])
         for module in getPlugins(IBotModule, heufybot.modules):
-            if module.name in self.modules:
+            if module.name in self.loadedModules:
                 continue
             if module.core or module.name in requestedModules:
                 self._loadModuleData(module)
         for module in requestedModules:
-            if module not in self.modules:
+            if module not in self.loadedModules:
                 log.err("Module {} failed to load.".format(module), level=logging.ERROR)
 
 class ModuleLoaderError(Exception):
