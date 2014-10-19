@@ -26,7 +26,7 @@ class InputHandler(object):
                 keyValuePair = param.split("=")
                 tokens[keyValuePair[0]] = keyValuePair[1]
             if "CHANTYPES" in tokens:
-                self.connection.supportHelper.chantypes = tokens["CHANTYPES"]
+                self.connection.supportHelper.chanTypes = tokens["CHANTYPES"]
             if "CHANMODES" in tokens:
                 self.connection.supportHelper.chanModes.clear()
                 groups = tokens["CHANMODES"].split(",")

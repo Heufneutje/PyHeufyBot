@@ -27,4 +27,4 @@ class ISupport(object):
             "+": "v"
         }
         self.statusOrder = "ov"
-        self.chantypes = "#"
+        self.chanTypes = "#"
