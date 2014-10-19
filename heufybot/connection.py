@@ -2,6 +2,7 @@ from twisted.words.protocols import irc
 from twisted.python import log as twistedlog
 from heufybot.input import InputHandler
 from heufybot.output import OutputHandler
+from heufybot.supported import ISupport
 import logging
 
 
@@ -10,6 +11,7 @@ class HeufyBotConnection(irc.IRC):
         self.bot = bot
         self.inputHandler = InputHandler(self)
         self.outputHandler = OutputHandler(self)
+        self.supportHelper = ISupport()
         self.loggedIn = False
         self.name = None
         self.nick = None
