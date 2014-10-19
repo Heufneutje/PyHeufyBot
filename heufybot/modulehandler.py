@@ -64,7 +64,8 @@ class ModuleHandler(object):
         del self.loadedModules[name]
 
     def reloadModule(self, name):
-        pass
+        self.unloadModule(name, False)
+        self.loadModule(name)
 
     def _loadAllModules(self):
         requestedModules = self.bot.config.itemWithDefault("modules", [])
