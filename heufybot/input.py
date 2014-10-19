@@ -1,4 +1,6 @@
 from twisted.words.protocols import irc
+from heufybot.channel import IRCChannel
+from heufybot.user import IRCUser
 from heufybot.utils import isNumber, ModeType
 
 
@@ -9,6 +11,22 @@ class InputHandler(object):
     def handleCommand(self, command, prefix, params):
         if isNumber(command):
             self._handleNumeric(command, prefix, params)
+        elif command == "JOIN":
+            nick = prefix[:prefix.find("!")]
+            ident = prefix[prefix.find("!") + 1:prefix.find("@")]
+            host = prefix[prefix.find("@") + 1:]
+            if nick not in self.connection.users:
+                user = IRCUser(nick, ident, host)
+                self.connection.users[nick] = user
+            else:
+                user = self.connection.users[nick]
+            if params[0] not in self.connection.channels:
+                channel = IRCChannel(params[0])
+                self.connection.channels[params[0]] = channel
+            else:
+                channel = self.connection.channels[params[0]]
+            channel.users[nick] = user
+            channel.ranks[nick] = ""
         elif command == "PING":
             self.connection.outputHandler.cmdPONG(" ".join(params))
 

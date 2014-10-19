@@ -18,6 +18,7 @@ class HeufyBotConnection(irc.IRC):
         self.ident = None
         self.gecos = None
         self.channels = {}
+        self.users = {}
         self.usermodes = {}
 
     def connectionMade(self):
