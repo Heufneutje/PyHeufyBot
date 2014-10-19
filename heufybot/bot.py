@@ -2,6 +2,7 @@ from twisted.internet import reactor
 from twisted.python import log
 from heufybot.config import Config
 from heufybot.factory import HeufyBotFactory
+from heufybot.modulehandler import ModuleHandler
 import logging
 
 # Try to enable SSL support
@@ -16,6 +17,7 @@ class HeufyBot(object):
     def __init__(self, configFile):
         self.config = Config(configFile)
         self.connectionFactory = HeufyBotFactory(self)
+        self.moduleHandler = ModuleHandler(self)
         self.servers = {}
         self.startup()
 
@@ -25,7 +27,8 @@ class HeufyBot(object):
                     level=logging.WARNING)
         log.msg("Loading configuration file...")
         self.config.readConfig()
-        # TODO: Load modules here
+        log.msg("Loading modules...")
+        self.moduleHandler.loadAllModules()
         log.msg("Initiating connections...")
         self._initiateConnections()
         log.msg("Starting reactor...")

@@ -67,7 +67,7 @@ class ModuleHandler(object):
         self.unloadModule(name, False)
         self.loadModule(name)
 
-    def _loadAllModules(self):
+    def loadAllModules(self):
         requestedModules = self.bot.config.itemWithDefault("modules", [])
         for module in getPlugins(IBotModule, heufybot.modules):
             if module.name in self.loadedModules:
@@ -76,7 +76,7 @@ class ModuleHandler(object):
                 self._loadModuleData(module)
         for module in requestedModules:
             if module not in self.loadedModules:
-                log.err("Module {} failed to load.".format(module), level=logging.ERROR)
+                log.msg("Module {} failed to load.".format(module), level=logging.ERROR)
 
 class ModuleLoaderError(Exception):
     def __init__(self, module, message):
