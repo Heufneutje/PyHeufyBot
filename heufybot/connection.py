@@ -1,11 +1,14 @@
 from twisted.words.protocols import irc
 from twisted.python import log as twistedlog
+from heufybot.input import InputHandler
 import logging
 
 
 class HeufyBotConnection(irc.IRC):
     def __init__(self, bot):
         self.bot = bot
+        self.inputHandler = InputHandler(self)
+        self.loggedIn = False
         self.name = None
         self.nick = None
         self.ident = None
@@ -30,6 +33,7 @@ class HeufyBotConnection(irc.IRC):
 
     def handleCommand(self, command, prefix, params):
         self.log(prefix, command, " ".join(params), level=logging.DEBUG)
+        self.inputParser.handleCommand(command, prefix, params)
 
     def sendMessage(self, command, *parameter_list, **prefix):
         self.log(command, " ".join(parameter_list), level=logging.DEBUG)
