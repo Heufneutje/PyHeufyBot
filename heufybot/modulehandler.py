@@ -9,7 +9,7 @@ class ModuleHandler(object):
     def __init__(self, bot):
         self.bot = bot
         self.modules = []
-        self.actions = []
+        self.actions = {}
 
     def loadModule(self, name):
         for module in getPlugins(IBotModule, heufybot.modules):
@@ -26,8 +26,31 @@ class ModuleHandler(object):
             raise ModuleLoaderError("???", "Module doesn't implement the module interface")
         if module.name in self.modules:
             raise ModuleLoaderError(module.name, "Module is already loaded")
+
         # We're good at this point so we can start initializing the module now
         module.hookBot(self.bot)
+        actions = {}
+        for action in module.actions():
+            if action[0] not in actions:
+                actions[action[0]] = [ (action[2], action[1]) ]
+            else:
+                actions[action[0]].append((action[2], action[1]))
+
+        # Add the actions implemented by the module and sort them by priority
+        for action, actionList in actions.iteritems():
+            if action not in self.actions:
+                self.actions[action] = []
+                for actionData in actionList:
+                    for index, handlerData in enumerate(self.actions[action]):
+                        if handlerData[1] < actionData[1]:
+                            self.actions[action].insert(index, actionData)
+                            break
+                        else:
+                            self.actions[action].append(actionData)
+
+        # Add the module to the list of loaded modules and call its load hooks
+        self.modules[module.name] = module
+        module.load()
 
     def unloadModule(self, name):
         pass
