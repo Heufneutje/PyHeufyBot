@@ -34,6 +34,9 @@ class HeufyBotConnection(irc.IRC):
         self.gecos = self.bot.config.serverItemWithDefault(self.name, "realname", self.nick)
         self.log("Logging in as {}!{} :{}...".format(self.nick, self.ident, self.gecos))
         self.outputHandler.cmdNICK(self.nick)
+        password = self.bot.config.serverItemWithDefault(self.name, "password", None)
+        if password:
+            self.outputHandler.cmdPASS(password)
         self.outputHandler.cmdUSER(self.ident, self.gecos)
 
     def handleCommand(self, command, prefix, params):

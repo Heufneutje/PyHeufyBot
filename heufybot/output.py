@@ -11,6 +11,9 @@ class OutputHandler(object):
     def cmdNICK(self, nick):
         self.connection.sendMessage("NICK", nick)
 
+    def cmdPASS(self, password):
+        self.connection.sendMessage("PASS", ":{}".format(password))
+
     def cmdPING(self, message):
         self.connection.sendMessage("PING", ":{}".format(message))
 
