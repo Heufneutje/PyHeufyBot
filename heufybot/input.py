@@ -8,3 +8,5 @@ class InputHandler(object):
     def handleCommand(self, command, prefix, params):
         if command == irc.RPL_WELCOME:
             self.connection.loggedIn = True
+        elif command == "PING":
+            self.connection.outputHandler.cmdPONG(" ".join(params))

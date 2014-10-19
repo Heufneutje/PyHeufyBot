@@ -5,6 +5,12 @@ class OutputHandler(object):
     def cmdNICK(self, nick):
         self.connection.sendMessage("NICK", nick)
 
+    def cmdPING(self, message):
+        self.connection.sendMessage("PING", ":{}".format(message))
+
+    def cmdPONG(self, message):
+        self.connection.sendMessage("PONG", ":{}".format(message))
+
     def cmdQUIT(self, reason):
         self.connection.sendMessage("QUIT", ":{}".format(reason))
 
