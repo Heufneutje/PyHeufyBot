@@ -11,11 +11,17 @@ class OutputHandler(object):
     def cmdNICK(self, nick):
         self.connection.sendMessage("NICK", nick)
 
+    def cmdNOTICE(self, target, message):
+        self.connection.sendMessage("NOTICE", target, ":{}".format(message))
+
     def cmdPASS(self, password):
         self.connection.sendMessage("PASS", ":{}".format(password))
 
     def cmdPING(self, message):
         self.connection.sendMessage("PING", ":{}".format(message))
+
+    def cmdPRIVMSG(self, target, message):
+        self.connection.sendMessage("PRIVMSG", target, ":{}".format(message))
 
     def cmdPONG(self, message):
         self.connection.sendMessage("PONG", ":{}".format(message))
