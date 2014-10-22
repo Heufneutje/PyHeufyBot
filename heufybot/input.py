@@ -44,7 +44,10 @@ class InputHandler(object):
             # The first param is our prefix and the last one is ":are supported by this server"
             for param in params[1:len(params) - 1]:
                 keyValuePair = param.split("=")
-                tokens[keyValuePair[0]] = keyValuePair[1]
+                if len(keyValuePair) > 1:
+                    tokens[keyValuePair[0]] = keyValuePair[1]
+                else:
+                    tokens[keyValuePair[0]] = ""
             if "CHANTYPES" in tokens:
                 self.connection.supportHelper.chanTypes = tokens["CHANTYPES"]
             if "CHANMODES" in tokens:
