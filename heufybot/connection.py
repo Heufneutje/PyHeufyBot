@@ -47,7 +47,7 @@ class HeufyBotConnection(irc.IRC):
         self.inputHandler.handleCommand(command, prefix, params)
 
     def sendMessage(self, command, *parameter_list, **prefix):
-        self.connection.bot.moduleHandler.runGenericAction("sendcommand-".format(command), *parameter_list)
+        self.bot.moduleHandler.runGenericAction("sendcommand-".format(command), *parameter_list)
         self.log(command, " ".join(parameter_list), level=logging.DEBUG)
         irc.IRC.sendMessage(self, command, *parameter_list, **prefix)
 
