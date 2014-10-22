@@ -78,6 +78,13 @@ class ModuleHandler(object):
             if module not in self.loadedModules:
                 log.msg("Module {} failed to load.".format(module), level=logging.ERROR)
 
+    def runGenericAction(self, actionName, *params, **kw):
+        actionList = []
+        if actionName in self.actions:
+            actionList = self.actions[actionName]
+        for action in actionList:
+            action[0](*params, **kw)
+
 class ModuleLoaderError(Exception):
     def __init__(self, module, message):
         self.module = module
