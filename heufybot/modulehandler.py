@@ -8,7 +8,7 @@ import heufybot.modules, importlib, logging
 class ModuleHandler(object):
     def __init__(self, bot):
         self.bot = bot
-        self.loadedModules = []
+        self.loadedModules = {}
         self.actions = {}
 
     def loadModule(self, name):
