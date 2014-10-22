@@ -27,12 +27,14 @@ class InputHandler(object):
                 channel = self.connection.channels[params[0]]
             channel.users[nick] = user
             channel.ranks[nick] = ""
+            self.connection.bot.moduleHandler.runGenericAction("channeljoin", channel)
         elif command == "PING":
             self.connection.outputHandler.cmdPONG(" ".join(params))
 
     def _handleNumeric(self, numeric, prefix, params):
         if numeric == irc.RPL_WELCOME:
             self.connection.loggedIn = True
+            self.connection.bot.moduleHandler.runGenericAction("welcome", self.connection.name)
         elif numeric == irc.RPL_MYINFO:
             self.connection.supportHelper.serverName = params[1]
             self.connection.supportHelper.serverVersion = params[2]

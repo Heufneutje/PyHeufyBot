@@ -22,6 +22,8 @@ class HeufyBotConnection(irc.IRC):
         self.usermodes = {}
 
     def connectionMade(self):
+        self.bot.moduleHandler.runGenericAction("connect", self.name)
+
         # Connection finalizing
         self.name = self.transport.addr[0]
         self.log("Connection established.")
@@ -40,10 +42,12 @@ class HeufyBotConnection(irc.IRC):
         self.outputHandler.cmdUSER(self.ident, self.gecos)
 
     def handleCommand(self, command, prefix, params):
+        self.bot.moduleHandler.runGenericAction("receivecommand-".format(command), params)
         self.log(prefix, command, " ".join(params), level=logging.DEBUG)
         self.inputHandler.handleCommand(command, prefix, params)
 
     def sendMessage(self, command, *parameter_list, **prefix):
+        self.connection.bot.moduleHandler.runGenericAction("sendcommand-".format(command), *parameter_list)
         self.log(command, " ".join(parameter_list), level=logging.DEBUG)
         irc.IRC.sendMessage(self, command, *parameter_list, **prefix)
 

@@ -51,6 +51,7 @@ class ModuleHandler(object):
         # Add the module to the list of loaded modules and call its load hooks
         self.loadedModules[module.name] = module
         module.load()
+        self.runGenericAction("moduleload", module.name)
 
     def unloadModule(self, name, fullUnload=True):
         if name not in self.loadedModules:
@@ -59,6 +60,7 @@ class ModuleHandler(object):
         if module.core and fullUnload:
             raise ModuleLoaderError(name, "Core modules cannot be unloaded")
         module.unload()
+        self.runGenericAction("moduleunload", module.name)
         for action in module.actions():
             self.actions[action[0]].remove((action[2], action[1]))
         del self.loadedModules[name]
