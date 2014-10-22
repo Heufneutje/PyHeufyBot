@@ -41,7 +41,7 @@ class ModuleHandler(object):
             if action not in self.actions:
                 self.actions[action] = []
                 for actionData in actionList:
-                    for index, handlerData in enumerate(self.actions[action]):
+                    for index, handlerData in enumerate(actions[action]):
                         if handlerData[1] < actionData[1]:
                             self.actions[action].insert(index, actionData)
                             break
