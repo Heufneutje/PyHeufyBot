@@ -81,7 +81,6 @@ class ModuleHandler(object):
                 log.msg("Module {} failed to load.".format(module), level=logging.ERROR)
 
     def runGenericAction(self, actionName, *params, **kw):
-        log.msg(actionName, *params, level=logging.DEBUG)
         actionList = []
         if actionName in self.actions:
             actionList = self.actions[actionName]
