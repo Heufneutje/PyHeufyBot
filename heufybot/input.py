@@ -32,7 +32,7 @@ class InputHandler(object):
                 channel = self.connection.channels[params[0]]
             channel.users[nick] = user
             channel.ranks[nick] = ""
-            self.connection.bot.moduleHandler.runGenericAction("channeljoin", channel)
+            self.connection.bot.moduleHandler.runGenericAction("channeljoin", self.connection.name, channel, user)
         elif command == "PART":
             if params[0] not in self.connection.channels:
                 self.connection.log("Received a PART message for unknown channel {}.".format(params[0]),
@@ -45,7 +45,7 @@ class InputHandler(object):
                 return
             user = self.connection.users[nick]
             # We need to run the action before we actually get rid of the user
-            self.connection.bot.moduleHandler.runGenericAction("channelpart", channel)
+            self.connection.bot.moduleHandler.runGenericAction("channelpart", self.connection.name, channel, user)
             del channel.users[nick]
             del channel.ranks[nick]
 
