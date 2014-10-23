@@ -59,9 +59,13 @@ class InputHandler(object):
                 self.connection.log("Received a PART message for unknown user {} in channel {}.".format(nick, params[0]),
                                     level=logging.WARNING)
                 return
+            reason = ""
+            if len(params) > 1:
+                reason = params[1]
             user = self.connection.users[nick]
             # We need to run the action before we actually get rid of the user
-            self.connection.bot.moduleHandler.runGenericAction("channelpart", self.connection.name, channel, user)
+            self.connection.bot.moduleHandler.runGenericAction("channelpart", self.connection.name, channel, user,
+                                                               reason)
             del channel.users[nick]
             del channel.ranks[nick]
 
