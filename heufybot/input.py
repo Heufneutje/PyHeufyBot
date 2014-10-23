@@ -136,3 +136,8 @@ class InputHandler(object):
                     self.connection.supportHelper.statusModes[modes[i]] = symbols[i]
                     self.connection.supportHelper.statusSymbols[symbols[i]] = modes[i]
             self.connection.supportHelper.rawTokens.update(tokens)
+        elif numeric == irc.ERR_NICKNAMEINUSE:
+            newNick = "{}_".format(self.connection.nick)
+            self.connection.log("Nickname {} is in use, retrying with {} ...".format(self.connection.nick, newNick))
+            self.connection.nick = newNick
+            self.connection.outputHandler.cmdNICK(self.connection.nick)
