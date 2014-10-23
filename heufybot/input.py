@@ -1,7 +1,7 @@
 from twisted.words.protocols import irc
 from heufybot.channel import IRCChannel
 from heufybot.user import IRCUser
-from heufybot.utils import isNumber, ModeType, parseUserPrefix
+from heufybot.utils import isNumber, ModeType, parseUserPrefix, timeutils
 import logging
 
 
@@ -18,6 +18,7 @@ class InputHandler(object):
         nick = parsedPrefix[0]
         ident = parsedPrefix[1]
         host = parsedPrefix[2]
+        moduleHandler = self.connection.bot.moduleHandler
 
         if command == "JOIN":
             if nick not in self.connection.users:
@@ -32,7 +33,7 @@ class InputHandler(object):
                 channel = self.connection.channels[params[0]]
             channel.users[nick] = user
             channel.ranks[nick] = ""
-            self.connection.bot.moduleHandler.runGenericAction("channeljoin", self.connection.name, channel, user)
+            moduleHandler.runGenericAction("channeljoin", self.connection.name, channel, user)
         elif command == "NICK":
             if nick not in self.connection.users:
                 self.connection.log("Received a NICK message for unknown user {}.".format(nick), level=logging.WARNING)
@@ -50,7 +51,7 @@ class InputHandler(object):
                     del channel.ranks[nick]
             if nick == self.connection.nick:
                 self.connection.nick = newNick
-            self.connection.bot.moduleHandler.runGenericAction("changenick", self.connection.name, user, nick, newNick)
+            moduleHandler.runGenericAction("changenick", self.connection.name, user, nick, newNick)
         elif command == "PART":
             if params[0] not in self.connection.channels:
                 self.connection.log("Received a PART message for unknown channel {}.".format(params[0]),
@@ -66,8 +67,7 @@ class InputHandler(object):
                 reason = params[1]
             user = self.connection.users[nick]
             # We need to run the action before we actually get rid of the user
-            self.connection.bot.moduleHandler.runGenericAction("channelpart", self.connection.name, channel, user,
-                                                               reason)
+            moduleHandler.runGenericAction("channelpart", self.connection.name, channel, user, reason)
             del channel.users[nick]
             del channel.ranks[nick]
 
@@ -81,6 +81,22 @@ class InputHandler(object):
                 del self.connection.users[nick]
         elif command == "PING":
             self.connection.outputHandler.cmdPONG(" ".join(params))
+        elif command == "TOPIC":
+            if params[0] not in self.connection.channels:
+                self.connection.log("Received a TOPIC message for unknown channel {}.".format(params[0]),
+                                    level=logging.WARNING)
+                return
+            channel = self.connection.channels[params[0]]
+            if nick not in self.connection.users:
+                # A user that's not in the channel can change the topic so let's make a temporary user.
+                user = IRCUser(nick, ident, host)
+            else:
+                user = self.connection.users[nick]
+            oldTopic = channel.topic
+            channel.topic = params[1]
+            channel.topicSetter = user.fullUserPrefix()
+            channel.topicTimestamp = timeutils.timestamp(timeutils.now())
+            moduleHandler.runGenericAction("changetopic", self.connection.name, channel, oldTopic, params[1])
         elif command == "QUIT":
             if nick not in self.connection.users:
                 self.connection.log("Received a QUIT message for unknown user {}.".format(nick), level=logging.WARNING)
@@ -89,7 +105,7 @@ class InputHandler(object):
             if len(params) > 0:
                 reason = params[0]
             user = self.connection.users[nick]
-            self.connection.bot.moduleHandler.runGenericAction("userquit", self.connection.name, user, reason)
+            moduleHandler.runGenericAction("userquit", self.connection.name, user, reason)
             del self.connection.users[nick]
             for channel in self.connection.channels.itervalues():
                 if nick in channel.users:
