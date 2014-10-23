@@ -48,6 +48,8 @@ class InputHandler(object):
                     channel.ranks[newNick] = channel.ranks[nick]
                     del channel.users[nick]
                     del channel.ranks[nick]
+            if nick == self.connection.nick:
+                self.connection.nick = newNick
             self.connection.bot.moduleHandler.runGenericAction("changenick", self.connection.name, user, nick, newNick)
         elif command == "PART":
             if params[0] not in self.connection.channels:
