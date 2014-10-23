@@ -11,3 +11,14 @@ def isNumber(s):
         return True
     except ValueError:
         return False
+
+def parseUserPrefix(prefix):
+    if "!" in prefix:
+        nick = prefix[:prefix.find("!")]
+        ident = prefix[prefix.find("!") + 1:prefix.find("@")]
+        host = prefix[prefix.find("@") + 1:]
+        return nick, ident, host
+
+    # Not all "users" have idents and hostnames
+    nick = prefix
+    return nick, None, None
