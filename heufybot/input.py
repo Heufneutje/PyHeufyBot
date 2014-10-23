@@ -57,9 +57,22 @@ class InputHandler(object):
                     break
             if lastCommon:
                 del self.connection.users[nick]
-
         elif command == "PING":
             self.connection.outputHandler.cmdPONG(" ".join(params))
+        elif command == "QUIT":
+            if nick not in self.connection.users:
+                self.connection.log("Received a QUIT message for unknown user {}.".format(nick), level=logging.WARNING)
+                return
+            reason = ""
+            if len(params) > 0:
+                reason = params[0]
+            user = self.connection.users[nick]
+            self.connection.bot.moduleHandler.runGenericAction("userquit", self.connection.name, user, reason)
+            del self.connection.users[nick]
+            for channel in self.connection.channels.itervalues():
+                if nick in channel.users:
+                    del channel.users[nick]
+                    del channel.ranks[nick]
 
     def _handleNumeric(self, numeric, prefix, params):
         if numeric == irc.RPL_WELCOME:
