@@ -2,6 +2,7 @@ from twisted.words.protocols import irc
 from heufybot.channel import IRCChannel
 from heufybot.user import IRCUser
 from heufybot.utils import isNumber, ModeType, parseUserPrefix
+import logging
 
 
 class InputHandler(object):
@@ -32,6 +33,31 @@ class InputHandler(object):
             channel.users[nick] = user
             channel.ranks[nick] = ""
             self.connection.bot.moduleHandler.runGenericAction("channeljoin", channel)
+        elif command == "PART":
+            if params[0] not in self.connection.channels:
+                self.connection.log("Received a PART message for unknown channel {}.".format(params[0]),
+                                    level=logging.WARNING)
+                return
+            channel = self.connection.channels[params[0]]
+            if nick not in channel.users:
+                self.connection.log("Received a PART message for unknown user {} in channel {}.".format(nick, params[0]),
+                                    level=logging.WARNING)
+                return
+            user = self.connection.users[nick]
+            # We need to run the action before we actually get rid of the user
+            self.connection.bot.moduleHandler.runGenericAction("channelpart", channel)
+            del channel.users[nick]
+            del channel.ranks[nick]
+
+            # Clean up the user if they just left the last common channel
+            lastCommon = True
+            for channel in self.connection.channels.itervalues():
+                if nick in channel.users:
+                    lastCommon = False
+                    break
+            if lastCommon:
+                del self.connection.users[nick]
+
         elif command == "PING":
             self.connection.outputHandler.cmdPONG(" ".join(params))
 
