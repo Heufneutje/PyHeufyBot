@@ -33,6 +33,22 @@ class InputHandler(object):
             channel.users[nick] = user
             channel.ranks[nick] = ""
             self.connection.bot.moduleHandler.runGenericAction("channeljoin", self.connection.name, channel, user)
+        elif command == "NICK":
+            if nick not in self.connection.users:
+                self.connection.log("Received a NICK message for unknown user {}.".format(nick), level=logging.WARNING)
+                return
+            user = self.connection.users[nick]
+            newNick = params[0]
+            user.nick = newNick
+            self.connection.users[newNick] = user
+            del self.connection.users[nick]
+            for channel in self.connection.channels.itervalues():
+                if nick in channel.users:
+                    channel.users[newNick] = user
+                    channel.ranks[newNick] = channel.ranks[nick]
+                    del channel.users[nick]
+                    del channel.ranks[nick]
+            self.connection.bot.moduleHandler.runGenericAction("changenick", self.connection.name, user, nick, newNick)
         elif command == "PART":
             if params[0] not in self.connection.channels:
                 self.connection.log("Received a PART message for unknown channel {}.".format(params[0]),
