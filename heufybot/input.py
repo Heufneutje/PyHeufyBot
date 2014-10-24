@@ -154,6 +154,31 @@ class InputHandler(object):
                     self.connection.supportHelper.statusModes[modes[i]] = symbols[i]
                     self.connection.supportHelper.statusSymbols[symbols[i]] = modes[i]
             self.connection.supportHelper.rawTokens.update(tokens)
+        elif numeric == irc.RPL_NAMREPLY:
+            channel = self.connection.channels[params[2]]
+            if channel.userlistComplete:
+                channel.userlistComplete = False
+                channel.users.clear()
+                channel.ranks.clear()
+            for userPrefix in params[3].split(" "):
+                parsedPrefix = parseUserPrefix(userPrefix)
+                nick = parsedPrefix[0]
+                ranks = ""
+                while nick[0] in self.connection.supportHelper.statusSymbols:
+                    ranks += self.connection.supportHelper.statusSymbols[nick[0]]
+                    nick = nick[1:]
+                if nick in self.connection.users:
+                    user = self.connection.users[nick]
+                    user.ident = parsedPrefix[1]
+                    user.host = parsedPrefix[2]
+                else:
+                    user = IRCUser(nick, parsedPrefix[1], parsedPrefix[2])
+                    self.connection.users[nick] = user
+                channel.users[nick] = user
+                channel.ranks[nick] = ranks
+        elif numeric == irc.RPL_ENDOFNAMES:
+            channel = self.connection.channels[params[1]]
+            channel.userlistComplete = True
         elif numeric == irc.ERR_NICKNAMEINUSE:
             newNick = "{}_".format(self.connection.nick)
             self.connection.log("Nickname {} is in use, retrying with {} ...".format(self.connection.nick, newNick))
