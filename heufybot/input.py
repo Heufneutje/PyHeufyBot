@@ -160,7 +160,7 @@ class InputHandler(object):
                 channel.userlistComplete = False
                 channel.users.clear()
                 channel.ranks.clear()
-            for userPrefix in params[3].split(" "):
+            for userPrefix in params[3].split():
                 parsedPrefix = parseUserPrefix(userPrefix)
                 nick = parsedPrefix[0]
                 ranks = ""
