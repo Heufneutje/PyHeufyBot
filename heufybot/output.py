@@ -8,6 +8,9 @@ class OutputHandler(object):
                 channels[i] = "#{}".format(channels[i])
         self.connection.sendMessage("JOIN", ",".join(channels), ",".join(keys))
 
+    def cmdNAMES(self, channel):
+        self.connection.sendMessage("NAMES", channel)
+
     def cmdNICK(self, nick):
         self.connection.sendMessage("NICK", nick)
 
