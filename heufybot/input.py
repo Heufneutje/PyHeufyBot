@@ -28,6 +28,7 @@ class InputHandler(object):
                 user = self.connection.users[nick]
             if params[0] not in self.connection.channels:
                 channel = IRCChannel(params[0])
+                self.connection.outputHandler.cmdWHO(params[0])
                 self.connection.channels[params[0]] = channel
             else:
                 channel = self.connection.channels[params[0]]
@@ -179,6 +180,27 @@ class InputHandler(object):
         elif numeric == irc.RPL_ENDOFNAMES:
             channel = self.connection.channels[params[1]]
             channel.userlistComplete = True
+        elif numeric == irc.RPL_WHOREPLY:
+            if params[5] not in self.connection.users:
+                self.connection.log("Received a WHO reply for unknown user {}.".format(params[5]),
+                                    level=logging.WARNING)
+                return
+            user = self.connection.users[params[5]]
+            user.ident = params[2]
+            user.host = params[3]
+            user.server = params[4]
+            flags = list(params[6])
+            if flags.pop(0) == "G":
+                user.isAway = True
+            if len(flags) > 0 and flags.pop(0) == "*":
+                user.isOper = True
+            if params[1] in self.connection.channels:
+                channel = self.connection.channels[params[1]]
+                channel.ranks[params[5]] = ""
+                for status in flags:
+                    channel.ranks[params[5]] += self.connection.supportHelper.statusSymbols[status]
+            user.hops = int(params[7].split()[0])
+            user.gecos = params[7].split()[1]
         elif numeric == irc.ERR_NICKNAMEINUSE:
             newNick = "{}_".format(self.connection.nick)
             self.connection.log("Nickname {} is in use, retrying with {} ...".format(self.connection.nick, newNick))

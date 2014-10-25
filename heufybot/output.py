@@ -36,3 +36,8 @@ class OutputHandler(object):
         # RFC2812 allows usermodes to be set, but this isn't implemented much in IRCds at all.
         # Pass 0 for usermodes instead.
         self.connection.sendMessage("USER", ident, "0", "*", ":{}".format(gecos))
+
+    def cmdWHO(self, mask):
+        if not mask:
+            mask = "*"
+        self.connection.sendMessage("WHO", mask)
