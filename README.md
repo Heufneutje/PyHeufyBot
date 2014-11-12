@@ -19,7 +19,7 @@ RE_HeufyBot's flaws
 ===================
 
 RE_HeufyBot was an interesting project for me since I didn't use any IRC libraries and had to figure
-but everything in the core myself. Mainly because it was my first stab at writing things like 
+out everything in the core myself. Mainly because it was my first stab at writing things like 
 this, or writing an IRC bot from scratch in general, the project had some fundamental design flaws.
 The biggest flaws were the broken config files, sockets breaking when trying to reconnect after
 losing connection, the lack of a message class and the late implementation of multiserver. This last
@@ -35,7 +35,7 @@ Design goals for PyHeufyBot
 ===========================
 
 - Multiserver. Make the bot connect to multiple servers from the start and build the core to handle
-  these mutliple connections right from the start.
+  these mutliple connections.
 - A well defined module API. I would like the module API to do what RE_HeufyBot's API should have
   done in the first place; allowing for events to be caught and have the bot execute certain 
   features based on those through its modules.
@@ -43,7 +43,5 @@ Design goals for PyHeufyBot
   and also how modules can interact with other modules. This is based on the action system used in
   [txircd](https://github.com/DesertBus/txircd) and ElementalAlchemist deserves credit for it.
 - Better control over connections. With RE_HeufyBot it was impossible to start any new connections 
-  after the config files had been loaded. Reconnecting was impossible as stated before. 
-  By making use of a Twisted factory, this should go a lot smoother.
-
-I might add more to this as time goes on, if any more ideas pop into my head.
+  after the config files had been loaded. Reconnecting was impossible as stated before. By making 
+  use of a Twisted factory, this should go a lot smoother.
