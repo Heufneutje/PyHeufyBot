@@ -11,10 +11,10 @@ class LevelLoggingObserver(log.FileLogObserver):
         self.emit(eventDict)
 
     def emit(self, eventDict):
-        if eventDict['isError']:
+        if eventDict["isError"]:
             level = logging.ERROR
-        elif 'level' in eventDict:
-            level = eventDict['level']
+        elif "level" in eventDict:
+            level = eventDict["level"]
         else:
             level = logging.INFO
         if level < self.logLevel:
