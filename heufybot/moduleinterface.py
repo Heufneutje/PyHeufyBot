@@ -4,6 +4,8 @@ from zope.interface import Attribute, Interface
 class IBotModule(Interface):
     name = Attribute("The module's name.")
     core = Attribute("Whether or not a module is a core module. False by default.")
+    blacklistable = Attribute("Whether or not this module can be blacklisted on a specific server. True by default. " \
+                               "Core module override this flag and cannot be blacklisted for any server.")
 
     def hookBot(bot):
         """
@@ -32,6 +34,7 @@ class IBotModule(Interface):
 
 class BotModule(object):
     core = False
+    blacklistable = True
 
     def hookBot(self, bot):
         pass

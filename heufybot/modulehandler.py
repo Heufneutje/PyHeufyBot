@@ -80,6 +80,23 @@ class ModuleHandler(object):
             if module not in self.loadedModules:
                 log.msg("Module {} failed to load.".format(module), level=logging.ERROR)
 
+    def useModuleOnServer(self, moduleName, serverName):
+        if moduleName not in self.loadedModules:
+            # A module gave us a bogus name. Reject it to prevent weird things.
+            return False
+        if self.loadedModules[moduleName].core:
+            # Core modules can never be blacklisted.
+            return True
+        if not self.loadedModules[moduleName].blacklistable:
+            # Modules that can't be blacklisted are also always allowed.
+            return True
+        if "module_blacklist" not in self.bot.config["servers"][serverName]:
+            # This server doesn't specify a blacklist, so all modules are allowed.
+            return True
+        if moduleName not in self.bot.config["servers"][serverName]["module_blacklist"]:
+            return True
+        return False
+
     def runGenericAction(self, actionName, *params, **kw):
         actionList = []
         if actionName in self.actions:

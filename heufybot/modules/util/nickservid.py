@@ -16,6 +16,9 @@ class NickServIdentify(BotModule):
         return [ ("welcome", 1, self.identify) ]
 
     def identify(self, serverName):
+        if not self.bot.moduleHandler.useModuleOnServer(self.name, serverName):
+            return
+
         nsSettings = self.bot.config.serverItemWithDefault(serverName, "NickServIdentify", {})
         if "nick" not in nsSettings:
             nick = "NickServ"
