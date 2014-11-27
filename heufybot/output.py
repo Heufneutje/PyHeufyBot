@@ -3,6 +3,7 @@ class OutputHandler(object):
         self.connection = connection
 
     def cmdJOIN(self, channels, keys=[]):
+        keys = ["" if not key else key for key in keys]
         for i in range(len(channels)):
             if channels[i][0] not in self.connection.supportHelper.chanTypes:
                 channels[i] = "#{}".format(channels[i])
