@@ -117,6 +117,9 @@ class InputHandler(object):
         if numeric == irc.RPL_WELCOME:
             self.connection.loggedIn = True
             self.connection.bot.moduleHandler.runGenericAction("welcome", self.connection.name)
+            channels = self.connection.bot.config.serverItemWithDefault(self.connection.name, "channels", {})
+            if len(channels) > 0:
+                self.connection.outputHandler.cmdJOIN(channels.keys(), channels.values())
         elif numeric == irc.RPL_MYINFO:
             self.connection.supportHelper.serverName = params[1]
             self.connection.supportHelper.serverVersion = params[2]
