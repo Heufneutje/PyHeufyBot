@@ -2,10 +2,16 @@ class OutputHandler(object):
     def __init__(self, connection):
         self.connection = connection
 
+    def cmdINVITE(self, user, channel):
+        self.connection.sendMessage("INVITE", user, channel)
+
     def cmdJOIN(self, channel, key=""):
         if channel[0] not in self.connection.supportHelper.chanTypes:
             channel = "#{}".format(channel)
         self.connection.sendMessage("JOIN", channel, key)
+
+    def cmdKICK(self, channel, user, reason=""):
+        self.connection.sendMessage("KICK", channel, user, ":{}".format(reason))
 
     def cmdNAMES(self, channel):
         self.connection.sendMessage("NAMES", channel)
@@ -15,6 +21,9 @@ class OutputHandler(object):
 
     def cmdNOTICE(self, target, message):
         self.connection.sendMessage("NOTICE", target, ":{}".format(message))
+
+    def cmdPART(self, channel, reason=""):
+        self.connection.sendMessage("PART", channel, ":{}".format(reason))
 
     def cmdPASS(self, password):
         self.connection.sendMessage("PASS", ":{}".format(password))
@@ -27,6 +36,9 @@ class OutputHandler(object):
 
     def cmdPONG(self, message):
         self.connection.sendMessage("PONG", ":{}".format(message))
+
+    def cmdTOPIC(self, channel, topic):
+        self.connection.sendMessage("TOPIC", channel, ":{}".format(topic))
 
     def cmdQUIT(self, reason):
         self.connection.sendMessage("QUIT", ":{}".format(reason))
