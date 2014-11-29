@@ -33,6 +33,7 @@ class InputHandler(object):
             if params[0] not in self.connection.channels:
                 channel = IRCChannel(params[0], self.connection)
                 self.connection.outputHandler.cmdWHO(params[0])
+                self.connection.outputHandler.cmdMODE(params[0])
                 self.connection.channels[params[0]] = channel
             else:
                 channel = self.connection.channels[params[0]]
@@ -223,6 +224,7 @@ class InputHandler(object):
                     del channel.ranks[nick]
 
     def handleNumeric(self, numeric, prefix, params):
+        moduleHandler = self.connection.bot.moduleHandler
         if numeric == irc.RPL_WELCOME:
             self.connection.loggedIn = True
             self.connection.bot.moduleHandler.runGenericAction("welcome", self.connection.name)
@@ -269,6 +271,15 @@ class InputHandler(object):
                     self.connection.supportHelper.statusModes[modes[i]] = symbols[i]
                     self.connection.supportHelper.statusSymbols[symbols[i]] = modes[i]
             self.connection.supportHelper.rawTokens.update(tokens)
+
+        elif numeric == irc.RPL_CHANNELMODEIS:
+            channel = self.connection.channels[params[1]]
+            modeParams = params[3].split() if len(params) > 3 else []
+            modes = channel.setModes(params[2], modeParams)
+            if not modes:
+                return
+            moduleHandler.runGenericAction("modes-channel", self.connection.name, channel, modes["added"],
+                                           modes["addedParams"])
 
         elif numeric == irc.RPL_NAMREPLY:
             channel = self.connection.channels[params[2]]
