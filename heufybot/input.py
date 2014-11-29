@@ -51,6 +51,28 @@ class InputHandler(object):
                 self.connection.nick = newNick
             moduleHandler.runGenericAction("changenick", self.connection.name, user, nick, newNick)
 
+        elif command == "NOTICE":
+            user = None
+            if params[0][0] in self.connection.supportHelper.chanTypes:
+                if params[0] in self.connection.channels:
+                    source = self.connection.channels[params[0]]
+                else:
+                    # We got a notice for an unknown channel. Create a temporary IRCChannel object for it.
+                    source = IRCChannel(params[0])
+                if nick in self.connection.users:
+                    user = self.connection.users[nick]
+                else:
+                    user = IRCUser(nick, ident, host)
+            elif nick in self.connection.users:
+                source = self.connection.users[nick]
+            else:
+                # We got a notice from an unknown user. Create a temporary IRCUser object for them.
+                source = IRCUser(nick, ident, host)
+            if isinstance(source, IRCChannel):
+                moduleHandler.runGenericAction("notice-channel", self.connection, source, user, params[1])
+            else:
+                moduleHandler.runGenericAction("notice-user", self.connection, source, params[1])
+
         elif command == "PART":
             if params[0] not in self.connection.channels:
                 self.connection.log("Received a PART message for unknown channel {}.".format(params[0]),
