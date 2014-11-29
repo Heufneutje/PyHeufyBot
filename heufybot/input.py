@@ -32,6 +32,30 @@ class InputHandler(object):
             channel.ranks[nick] = ""
             moduleHandler.runGenericAction("channeljoin", self.connection.name, channel, user)
 
+        elif command == "KICK":
+            if params[0] not in self.connection.channels:
+                self.connection.log("Received KICK message for unknown channel {}.".format(params[0]),
+                                    level=logging.WARNING)
+                return
+            channel = self.connection.channels[params[0]]
+            if params[1] not in channel.users:
+                self.connection.log("Received KICK message for unknown user {} in channel {}.".format(nick, params[0]),
+                                    level=logging.WARNING)
+                return
+            if nick not in self.connection.users:
+                # Technically opers could KICK a user despite not being in the channel themselves
+                kicker = IRCUser(nick, ident, host)
+            else:
+                kicker = self.connection.users[nick]
+            kicked = self.connection.users[nick]
+            reason = ""
+            if len(params) > 2:
+                reason = params[2]
+            # We need to run the action before we actually get rid of the user
+            moduleHandler.runGenericAction("channelkick", self.connection.name, channel, kicker, kicked, reason)
+            del channel.users[kicked]
+            del channel.ranks[kicked]
+
         elif command == "NICK":
             if nick not in self.connection.users:
                 self.connection.log("Received NICK message for unknown user {}.".format(nick), level=logging.WARNING)
