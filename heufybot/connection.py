@@ -3,6 +3,7 @@ from twisted.python import log as twistedlog
 from heufybot.input import InputHandler
 from heufybot.output import OutputHandler
 from heufybot.supported import ISupport
+from weakref import WeakValueDictionary
 import logging
 
 
@@ -18,7 +19,7 @@ class HeufyBotConnection(irc.IRC):
         self.ident = None
         self.gecos = None
         self.channels = {}
-        self.users = {}
+        self.users = WeakValueDictionary()
         self.usermodes = {}
 
     def connectionMade(self):

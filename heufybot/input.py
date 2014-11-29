@@ -71,15 +71,6 @@ class InputHandler(object):
             moduleHandler.runGenericAction("channelpart", self.connection.name, channel, user, reason)
             del channel.users[nick]
             del channel.ranks[nick]
-
-            # Clean up the user if they just left the last common channel
-            lastCommon = True
-            for channel in self.connection.channels.itervalues():
-                if nick in channel.users:
-                    lastCommon = False
-                    break
-            if lastCommon:
-                del self.connection.users[nick]
         elif command == "PING":
             self.connection.outputHandler.cmdPONG(" ".join(params))
         elif command == "TOPIC":
@@ -107,7 +98,6 @@ class InputHandler(object):
                 reason = params[0]
             user = self.connection.users[nick]
             moduleHandler.runGenericAction("userquit", self.connection.name, user, reason)
-            del self.connection.users[nick]
             for channel in self.connection.channels.itervalues():
                 if nick in channel.users:
                     del channel.users[nick]
