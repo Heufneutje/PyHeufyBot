@@ -16,7 +16,15 @@ class InputHandler(object):
         host = parsedPrefix[2]
         moduleHandler = self.connection.bot.moduleHandler
 
-        if command == "JOIN":
+        if command == "INVITE":
+            if nick in self.connection.users:
+                inviter = self.connection.users[nick]
+            else:
+                inviter = IRCUser(nick, ident, host)
+            self.connection.bot.moduleHandler.runGenericAction("channelinvite", params[1], inviter)
+            self.connection.outputHandler.cmdJOIN(params[1])
+
+        elif command == "JOIN":
             if nick not in self.connection.users:
                 user = IRCUser(nick, ident, host)
                 self.connection.users[nick] = user
