@@ -3,6 +3,7 @@ from twisted.python import log as twistedlog
 from heufybot.input import InputHandler
 from heufybot.output import OutputHandler
 from heufybot.supported import ISupport
+from heufybot.utils import isNumber
 from weakref import WeakValueDictionary
 import logging
 
@@ -43,9 +44,13 @@ class HeufyBotConnection(irc.IRC):
         self.outputHandler.cmdUSER(self.ident, self.gecos)
 
     def handleCommand(self, command, prefix, params):
-        self.bot.moduleHandler.runGenericAction("receivecommand-{}".format(command), params)
         self.log(prefix, command, " ".join(params), level=logging.DEBUG)
-        self.inputHandler.handleCommand(command, prefix, params)
+        if isNumber(command):
+            self.bot.moduleHandler.runGenericAction("receivenumeric-{}".format(command), params)
+            self.inputHandler.handleNumeric(command, prefix, params)
+        else:
+            self.bot.moduleHandler.runGenericAction("receivecommand-{}".format(command), params)
+            self.inputHandler.handleCommand(command, prefix, params)
 
     def sendMessage(self, command, *parameter_list, **prefix):
         self.bot.moduleHandler.runGenericAction("sendcommand-{}".format(command), *parameter_list)

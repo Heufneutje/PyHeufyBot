@@ -1,7 +1,7 @@
 from twisted.words.protocols import irc
 from heufybot.channel import IRCChannel
 from heufybot.user import IRCUser
-from heufybot.utils import isNumber, ModeType, parseUserPrefix, timeutils
+from heufybot.utils import ModeType, parseUserPrefix, timeutils
 import logging
 
 
@@ -10,10 +10,6 @@ class InputHandler(object):
         self.connection = connection
 
     def handleCommand(self, command, prefix, params):
-        if isNumber(command):
-            self._handleNumeric(command, prefix, params)
-            return
-
         parsedPrefix = parseUserPrefix(prefix)
         nick = parsedPrefix[0]
         ident = parsedPrefix[1]
@@ -133,7 +129,7 @@ class InputHandler(object):
                     del channel.users[nick]
                     del channel.ranks[nick]
 
-    def _handleNumeric(self, numeric, prefix, params):
+    def handleNumeric(self, numeric, prefix, params):
         if numeric == irc.RPL_WELCOME:
             self.connection.loggedIn = True
             self.connection.bot.moduleHandler.runGenericAction("welcome", self.connection.name)
