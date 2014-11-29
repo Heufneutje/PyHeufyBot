@@ -47,14 +47,17 @@ class InputHandler(object):
                 kicker = IRCUser(nick, ident, host)
             else:
                 kicker = self.connection.users[nick]
-            kicked = self.connection.users[nick]
+            kicked = self.connection.users[params[1]]
             reason = ""
             if len(params) > 2:
                 reason = params[2]
             # We need to run the action before we actually get rid of the user
             moduleHandler.runGenericAction("channelkick", self.connection.name, channel, kicker, kicked, reason)
-            del channel.users[kicked]
-            del channel.ranks[kicked]
+            if kicked.nick == self.connection.nick:
+                del self.connection.channels[params[0]]
+            else:
+                del channel.users[kicked]
+                del channel.ranks[kicked]
 
         elif command == "NICK":
             if nick not in self.connection.users:
@@ -113,8 +116,11 @@ class InputHandler(object):
             user = self.connection.users[nick]
             # We need to run the action before we actually get rid of the user
             moduleHandler.runGenericAction("channelpart", self.connection.name, channel, user, reason)
-            del channel.users[nick]
-            del channel.ranks[nick]
+            if nick == self.connection.nick:
+                del self.connection.channels[params[0]]
+            else:
+                del channel.users[nick]
+                del channel.ranks[nick]
 
         elif command == "PING":
             self.connection.outputHandler.cmdPONG(" ".join(params))
