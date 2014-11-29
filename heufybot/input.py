@@ -73,6 +73,32 @@ class InputHandler(object):
             del channel.ranks[nick]
         elif command == "PING":
             self.connection.outputHandler.cmdPONG(" ".join(params))
+        elif command == "PRIVMSG":
+            user = None
+            if params[0][0] in self.connection.supportHelper.chanTypes:
+                if params[0] in self.connection.channels:
+                    source = self.connection.channels[params[0]]
+                else:
+                    # We got a message for an unknown channel. Create a temporary IRCChannel object for it.
+                    source = IRCChannel(params[0])
+                if nick in self.connection.users:
+                    user = self.connection.users[nick]
+                else:
+                    user = IRCUser(nick, ident, host)
+            elif nick in self.connection.users:
+                source = self.connection.users[nick]
+            else:
+                # We got a message from an unknown user. Create a temporary IRCUser object for them.
+                source = IRCUser(nick, ident, host)
+
+            if params[1][0] == "\x01":
+                message = params[1][1:len(params[1]) - 1]
+                moduleHandler.runGenericAction("ctcp-message", self.connection.name, source, message)
+            elif isinstance(source, IRCChannel):
+                moduleHandler.runGenericAction("message-channel", self.connection, source, user, params[1])
+            else:
+                moduleHandler.runGenericAction("message-user", self.connection, source, params[1])
+
         elif command == "TOPIC":
             if params[0] not in self.connection.channels:
                 self.connection.log("Received a TOPIC message for unknown channel {}.".format(params[0]),
