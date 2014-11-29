@@ -13,6 +13,11 @@ class OutputHandler(object):
     def cmdKICK(self, channel, user, reason=""):
         self.connection.sendMessage("KICK", channel, user, ":{}".format(reason))
 
+    def cmdMODE(self, target, modes="", params=""):
+        if params and isinstance(params, str):
+            params = [params]
+        self.connection.sendMessage("MODE", target, modes, params)
+
     def cmdNAMES(self, channel):
         self.connection.sendMessage("NAMES", channel)
 

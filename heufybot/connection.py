@@ -21,7 +21,7 @@ class HeufyBotConnection(irc.IRC):
         self.gecos = None
         self.channels = {}
         self.users = WeakValueDictionary()
-        self.usermodes = {}
+        self.userModes = {}
 
     def connectionMade(self):
         self.bot.moduleHandler.runGenericAction("connect", self.name)
@@ -68,3 +68,26 @@ class HeufyBotConnection(irc.IRC):
         self.outputHandler.cmdQUIT(reason)
         self.transport.fullDisconnect = fullDisconnect
         self.transport.loseConnection()
+
+    def setUserModes(self, modes):
+        adding = True
+        modesAdded = []
+        modesRemoved = []
+        for mode in modes:
+            if mode == "+":
+                adding = True
+            elif mode == "-":
+                adding = False
+            elif mode not in self.supportHelper.userModes:
+                self.log("Received unknown MODE char {} in MODE string {}.".format(mode, modes), level=logging.WARNING)
+                return None
+            elif adding:
+                self.userModes[mode] = None
+                modesAdded.append(mode)
+            elif not adding and mode in self.userModes:
+                del self.userModes[mode]
+                modesRemoved.append(mode)
+        return {
+            "added": modesAdded,
+            "removed": modesRemoved
+        }

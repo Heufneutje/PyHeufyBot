@@ -31,7 +31,7 @@ class InputHandler(object):
             else:
                 user = self.connection.users[nick]
             if params[0] not in self.connection.channels:
-                channel = IRCChannel(params[0])
+                channel = IRCChannel(params[0], self.connection)
                 self.connection.outputHandler.cmdWHO(params[0])
                 self.connection.channels[params[0]] = channel
             else:
@@ -66,6 +66,39 @@ class InputHandler(object):
             else:
                 del channel.users[kicked]
                 del channel.ranks[kicked]
+
+        elif command == "MODE":
+            if nick in self.connection.users:
+                user = self.connection.users[nick]
+            else:
+                user = IRCUser(nick, ident, host)
+            if len(params) > 2:
+                modeParams = params[2].split()
+            else:
+                modeParams = []
+            if params[0][0] in self.connection.supportHelper.chanTypes:
+                if params[0] not in self.connection.channels:
+                    self.connection.log("Received MODE message for unknown channel {}.".format(params[0]),
+                                    level=logging.WARNING)
+                    return
+                channel = self.connection.channels[params[0]]
+                modes = channel.setModes(params[1], modeParams)
+                if not modes:
+                    return
+                if len(modes["added"]) > 0:
+                    moduleHandler.runGenericAction("modesadded-channel", self.connection.name, user, channel,
+                                                   modes["added"], modes["addedParams"])
+                if len(modes["removed"]) > 0:
+                    moduleHandler.runGenericAction("modesremoved-channel", self.connection.name, user, channel,
+                                                   modes["removed"], modes["removedParams"])
+            elif params[0] == self.connection.nick:
+                modes = self.connection.setUserModes(params[1])
+                if not modes:
+                    return
+                if len(modes["added"]) > 0:
+                    moduleHandler.runGenericAction("modesadded-user", self.connection.name, modes["added"])
+                if len(modes["removed"]) > 0:
+                    moduleHandler.runGenericAction("modesremoved-user", self.connection.name, modes["removed"])
 
         elif command == "NICK":
             if nick not in self.connection.users:
@@ -140,7 +173,7 @@ class InputHandler(object):
                     source = self.connection.channels[params[0]]
                 else:
                     # We got a message for an unknown channel. Create a temporary IRCChannel object for it.
-                    source = IRCChannel(params[0])
+                    source = IRCChannel(params[0], self.connection)
                 if nick in self.connection.users:
                     user = self.connection.users[nick]
                 else:
