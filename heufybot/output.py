@@ -2,12 +2,10 @@ class OutputHandler(object):
     def __init__(self, connection):
         self.connection = connection
 
-    def cmdJOIN(self, channels, keys=[]):
-        keys = ["" if not key else key for key in keys]
-        for i in range(len(channels)):
-            if channels[i][0] not in self.connection.supportHelper.chanTypes:
-                channels[i] = "#{}".format(channels[i])
-        self.connection.sendMessage("JOIN", ",".join(channels), ",".join(keys))
+    def cmdJOIN(self, channel, key=""):
+        if channel[0] not in self.connection.supportHelper.chanTypes:
+            channel = "#{}".format(channel)
+        self.connection.sendMessage("JOIN", channel, key)
 
     def cmdNAMES(self, channel):
         self.connection.sendMessage("NAMES", channel)

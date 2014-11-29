@@ -118,8 +118,8 @@ class InputHandler(object):
             self.connection.loggedIn = True
             self.connection.bot.moduleHandler.runGenericAction("welcome", self.connection.name)
             channels = self.connection.bot.config.serverItemWithDefault(self.connection.name, "channels", {})
-            if len(channels) > 0:
-                self.connection.outputHandler.cmdJOIN(channels.keys(), channels.values())
+            for channel, key in channels.iteritems():
+                self.connection.outputHandler.cmdJOIN(channel, key if key else "")
         elif numeric == irc.RPL_MYINFO:
             self.connection.supportHelper.serverName = params[1]
             self.connection.supportHelper.serverVersion = params[2]
