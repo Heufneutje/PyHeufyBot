@@ -34,7 +34,7 @@ class InputHandler(object):
 
         elif command == "NICK":
             if nick not in self.connection.users:
-                self.connection.log("Received a NICK message for unknown user {}.".format(nick), level=logging.WARNING)
+                self.connection.log("Received NICK message for unknown user {}.".format(nick), level=logging.WARNING)
                 return
             user = self.connection.users[nick]
             newNick = params[0]
@@ -75,12 +75,12 @@ class InputHandler(object):
 
         elif command == "PART":
             if params[0] not in self.connection.channels:
-                self.connection.log("Received a PART message for unknown channel {}.".format(params[0]),
+                self.connection.log("Received PART message for unknown channel {}.".format(params[0]),
                                     level=logging.WARNING)
                 return
             channel = self.connection.channels[params[0]]
             if nick not in channel.users:
-                self.connection.log("Received a PART message for unknown user {} in channel {}.".format(nick, params[0]),
+                self.connection.log("Received PART message for unknown user {} in channel {}.".format(nick, params[0]),
                                     level=logging.WARNING)
                 return
             reason = ""
@@ -122,7 +122,7 @@ class InputHandler(object):
 
         elif command == "TOPIC":
             if params[0] not in self.connection.channels:
-                self.connection.log("Received a TOPIC message for unknown channel {}.".format(params[0]),
+                self.connection.log("Received TOPIC message for unknown channel {}.".format(params[0]),
                                     level=logging.WARNING)
                 return
             channel = self.connection.channels[params[0]]
@@ -228,7 +228,7 @@ class InputHandler(object):
 
         elif numeric == irc.RPL_WHOREPLY:
             if params[5] not in self.connection.users:
-                self.connection.log("Received a WHO reply for unknown user {}.".format(params[5]),
+                self.connection.log("Received WHO reply for unknown user {}.".format(params[5]),
                                     level=logging.WARNING)
                 return
             user = self.connection.users[params[5]]
