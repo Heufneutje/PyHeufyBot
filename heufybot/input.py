@@ -35,6 +35,7 @@ class InputHandler(object):
             channel.users[nick] = user
             channel.ranks[nick] = ""
             moduleHandler.runGenericAction("channeljoin", self.connection.name, channel, user)
+
         elif command == "NICK":
             if nick not in self.connection.users:
                 self.connection.log("Received a NICK message for unknown user {}.".format(nick), level=logging.WARNING)
@@ -53,6 +54,7 @@ class InputHandler(object):
             if nick == self.connection.nick:
                 self.connection.nick = newNick
             moduleHandler.runGenericAction("changenick", self.connection.name, user, nick, newNick)
+
         elif command == "PART":
             if params[0] not in self.connection.channels:
                 self.connection.log("Received a PART message for unknown channel {}.".format(params[0]),
@@ -71,8 +73,10 @@ class InputHandler(object):
             moduleHandler.runGenericAction("channelpart", self.connection.name, channel, user, reason)
             del channel.users[nick]
             del channel.ranks[nick]
+
         elif command == "PING":
             self.connection.outputHandler.cmdPONG(" ".join(params))
+
         elif command == "PRIVMSG":
             user = None
             if params[0][0] in self.connection.supportHelper.chanTypes:
@@ -90,7 +94,6 @@ class InputHandler(object):
             else:
                 # We got a message from an unknown user. Create a temporary IRCUser object for them.
                 source = IRCUser(nick, ident, host)
-
             if params[1][0] == "\x01":
                 message = params[1][1:len(params[1]) - 1]
                 moduleHandler.runGenericAction("ctcp-message", self.connection.name, source, message)
@@ -115,6 +118,7 @@ class InputHandler(object):
             channel.topicSetter = user.fullUserPrefix()
             channel.topicTimestamp = timeutils.timestamp(timeutils.now())
             moduleHandler.runGenericAction("changetopic", self.connection.name, channel, oldTopic, params[1])
+
         elif command == "QUIT":
             if nick not in self.connection.users:
                 self.connection.log("Received a QUIT message for unknown user {}.".format(nick), level=logging.WARNING)
@@ -136,10 +140,12 @@ class InputHandler(object):
             channels = self.connection.bot.config.serverItemWithDefault(self.connection.name, "channels", {})
             for channel, key in channels.iteritems():
                 self.connection.outputHandler.cmdJOIN(channel, key if key else "")
+
         elif numeric == irc.RPL_MYINFO:
             self.connection.supportHelper.serverName = params[1]
             self.connection.supportHelper.serverVersion = params[2]
             self.connection.supportHelper.userModes = params[3]
+
         elif numeric == irc.RPL_ISUPPORT:
             tokens = {}
             # The first param is our prefix and the last one is ":are supported by this server"
@@ -174,6 +180,7 @@ class InputHandler(object):
                     self.connection.supportHelper.statusModes[modes[i]] = symbols[i]
                     self.connection.supportHelper.statusSymbols[symbols[i]] = modes[i]
             self.connection.supportHelper.rawTokens.update(tokens)
+
         elif numeric == irc.RPL_NAMREPLY:
             channel = self.connection.channels[params[2]]
             if channel.userlistComplete:
@@ -196,9 +203,11 @@ class InputHandler(object):
                     self.connection.users[nick] = user
                 channel.users[nick] = user
                 channel.ranks[nick] = ranks
+
         elif numeric == irc.RPL_ENDOFNAMES:
             channel = self.connection.channels[params[1]]
             channel.userlistComplete = True
+
         elif numeric == irc.RPL_WHOREPLY:
             if params[5] not in self.connection.users:
                 self.connection.log("Received a WHO reply for unknown user {}.".format(params[5]),
@@ -220,6 +229,7 @@ class InputHandler(object):
                     channel.ranks[params[5]] += self.connection.supportHelper.statusSymbols[status]
             user.hops = int(params[7].split()[0])
             user.gecos = params[7].split()[1]
+
         elif numeric == irc.ERR_NICKNAMEINUSE:
             newNick = "{}_".format(self.connection.nick)
             self.connection.log("Nickname {} is in use, retrying with {} ...".format(self.connection.nick, newNick))
