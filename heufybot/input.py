@@ -5,6 +5,9 @@ from heufybot.utils import ModeType, parseUserPrefix, timeutils
 import logging
 
 
+irc.RPL_CREATIONTIME = "329"
+irc.RPL_TOPICWHOTIME = "333"
+
 class InputHandler(object):
     def __init__(self, connection):
         self.connection = connection
@@ -280,6 +283,19 @@ class InputHandler(object):
                 return
             moduleHandler.runGenericAction("modes-channel", self.connection.name, channel, modes["added"],
                                            modes["addedParams"])
+
+        elif numeric == irc.RPL_CREATIONTIME:
+            channel = self.connection.channels[params[1]]
+            channel.creationTime = int(params[2])
+
+        elif numeric == irc.RPL_TOPIC:
+            channel = self.connection.channels[params[1]]
+            channel.topic = params[2]
+
+        elif numeric == irc.RPL_TOPICWHOTIME:
+            channel = self.connection.channels[params[1]]
+            channel.topicSetter = params[2]
+            channel.topicTimestamp = int(params[3])
 
         elif numeric == irc.RPL_NAMREPLY:
             channel = self.connection.channels[params[2]]
