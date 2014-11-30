@@ -19,7 +19,7 @@ class NickServIdentify(BotModule):
         if not self.bot.moduleHandler.useModuleOnServer(self.name, serverName):
             return
 
-        nsSettings = self.bot.config.serverItemWithDefault(serverName, "NickServIdentify", {})
+        nsSettings = self.bot.config.serverItemWithDefault(serverName, self.name, {})
         if "nick" not in nsSettings:
             nick = "NickServ"
             self.bot.servers[serverName].log("No valid NickServ nickname was found; defaulting to NickServ...",

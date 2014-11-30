@@ -1,1 +1,81 @@
-"nickname": "HeufyBot"
+# This is the example configuration file for PyHeufyBot.  Make sure you rename
+# this file to "heufybot.yaml" or create a new file with this name!  By default
+# most lines in this config file are commented out and the bot will usually use
+# the values you see in the commented line (not all the time).  Make sure you
+# uncomment a line if you change something.
+
+
+# CORE CONFIGURATION
+# These values are always used and give basic information about the bot.
+
+# nickname: string (default: "PyHeufyBot")
+# The nickname that will be given to the bot when connecting.  If this nickname
+# is already in use, an underscore will be appended until reaching a nickname
+# that is available.
+#nickname: "PyHeufyBot"
+
+# username: string (default: nickname)
+# The username or ident that will be given to the bot when connecting.
+#username: "PyHeufyBot"
+
+# realname: string (default: nickname)
+# The realname or gecos that will be given to the bot when connecting.
+#realname: "PyHeufyBot"
+
+# servers: dictionary (REQUIRED!):
+# The servers the bot will connect to on startup.  The keys in this dictionary
+# represent the host of the server to connect to.  Servers can override most
+# global settings of the bot, like the nickname.  A special setting is the
+# "module_blacklist", which cannot be used as a global setting and MUST be
+# defined in the servers dictionary. Any module in this list will be ignored
+# for that specific server.
+#servers:
+#  irc.example.org:
+#    nickname: "OtherBot"
+#    module_blacklist:
+#    - CTCP
+
+# port: int (default: 6667)
+# The port the bot will use to connect to a server. It is recommended to put
+# this in the "servers" dictionary.
+#port: 6667
+
+# password: string (default: null)
+# Uncomment this if the server(s) you want to connect to require(s) a password.
+# It is recommended to put this in the "servers" dictionary.
+#password: null
+
+
+# MODULES
+# With only the core and core modules the bot will not do much more than idle.
+# For extra functionality additional modules can be loaded.
+
+# modules: list (default: empty list)
+# The modules the bot will load on startup.  Keep in mind that core modules
+# will always be loaded, regardless of whether there defined in here.
+#modules: # Uncomment this line if you decide to load any modules.
+
+# NickServIdentify: Enables sending a password to IRC services for
+# authentication.
+#- NickServIdentify
+
+# CTCP: Enables replying to CTCP commands. The supported comamnds are PING,
+# VERSION, TIME and SOURCE.
+#- CTCP
+
+
+# MODULE CONFIGURATION
+# Some modules provide additional configuration options.  These are specified
+# by a dictionary that has the name of the module as its name.  In this
+# dictionary the config values for the module can be specified.  They can also
+# be specified per server.
+
+# NickServIdentify
+#NickServIdentify:
+
+# nick: string (default: "NickServ")
+# The name of authentication service.
+# pass: string (no default)
+# The password that will be sent to the authentication service.
+#  nick: "NickServ"
+#  pass: null
