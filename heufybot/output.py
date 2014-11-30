@@ -57,3 +57,7 @@ class OutputHandler(object):
         if not mask:
             mask = "*"
         self.connection.sendMessage("WHO", mask)
+
+    def ctcpACTION(self, target, action):
+        # We're keeping most CTCP stuff out of the core, but actions are used a lot and don't really belong in CTCP.
+        self.cmdPRIVMSG(target, "\x01ACTION {}\x01".format(action))
