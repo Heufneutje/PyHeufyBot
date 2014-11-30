@@ -68,8 +68,8 @@ class InputHandler(object):
             if kicked.nick == self.connection.nick:
                 del self.connection.channels[params[0]]
             else:
-                del channel.users[kicked]
-                del channel.ranks[kicked]
+                del channel.users[kicked.nick]
+                del channel.ranks[kicked.nick]
 
         elif command == "MODE":
             if nick in self.connection.users:
@@ -77,7 +77,7 @@ class InputHandler(object):
             else:
                 user = IRCUser(nick, ident, host)
             if len(params) > 2:
-                modeParams = params[2].split()
+                modeParams = params[2:]
             else:
                 modeParams = []
             if params[0][0] in self.connection.supportHelper.chanTypes:
