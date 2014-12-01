@@ -28,13 +28,13 @@ class CTCP(BotModule):
         else:
             target = source.nick
 
-        if message.upper().startswith("PING"):
+        if message.upper() == "PING" or message.upper().startswith("PING "):
             self.sendCTCPReply(server, target, "PING", message[5:])
-        elif message.upper().startswith("VERSION"):
-            self.sendCTCPReply(server, target, "VERSION", "PyHeufyBot v{} / {}".format(__version__, platform(())))
-        elif message.upper().startswith("TIME"):
+        elif message.upper() == "VERSION":
+            self.sendCTCPReply(server, target, "VERSION", "PyHeufyBot v{} / {}".format(__version__, platform()))
+        elif message.upper() == "TIME":
             self.sendCTCPReply(server, target, "TIME", str(now()))
-        elif message.upper().startswith("SOURCE"):
+        elif message.upper() == "SOURCE":
             self.sendCTCPReply(server, target, "SOURCE", "https://github.com/Heufneutje/PyHeufyBot/")
 
     def sendCTCPCommand(self, server, target, ctcpType):
