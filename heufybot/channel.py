@@ -1,6 +1,7 @@
 from heufybot.utils import ModeType
 import logging
 
+
 class IRCChannel(object):
     def __init__(self, name, connection):
         self.name = name
