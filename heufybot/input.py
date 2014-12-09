@@ -1,12 +1,8 @@
-from twisted.words.protocols import irc
 from heufybot.channel import IRCChannel
 from heufybot.user import IRCUser
 from heufybot.utils import ModeType, parseUserPrefix, timeutils
 import logging
 
-
-irc.RPL_CREATIONTIME = "329"
-irc.RPL_TOPICWHOTIME = "333"
 
 class InputHandler(object):
     def __init__(self, connection):
@@ -24,6 +20,13 @@ class InputHandler(object):
             method(nick, ident, host, params)
         else:
             self.handleUnknown(command, prefix, params)
+
+    def handleNumeric(self, numeric, prefix, params):
+        method = getattr(self, "_handleNumeric{}".format(numeric), None)
+        if method:
+            method(prefix, params)
+        else:
+            self.handleUnknown(numeric, prefix, params)
 
     def handleUnknown(self, command, prefix, params):
         pass
@@ -121,7 +124,6 @@ class InputHandler(object):
         newNick = params[0]
         user.nick = newNick
         self.connection.users[newNick] = user
-        del self.connection.users[nick]
         for channel in self.connection.channels.itervalues():
             if nick in channel.users:
                 channel.users[newNick] = user
@@ -150,9 +152,9 @@ class InputHandler(object):
             # We got a notice from an unknown user. Create a temporary IRCUser object for them.
             source = IRCUser(nick, ident, host)
         if isinstance(source, IRCChannel):
-            self.moduleHandler.runGenericAction("notice-channel", self.connection, source, user, params[1])
+            self.moduleHandler.runGenericAction("notice-channel", self.connection.name, source, user, params[1])
         else:
-            self.moduleHandler.runGenericAction("notice-user", self.connection, source, params[1])
+            self.moduleHandler.runGenericAction("notice-user", self.connection.name, source, params[1])
 
     def _handlePART(self, nick, ident, host, params):
         if params[0] not in self.connection.channels:
@@ -200,9 +202,9 @@ class InputHandler(object):
             message = params[1][1:len(params[1]) - 1]
             self.moduleHandler.runGenericAction("ctcp-message", self.connection.name, source, message)
         elif isinstance(source, IRCChannel):
-            self.moduleHandler.runGenericAction("message-channel", self.connection, source, user, params[1])
+            self.moduleHandler.runGenericAction("message-channel", self.connection.name, source, user, params[1])
         else:
-            self.moduleHandler.runGenericAction("message-user", self.connection, source, params[1])
+            self.moduleHandler.runGenericAction("message-user", self.connection.name, source, params[1])
 
     def _handleQUIT(self, nick, ident, host, params):
         if nick not in self.connection.users:
@@ -235,128 +237,137 @@ class InputHandler(object):
         channel.topicTimestamp = timeutils.timestamp(timeutils.now())
         self.moduleHandler.runGenericAction("changetopic", self.connection.name, channel, oldTopic, params[1])
 
-    def handleNumeric(self, numeric, prefix, params):
-        moduleHandler = self.connection.bot.moduleHandler
-        if numeric == irc.RPL_WELCOME:
-            self.connection.loggedIn = True
-            self.connection.bot.moduleHandler.runGenericAction("welcome", self.connection.name)
-            channels = self.connection.bot.config.serverItemWithDefault(self.connection.name, "channels", {})
-            for channel, key in channels.iteritems():
-                self.connection.outputHandler.cmdJOIN(channel, key if key else "")
+    def _handleNumeric001(self, prefix, params):
+        # 001: RPL_WELCOME
+        self.connection.loggedIn = True
+        self.connection.bot.moduleHandler.runGenericAction("welcome", self.connection.name)
+        channels = self.connection.bot.config.serverItemWithDefault(self.connection.name, "channels", {})
+        for channel, key in channels.iteritems():
+            self.connection.outputHandler.cmdJOIN(channel, key if key else "")
 
-        elif numeric == irc.RPL_MYINFO:
-            self.connection.supportHelper.serverName = params[1]
-            self.connection.supportHelper.serverVersion = params[2]
-            self.connection.supportHelper.userModes = params[3]
+    def _handleNumeric004(self, prefix, params):
+        # 004: RPL_MYINFO
+        self.connection.supportHelper.serverName = params[1]
+        self.connection.supportHelper.serverVersion = params[2]
+        self.connection.supportHelper.userModes = params[3]
 
-        elif numeric == irc.RPL_ISUPPORT:
-            tokens = {}
-            # The first param is our prefix and the last one is ":are supported by this server"
-            for param in params[1:len(params) - 1]:
-                keyValuePair = param.split("=")
-                if len(keyValuePair) > 1:
-                    tokens[keyValuePair[0]] = keyValuePair[1]
-                else:
-                    tokens[keyValuePair[0]] = ""
-            if "CHANTYPES" in tokens:
-                self.connection.supportHelper.chanTypes = tokens["CHANTYPES"]
-            if "CHANMODES" in tokens:
-                self.connection.supportHelper.chanModes.clear()
-                groups = tokens["CHANMODES"].split(",")
-                for mode in groups[0]:
-                    self.connection.supportHelper.chanModes[mode] = ModeType.LIST
-                for mode in groups[1]:
-                    self.connection.supportHelper.chanModes[mode] = ModeType.PARAM_UNSET
-                for mode in groups[2]:
-                    self.connection.supportHelper.chanModes[mode] = ModeType.PARAM_SET
-                for mode in groups[3]:
-                    self.connection.supportHelper.chanModes[mode] = ModeType.NO_PARAM
-            if "NETWORK" in tokens:
-                self.connection.supportHelper.network = tokens["NETWORK"]
-            if "PREFIX" in tokens:
-                self.connection.supportHelper.statusModes.clear()
-                self.connection.supportHelper.statusSymbols.clear()
-                modes = tokens["PREFIX"][1:tokens["PREFIX"].find(")")]
-                symbols = tokens["PREFIX"][tokens["PREFIX"].find(")") + 1:]
-                self.connection.supportHelper.statusOrder = modes
-                for i in range(len(modes)):
-                    self.connection.supportHelper.statusModes[modes[i]] = symbols[i]
-                    self.connection.supportHelper.statusSymbols[symbols[i]] = modes[i]
-            self.connection.supportHelper.rawTokens.update(tokens)
+    def _handleNumeric005(self, prefix, params):
+        # 005: RPL_ISUPPORT
+        tokens = {}
+        # The first param is our prefix and the last one is ":are supported by this server"
+        for param in params[1:len(params) - 1]:
+            keyValuePair = param.split("=")
+            if len(keyValuePair) > 1:
+                tokens[keyValuePair[0]] = keyValuePair[1]
+            else:
+                tokens[keyValuePair[0]] = ""
+        if "CHANTYPES" in tokens:
+            self.connection.supportHelper.chanTypes = tokens["CHANTYPES"]
+        if "CHANMODES" in tokens:
+            self.connection.supportHelper.chanModes.clear()
+            groups = tokens["CHANMODES"].split(",")
+            for mode in groups[0]:
+                self.connection.supportHelper.chanModes[mode] = ModeType.LIST
+            for mode in groups[1]:
+                self.connection.supportHelper.chanModes[mode] = ModeType.PARAM_UNSET
+            for mode in groups[2]:
+                self.connection.supportHelper.chanModes[mode] = ModeType.PARAM_SET
+            for mode in groups[3]:
+                self.connection.supportHelper.chanModes[mode] = ModeType.NO_PARAM
+        if "NETWORK" in tokens:
+            self.connection.supportHelper.network = tokens["NETWORK"]
+        if "PREFIX" in tokens:
+            self.connection.supportHelper.statusModes.clear()
+            self.connection.supportHelper.statusSymbols.clear()
+            modes = tokens["PREFIX"][1:tokens["PREFIX"].find(")")]
+            symbols = tokens["PREFIX"][tokens["PREFIX"].find(")") + 1:]
+            self.connection.supportHelper.statusOrder = modes
+            for i in range(len(modes)):
+                self.connection.supportHelper.statusModes[modes[i]] = symbols[i]
+                self.connection.supportHelper.statusSymbols[symbols[i]] = modes[i]
+        self.connection.supportHelper.rawTokens.update(tokens)
 
-        elif numeric == irc.RPL_CHANNELMODEIS:
+    def _handleNumeric324(self, prefix, params):
+        # 324: RPL_CHANNELMODEIS
+        channel = self.connection.channels[params[1]]
+        modeParams = params[3].split() if len(params) > 3 else []
+        modes = channel.setModes(params[2], modeParams)
+        if not modes:
+            return
+        self.moduleHandler.runGenericAction("modes-channel", self.connection.name, channel, modes["added"],
+                                       modes["addedParams"])
+
+    def _handleNumeric329(self, prefix, params):
+        # 329: RPL_CREATIONTIME
+        channel = self.connection.channels[params[1]]
+        channel.creationTime = int(params[2])
+
+    def _handleNumeric332(self, prefix, params):
+        # 332: RPL_TOPIC
+        channel = self.connection.channels[params[1]]
+        channel.topic = params[2]
+
+    def _handleNumeric333(self, prefix, params):
+        # 333: RPL_TOPICWHOTIME
+        channel = self.connection.channels[params[1]]
+        channel.topicSetter = params[2]
+        channel.topicTimestamp = int(params[3])
+
+    def _handleNumeric352(self, prefix, params):
+        # 352: RPL_WHOREPLY
+        if params[5] not in self.connection.users:
+            self.connection.log("Received WHO reply for unknown user {}.".format(params[5]),
+                                level=logging.WARNING)
+            return
+        user = self.connection.users[params[5]]
+        user.ident = params[2]
+        user.host = params[3]
+        user.server = params[4]
+        flags = list(params[6])
+        if flags.pop(0) == "G":
+            user.isAway = True
+        if len(flags) > 0 and flags.pop(0) == "*":
+            user.isOper = True
+        if params[1] in self.connection.channels:
             channel = self.connection.channels[params[1]]
-            modeParams = params[3].split() if len(params) > 3 else []
-            modes = channel.setModes(params[2], modeParams)
-            if not modes:
-                return
-            moduleHandler.runGenericAction("modes-channel", self.connection.name, channel, modes["added"],
-                                           modes["addedParams"])
+            channel.ranks[params[5]] = ""
+            for status in flags:
+                channel.ranks[params[5]] += self.connection.supportHelper.statusSymbols[status]
+        user.hops = int(params[7].split()[0])
+        user.gecos = params[7].split()[1]
 
-        elif numeric == irc.RPL_CREATIONTIME:
-            channel = self.connection.channels[params[1]]
-            channel.creationTime = int(params[2])
+    def _handleNumeric353(self, prefix, params):
+        # 353: RPL_NAMREPLY
+        channel = self.connection.channels[params[2]]
+        if channel.userlistComplete:
+            channel.userlistComplete = False
+            channel.users.clear()
+            channel.ranks.clear()
+        for userPrefix in params[3].split():
+            parsedPrefix = parseUserPrefix(userPrefix)
+            nick = parsedPrefix[0]
+            ranks = ""
+            while nick[0] in self.connection.supportHelper.statusSymbols:
+                ranks += self.connection.supportHelper.statusSymbols[nick[0]]
+                nick = nick[1:]
+            if nick in self.connection.users:
+                user = self.connection.users[nick]
+                user.ident = parsedPrefix[1]
+                user.host = parsedPrefix[2]
+            else:
+                user = IRCUser(nick, parsedPrefix[1], parsedPrefix[2])
+                self.connection.users[nick] = user
+            channel.users[nick] = user
+            channel.ranks[nick] = ranks
 
-        elif numeric == irc.RPL_TOPIC:
-            channel = self.connection.channels[params[1]]
-            channel.topic = params[2]
+    def _handleNumeric366(self, prefix, params):
+        # 366: RPL_ENDOFNAMES
+        channel = self.connection.channels[params[1]]
+        channel.userlistComplete = True
 
-        elif numeric == irc.RPL_TOPICWHOTIME:
-            channel = self.connection.channels[params[1]]
-            channel.topicSetter = params[2]
-            channel.topicTimestamp = int(params[3])
-
-        elif numeric == irc.RPL_NAMREPLY:
-            channel = self.connection.channels[params[2]]
-            if channel.userlistComplete:
-                channel.userlistComplete = False
-                channel.users.clear()
-                channel.ranks.clear()
-            for userPrefix in params[3].split():
-                parsedPrefix = parseUserPrefix(userPrefix)
-                nick = parsedPrefix[0]
-                ranks = ""
-                while nick[0] in self.connection.supportHelper.statusSymbols:
-                    ranks += self.connection.supportHelper.statusSymbols[nick[0]]
-                    nick = nick[1:]
-                if nick in self.connection.users:
-                    user = self.connection.users[nick]
-                    user.ident = parsedPrefix[1]
-                    user.host = parsedPrefix[2]
-                else:
-                    user = IRCUser(nick, parsedPrefix[1], parsedPrefix[2])
-                    self.connection.users[nick] = user
-                channel.users[nick] = user
-                channel.ranks[nick] = ranks
-
-        elif numeric == irc.RPL_ENDOFNAMES:
-            channel = self.connection.channels[params[1]]
-            channel.userlistComplete = True
-
-        elif numeric == irc.RPL_WHOREPLY:
-            if params[5] not in self.connection.users:
-                self.connection.log("Received WHO reply for unknown user {}.".format(params[5]),
-                                    level=logging.WARNING)
-                return
-            user = self.connection.users[params[5]]
-            user.ident = params[2]
-            user.host = params[3]
-            user.server = params[4]
-            flags = list(params[6])
-            if flags.pop(0) == "G":
-                user.isAway = True
-            if len(flags) > 0 and flags.pop(0) == "*":
-                user.isOper = True
-            if params[1] in self.connection.channels:
-                channel = self.connection.channels[params[1]]
-                channel.ranks[params[5]] = ""
-                for status in flags:
-                    channel.ranks[params[5]] += self.connection.supportHelper.statusSymbols[status]
-            user.hops = int(params[7].split()[0])
-            user.gecos = params[7].split()[1]
-
-        elif numeric == irc.ERR_NICKNAMEINUSE:
-            newNick = "{}_".format(self.connection.nick)
-            self.connection.log("Nickname {} is in use, retrying with {} ...".format(self.connection.nick, newNick))
-            self.connection.nick = newNick
-            self.connection.outputHandler.cmdNICK(self.connection.nick)
+    def _handleNumeric433(self, prefix, params):
+        # 433: ERR_NICKNAMEINUSE
+        newNick = "{}_".format(self.connection.nick)
+        self.connection.log("Nickname {} is in use, retrying with {} ...".format(self.connection.nick, newNick))
+        self.connection.nick = newNick
+        self.connection.outputHandler.cmdNICK(self.connection.nick)
