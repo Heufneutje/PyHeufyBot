@@ -18,7 +18,8 @@ class CommandHandler(BotModule):
     def handleChannelMessage(self, server, channel, user, messageBody):
         message = {
             "server": server,
-            "source": channel,
+            "source": channel.name,
+            "channel": channel,
             "user": user,
             "body": messageBody
         }
@@ -27,7 +28,8 @@ class CommandHandler(BotModule):
     def handlePrivateMessage(self, server, user, messageBody):
         message = {
             "server": server,
-            "source": user,
+            "source": user.nick,
+            "user": user,
             "body": messageBody
         }
         self._handleCommand(message)
@@ -38,7 +40,8 @@ class CommandHandler(BotModule):
             return # We don't need to be handling things that aren't bot commands
         params = message["body"].split()
         message["command"] = params[0][params[0].index(commandPrefix) + len(commandPrefix):]
+        del params[0]
         message["params"] = params
-        self.bot.moduleHander.runProcessingAction("botmessage", message)
+        self.bot.moduleHandler.runProcessingAction("botmessage", message)
 
 commandHandler = CommandHandler()

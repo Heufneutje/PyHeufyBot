@@ -19,7 +19,6 @@ class Config(object):
         try:
             with open(fileName, "r") as config:
                 configData = yaml.safe_load(config)
-                print configData
                 if not configData:
                     configData = {}
         except Exception as e:
