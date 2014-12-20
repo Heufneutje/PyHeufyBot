@@ -33,5 +33,4 @@ class NickServIdentify(BotModule):
         password = nsSettings["pass"]
         self.bot.servers[serverName].outputHandler.cmdPRIVMSG(nick, "IDENTIFY {}".format(password))
 
-
 nickServID = NickServIdentify()
