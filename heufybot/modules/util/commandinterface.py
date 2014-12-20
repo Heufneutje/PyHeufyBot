@@ -2,19 +2,23 @@ from heufybot.moduleinterface import BotModule
 
 
 class BotCommand(BotModule):
+    name = "UnknownCommand"
+
     def hookBot(self, bot):
         self.bot = bot
-        self.triggers = []
 
     def actions(self):
         return [ ("botmessage", 1, self._handleCommand) ]
 
     def _handleCommand(self, data):
-        if self._shouldExecute(data["command"]):
-            pass
+        if self._shouldExecute(data["server"], data["command"]):
+            self.execute(data["server"], data["source"], data["command"], data["params"], data)
 
-    def _shouldExecute(self, command):
-        if command not in self.triggers:
+    def _shouldExecute(self, server, command):
+        triggers = self.triggers if hasattr(self, "triggers") else []
+        if not self.bot.moduleHandler.useModuleOnServer(self.name, server):
+            return
+        if command not in triggers:
             return False
         if not self.checkPermissions():
             return False
@@ -23,5 +27,5 @@ class BotCommand(BotModule):
     def checkPermissions(self):
         return True # This function should be implemented by the commands that inherit from this
 
-    def execute(self, data):
+    def execute(self, server, source, command, params, data):
         pass # This function should be implemented by the commands that inherit from this
