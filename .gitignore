@@ -18,7 +18,6 @@ lib64/
 parts/
 sdist/
 var/
-*.egg-info/
 .installed.cfg
 *.egg
 
@@ -53,5 +52,5 @@ coverage.xml
 docs/_build/
 
 # Bot
-heufybot.yaml
+*.yaml
 dropin.cache

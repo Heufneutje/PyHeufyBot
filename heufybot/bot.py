@@ -26,7 +26,7 @@ class HeufyBot(object):
             log.msg("The PyOpenSSL package was not found. You will not be able to connect to servers using SSL.",
                     level=logging.WARNING)
         log.msg("Loading configuration file...")
-        self.config.readConfig()
+        self.config.loadConfig()
         log.msg("Loading modules...")
         self.moduleHandler.loadAllModules()
         log.msg("Initiating connections...")
