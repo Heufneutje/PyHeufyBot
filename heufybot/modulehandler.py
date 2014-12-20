@@ -104,6 +104,43 @@ class ModuleHandler(object):
         for action in actionList:
             action[0](*params, **kw)
 
+    def runProcessingAction(self, actionName, data, *params, **kw):
+        actionList = []
+        if actionName in self.actions:
+            actionList = self.actions[actionName]
+        for action in actionList:
+            action[0](data, *params, **kw)
+            if not data:
+                return
+
+    def runActionUntilTrue(self, actionName, *params, **kw):
+        actionList = []
+        if actionName in self.actions:
+            actionList = self.actions[actionName]
+        for action in actionList:
+            if action[0](*params, **kw):
+                return True
+        return False
+
+    def runActionUntilFalse(self, actionName, *params, **kw):
+        actionList = []
+        if actionName in self.actions:
+            actionList = self.actions[actionName]
+        for action in actionList:
+            if not action[0](*params, **kw):
+                return True
+        return False
+
+    def runActionUntilValue(self, actionName, *params, **kw):
+        actionList = []
+        if actionName in self.actions:
+            actionList = self.actions[actionName]
+        for action in actionList:
+            value = action[0](*params, **kw)
+            if value:
+                return value
+        return None
+
 class ModuleLoaderError(Exception):
     def __init__(self, module, message):
         self.module = module
