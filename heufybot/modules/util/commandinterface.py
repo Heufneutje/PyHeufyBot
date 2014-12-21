@@ -17,7 +17,7 @@ class BotCommand(BotModule):
     def _shouldExecute(self, server, command):
         triggers = [x.lower() for x in self.triggers] if hasattr(self, "triggers") else []
         if not self.bot.moduleHandler.useModuleOnServer(self.name, server):
-            return
+            return False
         if command.lower() not in triggers:
             return False
         if not self.checkPermissions():
