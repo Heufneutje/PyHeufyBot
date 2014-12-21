@@ -12,13 +12,13 @@ class BotCommand(BotModule):
 
     def _handleCommand(self, data):
         if self._shouldExecute(data["server"], data["command"]):
-            self.execute(data["server"], data["source"], data["command"], data["params"], data)
+            self.execute(data["server"], data["source"], data["command"].lower(), data["params"], data)
 
     def _shouldExecute(self, server, command):
-        triggers = self.triggers if hasattr(self, "triggers") else []
+        triggers = [x.lower() for x in self.triggers] if hasattr(self, "triggers") else []
         if not self.bot.moduleHandler.useModuleOnServer(self.name, server):
             return
-        if command not in triggers:
+        if command.lower() not in triggers:
             return False
         if not self.checkPermissions():
             return False
