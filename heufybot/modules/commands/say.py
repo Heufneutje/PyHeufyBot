@@ -8,7 +8,9 @@ class SayCommand(BotCommand):
     implements(IPlugin, IBotModule)
 
     name = "Say"
-    triggers = ["say", "sayto"]
+
+    def triggers(self):
+        return ["say", "sayto"]
 
     def execute(self, server, source, command, params, data):
         if command == "say" and len(params) < 1 or command == "sayto" and len(params) < 2:

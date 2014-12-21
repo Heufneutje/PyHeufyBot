@@ -10,15 +10,17 @@ class BotCommand(BotModule):
     def actions(self):
         return [ ("botmessage", 1, self._handleCommand) ]
 
+    def triggers(self):
+        return []
+
     def _handleCommand(self, data):
         if self._shouldExecute(data["server"], data["command"]):
             self.execute(data["server"], data["source"], data["command"].lower(), data["params"], data)
 
     def _shouldExecute(self, server, command):
-        triggers = [x.lower() for x in self.triggers] if hasattr(self, "triggers") else []
         if not self.bot.moduleHandler.useModuleOnServer(self.name, server):
             return False
-        if command.lower() not in triggers:
+        if command.lower() not in [x.lower() for x in self.triggers()]:
             return False
         if not self.checkPermissions():
             return False
