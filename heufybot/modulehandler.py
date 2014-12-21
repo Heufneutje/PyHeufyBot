@@ -40,13 +40,13 @@ class ModuleHandler(object):
         for action, actionList in actions.iteritems():
             if action not in self.actions:
                 self.actions[action] = []
-                for actionData in actionList:
-                    for index, handlerData in enumerate(actions[action]):
-                        if handlerData[1] < actionData[1]:
-                            self.actions[action].insert(index, actionData)
-                            break
-                        else:
-                            self.actions[action].append(actionData)
+            for actionData in actionList:
+                for index, handlerData in enumerate(actions[action]):
+                    if handlerData[1] < actionData[1]:
+                        self.actions[action].insert(index, actionData)
+                        break
+                    else:
+                        self.actions[action].append(actionData)
 
         # Add the module to the list of loaded modules and call its load hooks
         self.loadedModules[module.name] = module
