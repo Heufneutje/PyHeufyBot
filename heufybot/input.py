@@ -102,19 +102,19 @@ class InputHandler(object):
             if not modes:
                 return
             if len(modes["added"]) > 0:
-                self.moduleHandler.runGenericAction("modesadded-channel", self.connection.name, user, channel,
-                                               modes["added"], modes["addedParams"])
+                self.moduleHandler.runGenericAction("modeschanged-channel", self.connection.name, user, channel,
+                                               modes["added"], modes["addedParams"], True)
             if len(modes["removed"]) > 0:
-                self.moduleHandler.runGenericAction("modesremoved-channel", self.connection.name, user, channel,
-                                               modes["removed"], modes["removedParams"])
+                self.moduleHandler.runGenericAction("modeschanged-channel", self.connection.name, user, channel,
+                                               modes["removed"], modes["removedParams"], False)
         elif params[0] == self.connection.nick:
             modes = self.connection.setUserModes(params[1])
             if not modes:
                 return
             if len(modes["added"]) > 0:
-                self.moduleHandler.runGenericAction("modesadded-user", self.connection.name, modes["added"])
+                self.moduleHandler.runGenericAction("modeschanged-user", self.connection.name, modes["added"], True)
             if len(modes["removed"]) > 0:
-                self.moduleHandler.runGenericAction("modesremoved-user", self.connection.name, modes["removed"])
+                self.moduleHandler.runGenericAction("modeschanged-user", self.connection.name, modes["removed"], False)
 
     def _handleNICK(self, nick, ident, host, params):
         if nick not in self.connection.users:
