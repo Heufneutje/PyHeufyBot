@@ -19,7 +19,7 @@ class CTCP(BotModule):
         return [ ("ctcp-message", 1, self.handleCTCP),
                  ("send-ctcp", 1, self.sendCTCPCommand) ]
 
-    def handleCTCP(self, server, source, message):
+    def handleCTCP(self, server, source, user, message):
         if not self.bot.moduleHandler.useModuleOnServer(self.name, server):
             return
 

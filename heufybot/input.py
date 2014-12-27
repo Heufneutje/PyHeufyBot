@@ -200,7 +200,7 @@ class InputHandler(object):
             source = IRCUser(nick, ident, host)
         if params[1][0] == "\x01":
             message = params[1][1:len(params[1]) - 1]
-            self.moduleHandler.runGenericAction("ctcp-message", self.connection.name, source, message)
+            self.moduleHandler.runGenericAction("ctcp-message", self.connection.name, source, user, message)
         elif isinstance(source, IRCChannel):
             self.moduleHandler.runGenericAction("message-channel", self.connection.name, source, user, params[1])
         else:
