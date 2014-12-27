@@ -99,3 +99,4 @@ class IRCChannel(object):
         for status in self.connection.supportHelper.statusModes.iterkeys():
             if status in self.ranks[user.nick]:
                 return self.connection.supportHelper.statusModes[status]
+        return ""

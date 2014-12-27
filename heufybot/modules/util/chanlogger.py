@@ -1,6 +1,7 @@
 from twisted.plugin import IPlugin
 from heufybot.channel import IRCChannel
 from heufybot.moduleinterface import BotModule, IBotModule
+from heufybot.user import IRCUser
 from zope.interface import implements
 import os, time
 
@@ -23,7 +24,8 @@ class ChannelLogger(BotModule):
                  ("channelpart", 100, self.logPART),
                  ("message-channel", 100, self.logPRIVMSG),
                  ("userquit", 100, self.logQUIT),
-                 ("changetopic", 100, self.logTOPIC) ]
+                 ("changetopic", 100, self.logTOPIC),
+                 ("sendcommand-PRIVMSG", 100, self.logBotMessage) ]
 
     def logCTCP_ACTION(self, server, source, user, body):
         if not isinstance(source, IRCChannel):
@@ -80,6 +82,21 @@ class ChannelLogger(BotModule):
         message = "-- {} changes topic to '{}'".format(user.nick, newTopic)
         self._writeLog(server, channel.name, message)
 
+    def logBotMessage(self, server, source, body):
+        if source not in self.bot.servers[server].channels:
+            source = IRCChannel(source, self.bot.servers[server])
+        else:
+            source = self.bot.servers[server].channels[source]
+        if self.bot.servers[server].nick not in self.bot.servers[server].users:
+            user = IRCUser(self.bot.servers[server].nick, None, None)
+        else:
+            user = self.bot.servers[server].users[self.bot.servers[server].nick]
+        if body.startswith(":\x01ACTION"):
+            message = "* {} {}".format(user.nick, body[9:len(body) - 1])
+        else:
+            message = "<{}{}> {}".format(source.getHighestStatusOfUser(user), user.nick, body[1:])
+        self._writeLog(server, source.name, message)
+
     def _writeLog(self, server, target, message):
         basePath = self.bot.config.serverItemWithDefault(server, "logpath", "logs")
         todayDate = time.strftime("%Y-%m-%d")
@@ -93,6 +110,5 @@ class ChannelLogger(BotModule):
             os.makedirs(os.path.join(basePath, network, target))
         with open(logPath, "a+") as logFile:
             logFile.write("[{}] {}\n".format(todayTime, message))
-
 
 chanLogger = ChannelLogger()
