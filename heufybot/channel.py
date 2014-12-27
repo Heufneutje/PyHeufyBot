@@ -94,3 +94,8 @@ class IRCChannel(object):
             "addedParams": paramsAdded,
             "removedParams": paramsRemoved
         }
+
+    def getHighestStatusOfUser(self, user):
+        for status in self.connection.supportHelper.statusModes.iterkeys():
+            if status in self.ranks[user.nick]:
+                return self.connection.supportHelper.statusModes[status]

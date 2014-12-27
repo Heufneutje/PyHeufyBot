@@ -235,7 +235,7 @@ class InputHandler(object):
         channel.topic = params[1]
         channel.topicSetter = user.fullUserPrefix()
         channel.topicTimestamp = timeutils.timestamp(timeutils.now())
-        self.moduleHandler.runGenericAction("changetopic", self.connection.name, channel, oldTopic, params[1])
+        self.moduleHandler.runGenericAction("changetopic", self.connection.name, channel, user, oldTopic, params[1])
 
     def _handleNumeric001(self, prefix, params):
         # 001: RPL_WELCOME
