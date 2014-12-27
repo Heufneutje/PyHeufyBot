@@ -83,6 +83,8 @@ class ChannelLogger(BotModule):
         self._writeLog(server, channel.name, message)
 
     def logBotMessage(self, server, source, body):
+        if not isinstance(source, IRCChannel):
+            return
         if source not in self.bot.servers[server].channels:
             source = IRCChannel(source, self.bot.servers[server])
         else:
