@@ -27,7 +27,7 @@
 # represent the host of the server to connect to.  Servers can override most
 # global settings of the bot, like the nickname.  A special setting is the
 # "module_blacklist", which cannot be used as a global setting and MUST be
-# defined in the servers dictionary. Any module in this list will be ignored
+# defined in the servers dictionary.  Any module in this list will be ignored
 # for that specific server.
 #servers:
 #  irc.example.org:
@@ -36,7 +36,7 @@
 #    - CTCP
 
 # port: int (default: 6667)
-# The port the bot will use to connect to a server. It is recommended to put
+# The port the bot will use to connect to a server.  It is recommended to put
 # this in the "servers" dictionary.
 #port: 6667
 
@@ -45,6 +45,13 @@
 # It is recommended to put this in the "servers" dictionary.
 #password: null
 
+# channels: dictionary (default: null)
+# The channels the bot will join after connecting to the server.  The format is
+# name: password.  Use null for channels that don't require a password.  It is
+# recommended to put this in the "servers" dictionary.
+#channels:
+#  "#channel1": null
+#  "#channel2": "channelpassword"
 
 # MODULES
 # With only the core and core modules the bot will not do much more than idle.
@@ -59,23 +66,50 @@
 # authentication.
 #- NickServIdentify
 
-# CTCP: Enables replying to CTCP commands. The supported comamnds are PING,
+# CTCP: Enables replying to CTCP commands.  The supported comamnds are PING,
 # VERSION, TIME and SOURCE.
 #- CTCP
 
+# ChannelLogger: Enables logging of the channels the bot is in.
+#- ChannelLogger
+
+# CommandHandler: Enables the use of bot commands.
+#- CommandHandler
+
+
+# COMMAND MODULES
+# These are special modules that allow users to interact with the bot through
+# commands.  To be able to use any of these command modules, the CommandHandler
+# module MUST be loaded.
+
+# Join: Enables the Join command, which lets users request the bot in a given
+# channel.
+#- Join
+
+# Modules: Enables the Modules command, which lists all the modules that are
+# currently loaded.
+#- Modules
+
+# Say: Enables the Say command, which lets the bot echo a message or action
+# given by the user.
+#- Say
+
 
 # MODULE CONFIGURATION
-# Some modules provide additional configuration options.  These are specified
-# by a dictionary that has the name of the module as its name.  In this
-# dictionary the config values for the module can be specified.  They can also
+# Some modules provide additional configuration options.  They can also
 # be specified per server.
 
-# NickServIdentify
-#NickServIdentify:
-
-# nick: string (default: "NickServ")
+# nickserv_nick: string (NickServIdentify, default: "NickServ")
 # The name of authentication service.
-# pass: string (no default)
+#nickserv_nick: "NickServ"
+
+# nickserv_pass: string (NickServIdentify, no default)
 # The password that will be sent to the authentication service.
-#  nick: "NickServ"
-#  pass: null
+#nickserv_pass: null
+
+# logpath: string (ChannelLogger, default: "logs")
+# The folder where the channel logs will be stored.
+#logpath: "logs"
+
+# command_prefix: string (CommandHandler, default: "!")
+# The prefix that has to be used to run a bot command.
