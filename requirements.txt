@@ -1,4 +1,4 @@
-argparse>=1.2.2
+argparse>=1.2.1
 pyOpenSSL==0.13
 PyYAML>=3.11
 Twisted>=14.0.2
