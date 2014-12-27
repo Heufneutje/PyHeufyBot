@@ -46,14 +46,14 @@ class HeufyBotConnection(irc.IRC):
     def handleCommand(self, command, prefix, params):
         self.log(prefix, command, " ".join(params), level=logging.DEBUG)
         if isNumber(command):
-            self.bot.moduleHandler.runGenericAction("receivenumeric-{}".format(command), params)
+            self.bot.moduleHandler.runGenericAction("receivenumeric-{}".format(command), self.name, params)
             self.inputHandler.handleNumeric(command, prefix, params)
         else:
-            self.bot.moduleHandler.runGenericAction("receivecommand-{}".format(command), params)
+            self.bot.moduleHandler.runGenericAction("receivecommand-{}".format(command), self.name, params)
             self.inputHandler.handleCommand(command, prefix, params)
 
     def sendMessage(self, command, *parameter_list, **prefix):
-        self.bot.moduleHandler.runGenericAction("sendcommand-{}".format(command), *parameter_list)
+        self.bot.moduleHandler.runGenericAction("sendcommand-{}".format(command), self.name, *parameter_list)
         self.log(command, " ".join(parameter_list), level=logging.DEBUG)
         irc.IRC.sendMessage(self, command, *parameter_list, **prefix)
 
