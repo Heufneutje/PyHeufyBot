@@ -326,8 +326,9 @@ class InputHandler(object):
         flags = list(params[6])
         if flags.pop(0) == "G":
             user.isAway = True
-        if len(flags) > 0 and flags.pop(0) == "*":
+        if len(flags) > 0 and flags[0] == "*":
             user.isOper = True
+            flags.pop(0)
         if params[1] in self.connection.channels:
             channel = self.connection.channels[params[1]]
             channel.ranks[params[5]] = ""
