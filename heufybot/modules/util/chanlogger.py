@@ -45,6 +45,7 @@ class ChannelLogger(BotModule):
 
     def logMODE(self, server, user, channel, modes, params, adding):
         operation = "+" if adding else "-"
+        params = [x for x in params if x is not None]
         message = "-- {} sets mode: {}{} {}".format(user.nick, operation, "".join(modes), " ".join(params))
         self._writeLog(server, channel.name, message)
 
