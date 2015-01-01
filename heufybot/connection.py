@@ -32,6 +32,9 @@ class HeufyBotConnection(irc.IRC):
         self.transport.fullDisconnect = False
         self.bot.servers[self.name] = self
 
+        # Enable modules
+        self.bot.moduleHandler.enableModulesForServer(self.name)
+
         # Start logging in
         self.nick = self.bot.config.serverItemWithDefault(self.name, "nickname", "HeufyBot")
         self.ident = self.bot.config.serverItemWithDefault(self.name, "username", self.nick)

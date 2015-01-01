@@ -18,6 +18,11 @@ class HeufyBotFactory(ReconnectingClientFactory):
         ReconnectingClientFactory.clientConnectionFailed(self, connector, reason)
 
     def clientConnectionLost(self, connector, reason):
+        # Disable modules
+        if connector.host in self.bot.moduleHandler.enabledModules:
+            del self.bot.moduleHandler.enabledModules[connector.host]
+
+        # Check whether or not we should reconnect
         if hasattr(connector.transport, "fullDisconnect") and connector.transport.fullDisconnect:
             log.msg("Connection to {} was closed cleanly.".format(connector.host))
             ClientFactory.clientConnectionLost(self, connector, reason)

@@ -9,6 +9,7 @@ class ModuleHandler(object):
     def __init__(self, bot):
         self.bot = bot
         self.loadedModules = {}
+        self.enabledModules = {}
         self.actions = {}
 
     def loadModule(self, name):
@@ -51,6 +52,16 @@ class ModuleHandler(object):
         # Add the module to the list of loaded modules and call its load hooks
         self.loadedModules[module.name] = module
         module.load()
+
+        # Enable the module for the appropriate servers
+        for server, moduleList in self.enabledModules.iteritems():
+            if server not in self.enabledModules:
+                self.enabledModules[server] = []
+            if "disabled_modules" not in self.bot.config["servers"][server]:
+                self.enabledModules[server].append(module)
+            elif module not in self.bot.config["servers"][server]["disabled_modules"]:
+                self.enabledModules[server].append(module)
+
         self.runGenericAction("moduleload", module.name)
 
     def unloadModule(self, name, fullUnload=True):
@@ -64,6 +75,9 @@ class ModuleHandler(object):
         for action in module.actions():
             self.actions[action[0]].remove((action[2], action[1]))
         del self.loadedModules[name]
+        for moduleList in self.enabledModules.itervalues():
+            if name in moduleList:
+                del moduleList[name]
 
     def reloadModule(self, name):
         self.unloadModule(name, False)
@@ -74,26 +88,32 @@ class ModuleHandler(object):
         for module in getPlugins(IBotModule, heufybot.modules):
             if module.name in self.loadedModules:
                 continue
-            if module.core or module.name in requestedModules:
+            if module.name in requestedModules:
                 self._loadModuleData(module)
         for module in requestedModules:
             if module not in self.loadedModules:
                 log.msg("Module {} failed to load.".format(module), level=logging.ERROR)
 
+    def enableModulesForServer(self, server):
+        if server not in self.enabledModules:
+            self.enabledModules[server] = []
+        for module in self.loadedModules.iterkeys():
+            if "disabled_modules" not in self.bot.config["servers"][server]:
+                self.enabledModules[server].append(module)
+            elif module not in self.bot.config["servers"][server]["disabled_modules"]:
+                self.enabledModules[server].append(module)
+
     def useModuleOnServer(self, moduleName, serverName):
         if moduleName not in self.loadedModules:
             # A module gave us a bogus name. Reject it to prevent weird things.
             return False
-        if self.loadedModules[moduleName].core:
-            # Core modules can never be blacklisted.
+        if not self.loadedModules[moduleName].canDisable:
+            # Modules that can't be disabled are always allowed.
             return True
-        if not self.loadedModules[moduleName].blacklistable:
-            # Modules that can't be blacklisted are also always allowed.
-            return True
-        if "module_blacklist" not in self.bot.config["servers"][serverName]:
+        if "disabled_modules" not in self.bot.config["servers"][serverName]:
             # This server doesn't specify a blacklist, so all modules are allowed.
             return True
-        if moduleName not in self.bot.config["servers"][serverName]["module_blacklist"]:
+        if moduleName not in self.bot.config["servers"][serverName]["disabled_modules"]:
             return True
         return False
 
