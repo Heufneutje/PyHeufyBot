@@ -1,4 +1,5 @@
 from twisted.internet.protocol import ClientFactory, ReconnectingClientFactory
+from twisted.python import log
 from heufybot.connection import HeufyBotConnection
 
 
@@ -9,10 +10,17 @@ class HeufyBotFactory(ReconnectingClientFactory):
         self.bot = bot
 
     def buildProtocol(self, addr):
+        self.resetDelay()
         return self.protocol(self.bot)
+
+    def clientConnectionFailed(self, connector, reason):
+        log.msg("Client connection to {} failed (Reason: {}).".format(connector.host, reason.value))
+        ReconnectingClientFactory.clientConnectionFailed(self, connector, reason)
 
     def clientConnectionLost(self, connector, reason):
         if hasattr(connector.transport, "fullDisconnect") and connector.transport.fullDisconnect:
+            log.msg("Connection to {} was closed cleanly.".format(connector.host))
             ClientFactory.clientConnectionLost(self, connector, reason)
+            self.bot.countConnections()
         else:
             ReconnectingClientFactory.clientConnectionLost(self, connector, reason)

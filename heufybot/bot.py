@@ -3,7 +3,7 @@ from twisted.python import log
 from heufybot.config import Config
 from heufybot.factory import HeufyBotFactory
 from heufybot.modulehandler import ModuleHandler
-import logging
+import logging, os, sys
 
 # Try to enable SSL support
 try:
@@ -58,3 +58,31 @@ class HeufyBot(object):
         else:
             log.msg("Attempting connection to {}/{}...".format(host, port))
             reactor.connectTCP(host, port, self.connectionFactory)
+
+    def disconnectServer(self, host, quitMessage = "Quitting..."):
+        if host not in self.servers:
+            error = "A disconnect from {} was requested, but this connection doesn't exist.".format(host)
+            log.msg(error, level=logging.WARNING)
+            return error
+        self.servers[host].disconnect(quitMessage, True)
+
+    def reconnectServer(self, host, quitMessage = "Reconnecting..."):
+        if host not in self.servers:
+            error = "A reconnect to {} was requested, but this connection doesn't exist.".format(host)
+            log.msg(error, level=logging.WARNING)
+            return error
+        self.servers[host].disconnect(quitMessage)
+
+    def shutdown(self, quitMessage = "Shutting down..."):
+        serversCopy = self.servers.copy()
+        for server in serversCopy.itervalues():
+            server.disconnect(quitMessage, True)
+
+    def restart(self, quitMessage = "Restarting..."):
+        reactor.addSystemEventTrigger("after", "shutdown", lambda: os.execl(sys.executable, sys.executable, *sys.argv))
+        self.shutdown(quitMessage)
+
+    def countConnections(self):
+        if len(self.servers) == 0:
+            log.msg("No more connections alive, stopping reactor...")
+            reactor.stop()

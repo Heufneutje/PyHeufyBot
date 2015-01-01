@@ -31,6 +31,9 @@ class InputHandler(object):
     def handleUnknown(self, command, prefix, params):
         pass
 
+    def _handleERROR(self, nick, ident, host, params):
+        self.connection.log("Connection terminated ({}).".format(params[0]))
+
     def _handleINVITE(self, nick, ident, host, params):
         if nick in self.connection.users:
             inviter = self.connection.users[nick]
