@@ -85,6 +85,10 @@ $ functionality additional modules can be loaded.
 # commands.  To be able to use any of these command modules, the CommandHandler
 # module MUST be loaded.
 
+# ConnectionControl: Enables the Connect, Disconnect, Reconnect, Shutdown and
+# Restart commands to provide control over the bot's connections at runtime.
+#- ConnectionControl
+
 # Join: Enables the Join command, which lets users request the bot in a given
 # channel.
 #- Join
