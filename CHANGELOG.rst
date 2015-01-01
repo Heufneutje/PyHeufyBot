@@ -2,6 +2,15 @@
 PyHeufyBot Changelog
 ====================
 
+0.2
+===
+
+**0.2.0**
+  * Various improvements to the module API, namely disabling a module for
+    certain servers.
+  * Addition of the ModuleLoader, Admin and ConnectionControl modules, to
+    provide control over the bot at runtime.
+
 0.1
 ===
 
