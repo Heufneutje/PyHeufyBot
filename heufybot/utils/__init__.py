@@ -4,6 +4,7 @@ def _enum(**enums):
     return type('Enum', (), enums)
 
 ModeType = _enum(LIST=0, PARAM_SET=1, PARAM_UNSET=2, NO_PARAM=3)
+ModuleLoadType = _enum(LOAD=0, UNLOAD=1, ENABLE=2, DISABLE=3)
 
 def isNumber(s):
     try:

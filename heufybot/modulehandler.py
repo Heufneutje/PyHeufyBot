@@ -2,6 +2,7 @@ from twisted.plugin import getPlugins
 from twisted.plugin import log
 from twisted.python.rebuild import rebuild
 from heufybot.moduleinterface import IBotModule
+from heufybot.utils import ModuleLoadType
 import heufybot.modules, importlib, logging
 
 
@@ -15,18 +16,19 @@ class ModuleHandler(object):
     def loadModule(self, name):
         for module in getPlugins(IBotModule, heufybot.modules):
             if not module.name:
-                raise ModuleLoaderError("???", "Module did not provide a name")
+                raise ModuleLoaderError("???", "Module did not provide a name.", ModuleLoadType.LOAD)
             if module.name == name:
                 rebuild(importlib.import_module(module.__module__))
                 self._loadModuleData(module)
-                break
+                return module.name
+        raise ModuleLoaderError(name, "The module could not be found.", ModuleLoadType.LOAD)
 
     def _loadModuleData(self, module):
         # Make sure the module meets the requirements and is not already loaded
         if not IBotModule.providedBy(module):
-            raise ModuleLoaderError("???", "Module doesn't implement the module interface")
+            raise ModuleLoaderError("???", "Module doesn't implement the module interface.", ModuleLoadType.LOAD)
         if module.name in self.loadedModules:
-            raise ModuleLoaderError(module.name, "Module is already loaded")
+            raise ModuleLoaderError(module.name, "Module is already loaded.", ModuleLoadType.LOAD)
 
         # We're good at this point so we can start initializing the module now
         module.hookBot(self.bot)
@@ -54,34 +56,51 @@ class ModuleHandler(object):
         module.load()
 
         # Enable the module for the appropriate servers
-        for server, moduleList in self.enabledModules.iteritems():
-            if server not in self.enabledModules:
-                self.enabledModules[server] = []
+        for server in self.bot.servers.iterkeys():
             if "disabled_modules" not in self.bot.config["servers"][server]:
-                self.enabledModules[server].append(module)
+                self.enableModule(module.name, server)
             elif module not in self.bot.config["servers"][server]["disabled_modules"]:
-                self.enabledModules[server].append(module)
+                self.enableModule(module.name, server)
 
         self.runGenericAction("moduleload", module.name)
 
-    def unloadModule(self, name, fullUnload=True):
+    def unloadModule(self, name):
         if name not in self.loadedModules:
-            raise ModuleLoaderError(name, "The module is not loaded")
+            raise ModuleLoaderError(name, "The module is not loaded.", ModuleLoadType.UNLOAD)
         module = self.loadedModules[name]
-        if module.core and fullUnload:
-            raise ModuleLoaderError(name, "Core modules cannot be unloaded")
         module.unload()
         self.runGenericAction("moduleunload", module.name)
         for action in module.actions():
             self.actions[action[0]].remove((action[2], action[1]))
+        for server, moduleList in self.enabledModules.iteritems():
+            if module.name in moduleList:
+                self.disableModule(module.name, server)
         del self.loadedModules[name]
-        for moduleList in self.enabledModules.itervalues():
-            if name in moduleList:
-                del moduleList[name]
+        return name
 
     def reloadModule(self, name):
-        self.unloadModule(name, False)
-        self.loadModule(name)
+        self.unloadModule(name)
+        return self.loadModule(name)
+
+    def enableModule(self, module, server):
+        if module not in self.loadedModules:
+            raise ModuleLoaderError(module, "The module is not loaded.", ModuleLoadType.ENABLE)
+        if server not in self.enabledModules:
+            self.enabledModules[server] = []
+        if module in self.enabledModules[server]:
+            raise ModuleLoaderError(module, "The module is already enabled.", ModuleLoadType.ENABLE)
+        self.enabledModules[server].append(module)
+        return module
+
+    def disableModule(self, module, server):
+        if module not in self.loadedModules:
+            raise ModuleLoaderError(module, "The module is not loaded.", ModuleLoadType.DISABLE)
+        if server not in self.enabledModules:
+            self.enabledModules[server] = []
+        if module not in self.enabledModules[server]:
+            raise ModuleLoaderError(module, "The module is not enabled.", ModuleLoadType.DISABLE)
+        self.enabledModules[server].remove(module)
+        return module
 
     def loadAllModules(self):
         requestedModules = self.bot.config.itemWithDefault("modules", [])
@@ -103,17 +122,14 @@ class ModuleHandler(object):
             elif module not in self.bot.config["servers"][server]["disabled_modules"]:
                 self.enabledModules[server].append(module)
 
-    def useModuleOnServer(self, moduleName, serverName):
-        if moduleName not in self.loadedModules:
-            # A module gave us a bogus name. Reject it to prevent weird things.
+    def useModuleOnServer(self, module, server):
+        if module not in self.loadedModules or server not in self.enabledModules:
+            # A module gave us a bogus name or the server has no enabled modules. Reject it to prevent weird things.
             return False
-        if not self.loadedModules[moduleName].canDisable:
+        if not self.loadedModules[module].canDisable:
             # Modules that can't be disabled are always allowed.
             return True
-        if "disabled_modules" not in self.bot.config["servers"][serverName]:
-            # This server doesn't specify a blacklist, so all modules are allowed.
-            return True
-        if moduleName not in self.bot.config["servers"][serverName]["disabled_modules"]:
+        if module in self.enabledModules[server]:
             return True
         return False
 
@@ -162,9 +178,18 @@ class ModuleHandler(object):
         return None
 
 class ModuleLoaderError(Exception):
-    def __init__(self, module, message):
+    def __init__(self, module, message, loadType):
         self.module = module
         self.message = message
+        self.loadType = loadType
 
     def __str__(self):
-        return "Module {} could not be loaded/unloaded: {}".format(self.module, self.message)
+        if self.loadType == ModuleLoadType.LOAD:
+            return "Module {} could not be loaded: {}".format(self.module, self.message)
+        elif self.loadType == ModuleLoadType.UNLOAD:
+            return "Module {} could not be unloaded: {}".format(self.module, self.message)
+        elif self.loadType == ModuleLoadType.ENABLE:
+            return "Module {} could not be enabled: {}".format(self.module, self.message)
+        elif self.loadType == ModuleLoadType.DISABLE:
+            return "Module {} could not be disabled: {}".format(self.module, self.message)
+        return "Error: {}".format(self.message)
