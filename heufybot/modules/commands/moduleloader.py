@@ -13,6 +13,10 @@ class ModuleLoaderCommands(BotCommand):
     def triggers(self):
         return ["load", "unload", "reload", "enable", "disable"]
 
+    def checkPermissions(self, server, source, user, command):
+        return not self.bot.moduleHandler.runActionUntilFalse("checkadminpermission", server, source, user,
+                                                              "module-control")
+
     def execute(self, server, source, command, params, data):
         output = self.bot.servers[server].outputHandler
         if command == "load" and len(params) < 1:

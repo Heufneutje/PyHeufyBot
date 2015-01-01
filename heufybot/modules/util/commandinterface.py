@@ -14,19 +14,19 @@ class BotCommand(BotModule):
         return []
 
     def _handleCommand(self, data):
-        if self._shouldExecute(data["server"], data["command"]):
+        if self._shouldExecute(data["server"], data["source"], data["user"], data["command"]):
             self.execute(data["server"], data["source"], data["command"].lower(), data["params"], data)
 
-    def _shouldExecute(self, server, command):
+    def _shouldExecute(self, server, source, user, command):
         if not self.bot.moduleHandler.useModuleOnServer(self.name, server):
             return False
         if command.lower() not in [x.lower() for x in self.triggers()]:
             return False
-        if not self.checkPermissions():
+        if not self.checkPermissions(server, source, user, command):
             return False
         return True
 
-    def checkPermissions(self):
+    def checkPermissions(self, server, source, user, command):
         return True # This function should be implemented by the commands that inherit from this
 
     def execute(self, server, source, command, params, data):
