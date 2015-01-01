@@ -26,13 +26,13 @@
 # The servers the bot will connect to on startup.  The keys in this dictionary
 # represent the host of the server to connect to.  Servers can override most
 # global settings of the bot, like the nickname.  A special setting is the
-# "module_blacklist", which cannot be used as a global setting and MUST be
+# "disabled_modules", which cannot be used as a global setting and MUST be
 # defined in the servers dictionary.  Any module in this list will be ignored
 # for that specific server.
 #servers:
 #  irc.example.org:
 #    nickname: "OtherBot"
-#    module_blacklist:
+#    disabled_modules:
 #    - CTCP
 
 # port: int (default: 6667)
@@ -54,27 +54,30 @@
 #  "#channel2": "channelpassword"
 
 # MODULES
-# With only the core and core modules the bot will not do much more than idle.
-# For extra functionality additional modules can be loaded.
+# With only the core the bot will not do much more than idle.  For extra
+$ functionality additional modules can be loaded.
 
 # modules: list (default: empty list)
-# The modules the bot will load on startup.  Keep in mind that core modules
-# will always be loaded, regardless of whether there defined in here.
+# The modules the bot will load on startup.
 #modules: # Uncomment this line if you decide to load any modules.
 
-# NickServIdentify: Enables sending a password to IRC services for
-# authentication.
-#- NickServIdentify
-
-# CTCP: Enables replying to CTCP commands.  The supported comamnds are PING,
-# VERSION, TIME and SOURCE.
-#- CTCP
+# Admin: Enables permission checks for command modules, based on a user's
+# hostmask.
+#- Admin
 
 # ChannelLogger: Enables logging of the channels the bot is in.
 #- ChannelLogger
 
 # CommandHandler: Enables the use of bot commands.
 #- CommandHandler
+
+# CTCP: Enables replying to CTCP commands.  The supported comamnds are PING,
+# VERSION, TIME and SOURCE.
+#- CTCP
+
+# NickServIdentify: Enables sending a password to IRC services for
+# authentication.
+#- NickServIdentify
 
 
 # COMMAND MODULES
@@ -85,6 +88,11 @@
 # Join: Enables the Join command, which lets users request the bot in a given
 # channel.
 #- Join
+
+# ModuleLoader: Enables the Load, Unload, Reload, Enable and Disable commands.
+# These commands are used to control what modules are loaded and used at
+# runtime.
+$- ModuleLoader
 
 # Modules: Enables the Modules command, which lists all the modules that are
 # currently loaded.
@@ -99,13 +107,11 @@
 # Some modules provide additional configuration options.  They can also
 # be specified per server.
 
-# nickserv_nick: string (NickServIdentify, default: "NickServ")
-# The name of authentication service.
-#nickserv_nick: "NickServ"
-
-# nickserv_pass: string (NickServIdentify, no default)
-# The password that will be sent to the authentication service.
-#nickserv_pass: null
+# bot_admins: list (Admin, default: empty list)
+# The users that can use command modules that require admin permissions.  The
+# values of the list are hostmasks with possible wildcards.
+#bot_admins:
+#  - someuser!*@localhost
 
 # logpath: string (ChannelLogger, default: "logs")
 # The folder where the channel logs will be stored.
@@ -113,3 +119,12 @@
 
 # command_prefix: string (CommandHandler, default: "!")
 # The prefix that has to be used to run a bot command.
+#command_prefix: "!"
+
+# nickserv_nick: string (NickServIdentify, default: "NickServ")
+# The name of authentication service.
+#nickserv_nick: "NickServ"
+
+# nickserv_pass: string (NickServIdentify, no default)
+# The password that will be sent to the authentication service.
+#nickserv_pass: null
