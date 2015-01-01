@@ -22,7 +22,7 @@ class BotCommand(BotModule):
             return False
         if command.lower() not in [x.lower() for x in self.triggers()]:
             return False
-        if not self.checkPermissions(server, source, user, command):
+        if not self.checkPermissions(server, source, user, command.lower()):
             return False
         return True
 

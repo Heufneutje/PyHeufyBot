@@ -12,6 +12,12 @@ class SayCommand(BotCommand):
     def triggers(self):
         return ["say", "sayto", "do", "doto"]
 
+    def checkPermissions(self, server, source, user, command):
+        if command == "sayto" or command == "doto":
+            return not self.bot.moduleHandler.runActionUntilFalse("checkadminpermission", server, source, user,
+                                                                  "bot-conversation")
+        return True
+
     def execute(self, server, source, command, params, data):
         if command == "say" and len(params) < 1 or command == "sayto" and len(params) < 2:
             self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Say what?")
