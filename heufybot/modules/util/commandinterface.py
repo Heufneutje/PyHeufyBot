@@ -8,14 +8,29 @@ class BotCommand(BotModule):
         self.bot = bot
 
     def actions(self):
-        return [ ("botmessage", 1, self._handleCommand) ]
+        return [ ("botmessage", 1, self.handleCommand),
+                 ("commandhelp", 1, self.displayHelp) ]
+
+    def load(self):
+        self.help = "This module does not provide a help text."
+        self.commandHelp = {}
 
     def triggers(self):
         return []
 
-    def _handleCommand(self, data):
+    def handleCommand(self, data):
         if self._shouldExecute(data["server"], data["source"], data["user"], data["command"]):
             self.execute(data["server"], data["source"], data["command"].lower(), data["params"], data)
+
+    def displayHelp(self, request):
+        if request.lower() == self.name.lower():
+            return self.help
+        if request.lower() in [x.lower() for x in self.triggers()]:
+            try:
+                return self.commandHelp[request.lower()]
+            except KeyError:
+                return self.help
+        return None
 
     def _shouldExecute(self, server, source, user, command):
         if not self.bot.moduleHandler.useModuleOnServer(self.name, server):
