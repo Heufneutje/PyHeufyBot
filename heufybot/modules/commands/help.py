@@ -22,7 +22,7 @@ class HelpCommand(BotCommand):
             for module in self.bot.moduleHandler.enabledModules[server]:
                 if isinstance(self.bot.moduleHandler.loadedModules[module], BotCommand):
                     commandModules.append(module)
-            message = "Loaded command modules: {}".format(", ".join(commandModules))
+            message = "Loaded command modules: {}".format(", ".join(sorted(commandModules)))
             self.bot.servers[server].outputHandler.cmdPRIVMSG(source, message)
         else:
             helpText = self.bot.moduleHandler.runActionUntilValue("commandhelp", server, params[0])
