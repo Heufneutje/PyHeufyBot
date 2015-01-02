@@ -22,7 +22,9 @@ class BotCommand(BotModule):
         if self._shouldExecute(data["server"], data["source"], data["user"], data["command"]):
             self.execute(data["server"], data["source"], data["command"].lower(), data["params"], data)
 
-    def displayHelp(self, request):
+    def displayHelp(self, server, request):
+        if not self.bot.moduleHandler.useModuleOnServer(self.name, server):
+            return None
         if request.lower() == self.name.lower():
             return self.help
         if request.lower() in [x.lower() for x in self.triggers()]:

@@ -12,6 +12,18 @@ class ConnectionControlCommands(BotCommand):
     def triggers(self):
         return ["connect", "disconnect", "reconnect", "shutdown", "restart"]
 
+    def load(self):
+        self.help = "Commands: connect <server>, disconnect (<server>) (<quitmessage>), reconnect (<server>) (" \
+                    "<quitmessage>), shutdown (<quitmessage>), restart (<quitmessage>) | Provides control over the " \
+                    "bot's connections."
+        self.commandHelp = {
+            "connect": "connect <server> | Connect to a server that's defined in the bot's config.",
+            "disconnect": "disconnect (<server>) (<quitmessage>) | Disconnect from a server the bot is currently on.",
+            "reconnect": "reconnect (<server>) (<quitmessage>) | Reconnect to a server the bot is currently on.",
+            "shutdown": "shutdown (<quitmessage>) | Shutdown the bot.",
+            "restart": "restart (<quitmessage>) | Perform a full restart of the bot."
+        }
+
     def checkPermissions(self, server, source, user, command):
         return not self.bot.moduleHandler.runActionUntilFalse("checkadminpermission", server, source, user,
                                                               "connection-control")

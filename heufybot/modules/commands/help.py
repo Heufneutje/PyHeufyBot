@@ -13,7 +13,8 @@ class HelpCommand(BotCommand):
         return ["help"]
 
     def load(self):
-        self.help = "Commands: help (<command/trigger>) | Displays help for a given command module or command trigger"
+        self.help = "Commands: help (<command/trigger>) | Displays help for a given command module or command trigger " \
+                    "or show a list of all enabled command modules."
 
     def execute(self, server, source, command, params, data):
         if len(params) < 1:
@@ -24,7 +25,7 @@ class HelpCommand(BotCommand):
             message = "Loaded command modules: {}".format(", ".join(commandModules))
             self.bot.servers[server].outputHandler.cmdPRIVMSG(source, message)
         else:
-            helpText = self.bot.moduleHandler.runActionUntilValue("commandhelp", params[0])
+            helpText = self.bot.moduleHandler.runActionUntilValue("commandhelp", server, params[0])
             if helpText:
                 self.bot.servers[server].outputHandler.cmdPRIVMSG(source, helpText)
             else:

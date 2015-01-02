@@ -12,6 +12,9 @@ class ModulesCommand(BotCommand):
     def triggers(self):
         return ["modules"]
 
+    def load(self):
+        self.help = "Commands: modules | Show a list of all loaded modules."
+
     def execute(self, server, source, command, params, data):
         loadedModules = sorted(self.bot.moduleHandler.loadedModules.keys())
         self.bot.servers[server].outputHandler.cmdNOTICE(source, "Loaded modules: {}".format(", ".join(loadedModules)))

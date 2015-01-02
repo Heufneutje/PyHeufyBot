@@ -12,6 +12,9 @@ class JoinCommand(BotCommand):
     def triggers(self):
         return ["join"]
 
+    def load(self):
+        self.help = "Commands: join <channel> | Make the bot join a given channel."
+
     def execute(self, server, source, command, params, data):
         if len(params) < 1:
             self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Join what?")

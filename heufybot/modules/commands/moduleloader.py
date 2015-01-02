@@ -13,6 +13,17 @@ class ModuleLoaderCommands(BotCommand):
     def triggers(self):
         return ["load", "unload", "reload", "enable", "disable"]
 
+    def load(self):
+        self.help = "Commands: load <module>, unload <module>, reload <module>, enable <module>, disable <module> | " \
+                    "Provides control over what modules are loaded."
+        self.commandHelp = {
+            "load": "load <module> | Load a given module.",
+            "unload": "unload <module> | Unload a given module.",
+            "reload": "reload <module> | Reload a given module.",
+            "enable": "enable <module> | Enable a given module for the current server",
+            "disable": "disable <module> | Disable a given module for the current server"
+        }
+
     def checkPermissions(self, server, source, user, command):
         return not self.bot.moduleHandler.runActionUntilFalse("checkadminpermission", server, source, user,
                                                               "module-control")

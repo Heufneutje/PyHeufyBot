@@ -12,6 +12,18 @@ class SayCommand(BotCommand):
     def triggers(self):
         return ["say", "sayto", "do", "doto"]
 
+    def load(self):
+        self.help = "Commands: say <message>, sayto <target> <message>, do <message>, doto <target> <message> | Make " \
+                    "the bot say certain things."
+        self.commandHelp = {
+            "say": "say <message> | Make the bot say a given thing in the current channel or query.",
+            "sayto": "sayto <target> <message> | Make the bot say a given thing in a given location. Requires admin "
+                     "permission.",
+            "do": "do <message> | Make the bot do a given thing in the current channel or query.",
+            "doto": "doto <target> <message> | Make the bot do a given thing in a given location. Requires admin "
+                    "permission"
+        }
+
     def checkPermissions(self, server, source, user, command):
         if command == "sayto" or command == "doto":
             return not self.bot.moduleHandler.runActionUntilFalse("checkadminpermission", server, source, user,
