@@ -17,7 +17,7 @@ class ModuleHandler(object):
         for module in getPlugins(IBotModule, heufybot.modules):
             if not module.name:
                 raise ModuleLoaderError("???", "Module did not provide a name.", ModuleLoadType.LOAD)
-            if module.name == name:
+            if module.name.lower() == name.lower():
                 rebuild(importlib.import_module(module.__module__))
                 self._loadModuleData(module)
                 return module.name
@@ -65,9 +65,10 @@ class ModuleHandler(object):
         self.runGenericAction("moduleload", module.name)
 
     def unloadModule(self, name):
-        if name not in self.loadedModules:
+        lowercaseMapping = dict((k.lower(), v) for k, v in self.loadedModules.iteritems())
+        if name.lower() not in lowercaseMapping:
             raise ModuleLoaderError(name, "The module is not loaded.", ModuleLoadType.UNLOAD)
-        module = self.loadedModules[name]
+        module = lowercaseMapping[name.lower()]
         module.unload()
         self.runGenericAction("moduleunload", module.name)
         for action in module.actions():
@@ -75,43 +76,44 @@ class ModuleHandler(object):
         for server, moduleList in self.enabledModules.iteritems():
             if module.name in moduleList:
                 self.disableModule(module.name, server)
-        del self.loadedModules[name]
-        return name
+        del self.loadedModules[module.name]
+        return module.name
 
     def reloadModule(self, name):
         self.unloadModule(name)
         return self.loadModule(name)
 
     def enableModule(self, module, server):
-        if module not in self.loadedModules:
+        lowercaseLoaded = dict((k.lower(), v) for k, v in self.loadedModules.iteritems())
+        if module.lower() not in lowercaseLoaded:
             raise ModuleLoaderError(module, "The module is not loaded.", ModuleLoadType.ENABLE)
         if server not in self.enabledModules:
             self.enabledModules[server] = []
-        if module in self.enabledModules[server]:
-            raise ModuleLoaderError(module, "The module is already enabled.", ModuleLoadType.ENABLE)
-        self.enabledModules[server].append(module)
-        return module
+        properCaseName = lowercaseLoaded[module.lower()].name
+        if properCaseName in self.enabledModules[server]:
+            raise ModuleLoaderError(properCaseName, "The module is already enabled.", ModuleLoadType.ENABLE)
+        self.enabledModules[server].append(properCaseName)
+        return properCaseName
 
     def disableModule(self, module, server):
-        if module not in self.loadedModules:
+        lowercaseLoaded = dict((k.lower(), v) for k, v in self.loadedModules.iteritems())
+        if module.lower() not in lowercaseLoaded:
             raise ModuleLoaderError(module, "The module is not loaded.", ModuleLoadType.DISABLE)
         if server not in self.enabledModules:
             self.enabledModules[server] = []
-        if module not in self.enabledModules[server]:
-            raise ModuleLoaderError(module, "The module is not enabled.", ModuleLoadType.DISABLE)
-        self.enabledModules[server].remove(module)
-        return module
+        properCaseName = lowercaseLoaded[module.lower()].name
+        if properCaseName not in self.enabledModules[server]:
+            raise ModuleLoaderError(properCaseName, "The module is not enabled.", ModuleLoadType.DISABLE)
+        self.enabledModules[server].remove(properCaseName)
+        return properCaseName
 
     def loadAllModules(self):
         requestedModules = self.bot.config.itemWithDefault("modules", [])
-        for module in getPlugins(IBotModule, heufybot.modules):
-            if module.name in self.loadedModules:
-                continue
-            if module.name in requestedModules:
-                self._loadModuleData(module)
         for module in requestedModules:
-            if module not in self.loadedModules:
-                log.msg("Module {} failed to load.".format(module), level=logging.ERROR)
+            try:
+                self.loadModule(module)
+            except ModuleLoaderError as e:
+                log.msg("Module {} failed to load: {}".format(module, e.message), level=logging.ERROR)
 
     def enableModulesForServer(self, server):
         if server not in self.enabledModules:
