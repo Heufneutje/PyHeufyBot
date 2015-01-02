@@ -89,6 +89,10 @@ $ functionality additional modules can be loaded.
 # Restart commands to provide control over the bot's connections at runtime.
 #- ConnectionControl
 
+# Help: Enables the Help commands to display a list of all enabled command
+# modules on a server or to get help for a specific command.
+#- Help
+
 # Join: Enables the Join command, which lets users request the bot in a given
 # channel.
 #- Join
