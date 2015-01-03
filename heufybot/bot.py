@@ -85,4 +85,6 @@ class HeufyBot(object):
     def countConnections(self):
         if len(self.servers) == 0:
             log.msg("No more connections alive, stopping reactor...")
+            # If we have any connections that have been started but never finished, stop trying
+            self.connectionFactory.stopTrying()
             reactor.stop()
