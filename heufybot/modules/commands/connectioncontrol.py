@@ -61,6 +61,6 @@ class ConnectionControlCommands(BotCommand):
             else:
                 self.bot.restart(" ".join(params))
         if message:
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, message)
+            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, message)
 
 connectionControlCommands = ConnectionControlCommands()
