@@ -1,5 +1,5 @@
 from twisted.plugin import getPlugins
-from twisted.plugin import log
+from twisted.python import log
 from twisted.python.rebuild import rebuild
 from heufybot.moduleinterface import IBotModule
 from heufybot.utils import ModuleLoadType
