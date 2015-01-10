@@ -114,6 +114,10 @@ $- ModuleLoader
 # given by the user.
 #- Say
 
+# Source: Enables the Source command, which provides a link to the source code
+# of the bot.
+#- Source
+
 
 # MODULE CONFIGURATION
 # Some modules provide additional configuration options.  They can also
