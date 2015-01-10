@@ -19,9 +19,9 @@ class HeufyBot(object):
         self.connectionFactory = HeufyBotFactory(self)
         self.moduleHandler = ModuleHandler(self)
         self.servers = {}
-        self.startup()
+        self._startup()
 
-    def startup(self):
+    def _startup(self):
         if not sslSupported:
             log.msg("The PyOpenSSL package was not found. You will not be able to connect to servers using SSL.",
                     level=logging.WARNING)
@@ -85,4 +85,6 @@ class HeufyBot(object):
     def countConnections(self):
         if len(self.servers) == 0:
             log.msg("No more connections alive, stopping reactor...")
+            # If we have any connections that have been started but never finished, stop trying
+            self.connectionFactory.stopTrying()
             reactor.stop()
