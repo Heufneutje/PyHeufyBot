@@ -106,6 +106,10 @@ $- ModuleLoader
 # currently loaded.
 #- Modules
 
+# Part: Enables the Part command, whichslets users request the bot to leave a
+# given channel.
+#- Part
+
 # Say: Enables the Say command, which lets the bot echo a message or action
 # given by the user.
 #- Say
