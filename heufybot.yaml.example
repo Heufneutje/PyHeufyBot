@@ -106,7 +106,11 @@ $- ModuleLoader
 # currently loaded.
 #- Modules
 
-# Part: Enables the Part command, whichslets users request the bot to leave a
+# Nick: Enables the Nick command, which lets users change the nickname of the
+# bot.
+#- Nick
+
+# Part: Enables the Part command, whichs lets users request the bot to leave a
 # given channel.
 #- Part
 
