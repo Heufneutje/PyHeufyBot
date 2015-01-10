@@ -48,7 +48,7 @@ class LogCommand(BotCommand):
             self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "I don't have that log.")
             return
 
-        url = "Log for {0} on {1}: http://heufneutje.net/logs/?channel={0}&network={2}&date={1}".format(source,
+        url = "Log for {0} on {1}: http://heufneutje.net/logs/?channel={0}&network={2}&date={1}".format(source[1:],
               logDate.strftime("%Y-%m-%d"), network)
 
         self.bot.servers[server].outputHandler.cmdPRIVMSG(source, url)
