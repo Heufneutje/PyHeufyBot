@@ -337,8 +337,12 @@ class InputHandler(object):
             channel.ranks[params[5]] = ""
             for status in flags:
                 channel.ranks[params[5]] += self.connection.supportHelper.statusSymbols[status]
-        user.hops = int(params[7].split()[0])
-        user.gecos = params[7].split()[1]
+        hopsGecos = params[7].split()
+        user.hops = int(hopsGecos[0])
+        if len(hopsGecos) > 1:
+            user.gecos = hopsGecos[1]
+        else:
+            user.gecos = "No info"
 
     def _handleNumeric353(self, prefix, params):
         # 353: RPL_NAMREPLY
