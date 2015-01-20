@@ -5,6 +5,10 @@ PyHeufyBot Changelog
 0.2
 ===
 
+**0.2.1**
+  * Addition of a bunch of new modules.
+  * A number of critical bug fixes.
+
 **0.2.0**
   * Various improvements to the module API, namely disabling a module for
     certain servers.
