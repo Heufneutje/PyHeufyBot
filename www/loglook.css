@@ -1,0 +1,61 @@
+/* CSS almost completely taken from T-M at www.moronic-works.co.uk with same adaptions and additions*/
+tr:nth-child(odd)
+{
+	background: #EEE;
+}
+tr:nth-child(even)
+{
+	background: #DDD;
+}
+td
+{
+	max-width: 900px;
+}
+
+.log
+{
+	border-collapse: collapse;
+	font-family: monospace;
+	font-size: 14px;
+}
+.user
+{
+	font-weight: bold;
+}
+.message .user
+{
+	text-align: right;
+	border-right: 1px solid #000;
+	padding-right: 0.5em;
+}
+.spacer
+{
+	text-align: right;
+	border-right: 1px solid #000;
+	padding-right: 0.5em;
+	color: #666;
+}
+.text
+{
+	word-wrap: break-word;
+	padding-left: 0.5em;
+}
+.action .text
+{
+	font-style: italic;
+}
+.other .text
+{
+	color: #666;
+}
+td.time a:link, td.time a:visited
+{
+        color: #666;
+        text-decoration: none;
+}
+
+td.time a:hover
+{
+        color: #0000ff;
+        text-decoration: underline;
+}
