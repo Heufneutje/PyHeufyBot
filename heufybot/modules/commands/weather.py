@@ -18,7 +18,15 @@ class WeatherCommand(BotCommand):
         return ["weather", "forecast"]
 
     def load(self):
-        self.help = "No help yet. I'm lazy."
+        self.help = "Commands: weather <lat> <lon>, weather <place>, weather <nickname>, forecast <lat> <lon>, " \
+                    "forecast <place>, forecast <nickname> | Get the current weather conditions or forecast for the " \
+                    "given latlon, place or user."
+        self.commandHelp = {
+            "weather": "weather <lat> <lon>, weather <place>, weather <nickname> | Get the current weather condidions "
+                       "for the given latlon, place or user.",
+            "forecast": "forecast <lat> <lon>, forecast <place>, forecast <nickname> | Get the forecast for the given "
+                        "latlon, place or user."
+        }
 
     def execute(self, server, source, command, params, data):
         # Use the user's nickname as a parameter if none were given
