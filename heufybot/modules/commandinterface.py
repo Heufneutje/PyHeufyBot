@@ -1,4 +1,5 @@
 from heufybot.moduleinterface import BotModule
+from heufybot.utils.logutils import logExceptionTrace
 
 
 class BotCommand(BotModule):
@@ -20,7 +21,12 @@ class BotCommand(BotModule):
 
     def handleCommand(self, data):
         if self._shouldExecute(data["server"], data["source"], data["user"], data["command"]):
-            self.execute(data["server"], data["source"], data["command"].lower(), data["params"], data)
+            try:
+                self.execute(data["server"], data["source"], data["command"].lower(), data["params"], data)
+            except Exception as ex:
+                error = "Python execution error while running command: {}: {}".format(type(ex).__name__, ex.message)
+                self.bot.servers[data["server"]].outputHandler.cmdPRIVMSG(data["source"], error)
+                logExceptionTrace(ex)
 
     def displayHelp(self, server, request):
         if not self.bot.moduleHandler.useModuleOnServer(self.name, server):
