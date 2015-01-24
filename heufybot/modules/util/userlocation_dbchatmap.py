@@ -15,7 +15,7 @@ class UserLocationChatmap(BotModule):
     def actions(self):
         return [ ("userlocation", 1, self.userLocationFromDBChatmap) ]
 
-    def userLocationFromDBChatmap(self, server, source, user):
+    def userLocationFromDBChatmap(self, server, source, user, displayErrors):
         if not self.bot.moduleHandler.useModuleOnServer(self.name, server):
             return
 
@@ -24,11 +24,13 @@ class UserLocationChatmap(BotModule):
         }
         result = self.bot.moduleHandler.runActionUntilValue("fetch-url", self.baseURL, params)
         if not result:
-            self.bot.outputHandler.servers[server].cmdPRIVMSG(source, "Chatmap is currently unavailable. Try again "
-                                                                      "later.")
+            if displayErrors:
+                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Chatmap is currently unavailable. Try again "
+                                                                          "later.")
             return None
         if result.text == ",":
-            self.bot.outputHandler.servers[server].cmdPRIVMSG(source, "You are not on the chatmap.")
+            if displayErrors:
+                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "You are not on the chatmap.")
             return {
                 "success": False
             }

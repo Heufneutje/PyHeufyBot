@@ -56,13 +56,13 @@ class WeatherCommand(BotCommand):
 
         # Try to determine the user's location from a nickname
         if self.bot.config.serverItemWithDefault(server, "use_userlocation", False):
-            userLoc = self.bot.moduleHandler.runActionUntilValue("userlocation", server, source, params[0])
+            userLoc = self.bot.moduleHandler.runActionUntilValue("userlocation", server, source, params[0], selfSearch)
             if selfSearch:
                 if not userLoc:
                     return
                 elif not userLoc["success"]:
                     return
-            if userLoc:
+            if userLoc and userLoc["success"]:
                 location = self.bot.moduleHandler.runActionUntilValue("geolocation-latlon", userLoc["lat"],
                                                                       userLoc["lon"])
                 if not location:
