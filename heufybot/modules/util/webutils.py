@@ -17,16 +17,18 @@ class WebUtils(BotModule):
     def actions(self):
         return [ ("fetch-url", 1, self.fetchURL) ]
 
-    def fetchURL(self, url, params = None):
+    def fetchURL(self, url, params = None, extraHeaders = None):
+        headers = { "user-agent": "Mozilla/5.0" }
+        if extraHeaders:
+            headers.update(extraHeaders)
         try:
-            request = requests.get(url, params=params)
+            request = requests.get(url, params=params, headers=headers)
             pageType = request.headers["content-type"]
             if not re.match("^(text/.*|application/((rss|atom|rdf)\+)?xml(;.*)?|application/(.*)json(;.*)?)$", pageType):
                 # Make sure we don't download any unwanted things
                 return None
-
             return request
-        except Exception as ex:
+        except requests.RequestException as ex:
             logExceptionTrace("Error while fetching from {}: {}".format(url, ex))
             return None
 
