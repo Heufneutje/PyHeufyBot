@@ -40,6 +40,10 @@
 # this in the "servers" dictionary.
 #port: 6667
 
+# ssl: boolean (default: false)
+# Whether or not the bot should try to connect securely.
+#ssl: false
+
 # password: string (default: null)
 # Uncomment this if the server(s) you want to connect to require(s) a password.
 # It is recommended to put this in the "servers" dictionary.
@@ -75,9 +79,20 @@ $ functionality additional modules can be loaded.
 # VERSION, TIME and SOURCE.
 #- CTCP
 
+# GeoLocation: Provides utility functions for getting coordinates for a given
+# location from the Google Maps API.  Requires WebUtils to be loaded.
+#- GeoLocation
+
 # NickServIdentify: Enables sending a password to IRC services for
 # authentication.
 #- NickServIdentify
+
+# UserLocationChatmap: Provides utility functions to determine the location of
+# a user on the Desert Bus Chatmap.  Requires WebUtils to be loaded.
+#- UserLocationChatmap
+
+# WebUtils: Enables fetch and posting of URLs.
+#- WebUtils
 
 
 # COMMAND MODULES
@@ -122,6 +137,11 @@ $- ModuleLoader
 # of the bot.
 #- Source
 
+# Weather: Enables the Weather and Forecast commmands, which provide the
+# weather or forecast for a place or user when requested.  Requires WebUtils
+# and GeoLocation to be loaded.
+#- Weather
+
 
 # MODULE CONFIGURATION
 # Some modules provide additional configuration options.  They can also
@@ -148,3 +168,8 @@ $- ModuleLoader
 # nickserv_pass: string (NickServIdentify, no default)
 # The password that will be sent to the authentication service.
 #nickserv_pass: null
+
+# use_userlocation: boolean (Weather, default: false)
+# If this is enabled, some modules that can make use of user locations will
+# utilize this.
+#use_userlocation: false
