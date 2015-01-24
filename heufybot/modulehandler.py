@@ -104,6 +104,8 @@ class ModuleHandler(object):
         properCaseName = lowercaseLoaded[module.lower()].name
         if properCaseName not in self.enabledModules[server]:
             raise ModuleLoaderError(properCaseName, "The module is not enabled.", ModuleLoadType.DISABLE)
+        if not self.loadedModules[properCaseName].canDisable:
+            raise ModuleLoaderError(properCaseName, "The module can never be disabled.", ModuleLoadType.DISABLE)
         self.enabledModules[server].remove(properCaseName)
         return properCaseName
 

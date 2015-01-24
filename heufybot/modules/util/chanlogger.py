@@ -10,6 +10,7 @@ class ChannelLogger(BotModule):
     implements(IPlugin, IBotModule)
 
     name = "ChannelLogger"
+    canDisable = False
 
     def hookBot(self, bot):
         self.bot = bot
