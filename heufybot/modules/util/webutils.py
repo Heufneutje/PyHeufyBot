@@ -1,8 +1,9 @@
 from twisted.plugin import IPlugin
+from twisted.python import log
 from heufybot.moduleinterface import BotModule, IBotModule
 from heufybot.utils.logutils import logExceptionTrace
 from zope.interface import implements
-import re, requests
+import logging, re, requests
 
 
 class WebUtils(BotModule):
@@ -27,6 +28,7 @@ class WebUtils(BotModule):
             if not re.match("^(text/.*|application/((rss|atom|rdf)\+)?xml(;.*)?|application/(.*)json(;.*)?)$", pageType):
                 # Make sure we don't download any unwanted things
                 return None
+            log.msg(request.url, level=logging.DEBUG)
             return request
         except requests.RequestException as ex:
             logExceptionTrace("Error while fetching from {}: {}".format(url, ex))
