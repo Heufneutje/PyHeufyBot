@@ -21,8 +21,14 @@ class WeatherCommand(BotCommand):
         self.help = "No help yet. I'm lazy."
 
     def execute(self, server, source, command, params, data):
+        # Use the user's nickname as a parameter if none were given
         if len(params) == 0:
-            params[0] = data["user"].nick
+            params.append(data["user"].nick)
+            selfSearch = True
+        else:
+            selfSearch = False
+
+        # Try using latlon to get the location
         try:
             lat = float(params[0])
             lon = float(params[1])
@@ -35,19 +41,44 @@ class WeatherCommand(BotCommand):
                 self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "I don't think that's even a location in "
                                                                           "this multiverse...")
                 return
+            self._handleCommandWithLocation(server, source, command, location)
+            return
         except (IndexError, ValueError):
             pass # The user did not give a latlon, so continue using other methods
 
+        # Try to determine the user's location from a nickname
+        userLoc = self.bot.moduleHandler.runActionUntilValue("userlocation", server, source, params[0])
+        if selfSearch:
+            if not userLoc:
+                return
+            elif not userLoc["success"]:
+                return
+        if userLoc:
+            location = self.bot.moduleHandler.runActionUntilValue("geolocation-latlon", userLoc["lat"], userLoc["lon"])
+            if not location:
+                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "I can't determine locations at the moment. "
+                                                                          "Try again later.")
+                return
+            if not location["success"]:
+                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "I don't think that's even a location in "
+                                                                          "this multiverse...")
+                return
+            self._handleCommandWithLocation(server, source, command, location)
+            return
+
+        # Try to determine the location by the name of the place
         location = self.bot.moduleHandler.runActionUntilValue("geolocation-place", " ".join(params))
         if not location:
-            self.bot.outputHandler.servers[server].cmdPRIVMSG(source, "I can't determine locations at the moment. "
+            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "I can't determine locations at the moment. "
                                                                       "Try again later.")
             return
         if not location["success"]:
-            self.bot.outputHandler.servers[server].cmdPRIVMSG(source, "I don't think that's even a location "
+            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "I don't think that's even a location "
                                                                       "in this multiverse...")
             return
+        self._handleCommandWithLocation(server, source, command, location)
 
+    def _handleCommandWithLocation(self, server, source, command, location):
         weather = ""
         if command == "weather":
             weather = self._getWeather(location["latitude"], location["longitude"])
