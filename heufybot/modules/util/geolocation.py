@@ -25,7 +25,7 @@ class GeoLocation(BotModule):
 
     def geolocationForPlace(self, place):
         params = {
-            "address": place
+            "address": place.replace(" ", "+")
         }
         return self._sendLocationRequest(params)
 
