@@ -1,6 +1,11 @@
 from twisted.python import log, util
-import logging
+import logging, sys, traceback
 
+
+def logExceptionTrace(error = None):
+    if error:
+        log.msg("A Python excecution error occurred:", error, level=logging.ERROR)
+    log.msg(traceback.format_exc(sys.exc_info()[2]), level=logging.ERROR)
 
 class LevelLoggingObserver(log.FileLogObserver):
     def __init__(self, logfile, logLevel):
