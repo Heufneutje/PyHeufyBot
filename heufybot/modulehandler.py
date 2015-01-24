@@ -75,7 +75,7 @@ class ModuleHandler(object):
             self.actions[action[0]].remove((action[2], action[1]))
         for server, moduleList in self.enabledModules.iteritems():
             if module.name in moduleList:
-                self.disableModule(module.name, server)
+                self.disableModule(module.name, server, True)
         del self.loadedModules[module.name]
         return module.name
 
@@ -95,7 +95,7 @@ class ModuleHandler(object):
         self.enabledModules[server].append(properCaseName)
         return properCaseName
 
-    def disableModule(self, module, server):
+    def disableModule(self, module, server, forUnload = False):
         lowercaseLoaded = dict((k.lower(), v) for k, v in self.loadedModules.iteritems())
         if module.lower() not in lowercaseLoaded:
             raise ModuleLoaderError(module, "The module is not loaded.", ModuleLoadType.DISABLE)
@@ -104,7 +104,7 @@ class ModuleHandler(object):
         properCaseName = lowercaseLoaded[module.lower()].name
         if properCaseName not in self.enabledModules[server]:
             raise ModuleLoaderError(properCaseName, "The module is not enabled.", ModuleLoadType.DISABLE)
-        if not self.loadedModules[properCaseName].canDisable:
+        if not self.loadedModules[properCaseName].canDisable and not forUnload:
             raise ModuleLoaderError(properCaseName, "The module can never be disabled.", ModuleLoadType.DISABLE)
         self.enabledModules[server].remove(properCaseName)
         return properCaseName
