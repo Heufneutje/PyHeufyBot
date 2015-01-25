@@ -42,7 +42,7 @@
 
 # ssl: boolean (default: false)
 # Whether or not the bot should try to connect securely.  Requires PyOpenSSL to
-# be installed.
+# be installed.  See optional-requirements.txt.
 #ssl: false
 
 # password: string (default: null)
