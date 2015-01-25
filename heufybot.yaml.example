@@ -41,7 +41,8 @@
 #port: 6667
 
 # ssl: boolean (default: false)
-# Whether or not the bot should try to connect securely.
+# Whether or not the bot should try to connect securely.  Requires PyOpenSSL to
+# be installed.
 #ssl: false
 
 # password: string (default: null)
@@ -91,7 +92,8 @@ $ functionality additional modules can be loaded.
 # a user on the Desert Bus Chatmap.  Requires WebUtils to be loaded.
 #- UserLocationChatmap
 
-# WebUtils: Enables fetch and posting of URLs.
+# WebUtils: Enables fetch and posting of URLs.  Requires Requests to be
+# installed.  See optional-requirements.txt.
 #- WebUtils
 
 
