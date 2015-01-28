@@ -48,8 +48,19 @@ td
 {
 	color: #666;
 }
+td.time a:link, td.time a:visited
+{
+        color: #666;
+        text-decoration: none;
+}
 
-/* IRC Colour Codes */
+td.time a:hover
+{
+        color: #0000ff;
+        text-decoration: underline;
+}
+
+/* IRC colour codes */
 span.bold
 {
 	font-weight: bold;
@@ -182,12 +193,3 @@ span.fg15
 {
 	color: #D2D2D2
 }
-
-/*
-#eventToggle
-{
-	position: fixed;
-	background-color: #ffffff;
-	left:1100px;
-}
-*/
