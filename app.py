@@ -1,6 +1,7 @@
 from twisted.python import log
 from heufybot.bot import HeufyBot
 from heufybot.utils.logutils import LevelLoggingObserver
+from signal import signal, SIGINT
 import argparse, logging
 
 
@@ -30,3 +31,5 @@ if __name__ == "__main__":
     # Start the bot
     log.msg("Starting bot...")
     heufybot = HeufyBot(options.config)
+    signal(SIGINT, lambda signal, stack: heufybot.shutdown())
+    heufybot.startup()

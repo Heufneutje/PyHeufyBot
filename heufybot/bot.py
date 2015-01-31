@@ -22,9 +22,8 @@ class HeufyBot(object):
         self.servers = {}
         self.storage = None
         self.storageSync = None
-        self._startup()
 
-    def _startup(self):
+    def startup(self):
         if not sslSupported:
             log.msg("The PyOpenSSL package was not found. You will not be able to connect to servers using SSL.",
                     level=logging.WARNING)
