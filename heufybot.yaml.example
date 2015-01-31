@@ -140,7 +140,7 @@ $- ModuleLoader
 #- Source
 
 # Time: Enables the Time command, which provides the local time for a place or
-# user when requested.  Rquires WebUtils and GeoLocation to be loaded.
+# user when requested.  Requires WebUtils and GeoLocation to be loaded.
 #- Time
 
 # Weather: Enables the Weather and Forecast commmands, which provide the
