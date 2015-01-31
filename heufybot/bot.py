@@ -97,4 +97,7 @@ class HeufyBot(object):
             if self.storageSync.running:
                 self.storageSync.stop()
             self.storage.close()
+            log.msg("Unloading modules...")
+            self.moduleHandler.unloadAllModules()
+            log.msg("Stopping reactor...")
             reactor.stop()

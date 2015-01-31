@@ -117,6 +117,11 @@ class ModuleHandler(object):
             except ModuleLoaderError as e:
                 log.msg("Module {} failed to load: {}".format(module, e.message), level=logging.ERROR)
 
+    def unloadAllModules(self):
+        modules = self.loadedModules.keys()
+        for module in modules:
+            self.unloadModule(module)
+
     def enableModulesForServer(self, server):
         if server not in self.enabledModules:
             self.enabledModules[server] = []
