@@ -53,4 +53,5 @@ docs/_build/
 
 # Bot
 *.yaml
+*.db
 dropin.cache
