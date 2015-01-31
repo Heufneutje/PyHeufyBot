@@ -1,0 +1,84 @@
+from twisted.plugin import IPlugin
+from heufybot.moduleinterface import IBotModule
+from heufybot.modules.commandinterface import BotCommand
+from zope.interface import implements
+from fnmatch import fnmatch
+
+
+class IgnoreCommand(BotCommand):
+    implements(IPlugin, IBotModule)
+
+    name = "Ignore"
+
+    def triggers(self):
+        return ["ignore", "unignore"]
+
+    def actions(self):
+        return super(IgnoreCommand, self).actions() + [
+            ("botmessage", 50, self.applyIgnores) ]
+
+    def applyIgnores(self, data):
+        if not self.bot.moduleHandler.useModuleOnServer(self.name, data["server"]):
+            return
+        if data["server"] not in self.ignores:
+            return
+        for ignoredHost in self.ignores[data["server"]]:
+            if fnmatch(data["user"].fullUserPrefix(), ignoredHost):
+                data.clear()
+                break
+
+    def load(self):
+        self.help = "Commands: ignore <hostmask>, unignore <hostmask> | Ignore or unignore a user. Ignored users " \
+                    "can't run commands."
+        self.commandHelp = {
+            "ignore": "ignore <hostmask> | Add a user to the ignore list. Requires admin permission.",
+            "unignore": "unignore <hostmask> | Remove a user from the ignore list. Requires admin permission."
+        }
+        if "ignore_list" not in self.bot.storage:
+            self.bot.storage["ignore_list"] = {}
+        self.ignores = self.bot.storage["ignore_list"]
+
+    def checkPermissions(self, server, source, user, command):
+        return not self.bot.moduleHandler.runActionUntilFalse("checkadminpermission", server, source, user, "ignores")
+
+    def execute(self, server, source, command, params, data):
+        if server not in self.ignores:
+            self.ignores[server] = []
+        if len(params) == 0:
+            if len(self.ignores[server]) == 0:
+                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "There are no users that are ignored.")
+            else:
+                ignoredUsers = ", ".join(self.ignores[server])
+                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Ignoring users: {}.".format(ignoredUsers))
+            return
+        success = []
+        fail = []
+        if command == "ignore":
+            for ignore in params:
+                if ignore.lower() in self.ignores[server]:
+                    fail.append(ignore)
+                else:
+                    self.ignores[server].append(ignore.lower())
+                    success.append(ignore)
+            if len(success) > 0:
+                self.bot.storage["ignore_list"] = self.ignores
+                self.bot.servers[server].outputHandler.cmdPRIVMSG(source,
+                                                                  "Now ignoring: {}.".format(", ".join(success)))
+            if len(fail) > 0:
+                self.bot.servers[server].outputHandler.cmdPRIVMSG(source,
+                                                                  "Already ignored: {}.".format(", ".join(fail)))
+        elif command == "unignore":
+            for ignore in params:
+                if ignore.lower() in self.ignores[server]:
+                    self.ignores[server].remove(ignore.lower())
+                    success.append(ignore)
+                else:
+                    fail.append(ignore)
+            if len(success) > 0:
+                self.bot.storage["ignore_list"] = self.ignores
+                self.bot.servers[server].outputHandler.cmdPRIVMSG(source,
+                                                                  "No longer ignoring: {}.".format(", ".join(success)))
+            if len(fail) > 0:
+                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Not ignored: {}.".format(", ".join(fail)))
+
+ignoreCommand = IgnoreCommand()
