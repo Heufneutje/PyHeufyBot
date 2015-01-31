@@ -93,6 +93,7 @@ class ModuleHandler(object):
         if properCaseName in self.enabledModules[server]:
             raise ModuleLoaderError(properCaseName, "The module is already enabled.", ModuleLoadType.ENABLE)
         self.enabledModules[server].append(properCaseName)
+        lowercaseLoaded[module.lower()].enable(server)
         return properCaseName
 
     def disableModule(self, module, server, forUnload = False):
@@ -107,6 +108,7 @@ class ModuleHandler(object):
         if not self.loadedModules[properCaseName].canDisable and not forUnload:
             raise ModuleLoaderError(properCaseName, "The module can never be disabled.", ModuleLoadType.DISABLE)
         self.enabledModules[server].remove(properCaseName)
+        lowercaseLoaded[module.lower()].disable(server)
         return properCaseName
 
     def loadAllModules(self):

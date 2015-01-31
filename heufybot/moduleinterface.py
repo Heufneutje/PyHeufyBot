@@ -30,6 +30,15 @@ class IBotModule(Interface):
         """
         Called when the module is unloaded. Cleanup should happen here.
         """
+    def enable(server):
+        """
+        Called when the module is enabled for a server. This is where server specific intializing can be done.
+        """
+
+    def disable(server):
+        """
+        Called when the module is disabled for a server. Server specific cleanup should happen here.
+        """
 
 class BotModule(object):
     canDisable = True
@@ -44,4 +53,10 @@ class BotModule(object):
         pass
 
     def unload(self):
+        pass
+
+    def enable(self, server):
+        pass
+
+    def disable(self, server):
         pass
