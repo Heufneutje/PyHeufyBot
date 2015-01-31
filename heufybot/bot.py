@@ -1,9 +1,10 @@
 from twisted.internet import reactor
+from twisted.internet.task import LoopingCall
 from twisted.python import log
 from heufybot.config import Config
 from heufybot.factory import HeufyBotFactory
 from heufybot.modulehandler import ModuleHandler
-import logging, os, sys
+import logging, os, shelve, sys
 
 # Try to enable SSL support
 try:
@@ -19,6 +20,8 @@ class HeufyBot(object):
         self.connectionFactory = HeufyBotFactory(self)
         self.moduleHandler = ModuleHandler(self)
         self.servers = {}
+        self.storage = None
+        self.storageSync = None
         self._startup()
 
     def _startup(self):
@@ -27,6 +30,10 @@ class HeufyBot(object):
                     level=logging.WARNING)
         log.msg("Loading configuration file...")
         self.config.loadConfig()
+        log.msg("Loading storage...")
+        self.storage = shelve.open(self.config.itemWithDefault("storage_path", "heufybot.db"))
+        self.storageSync = LoopingCall(self.storage.sync)
+        self.storageSync.start(self.config.itemWithDefault("storage_sync_interval", 5), now=False)
         log.msg("Loading modules...")
         self.moduleHandler.loadAllModules()
         log.msg("Initiating connections...")
@@ -84,7 +91,11 @@ class HeufyBot(object):
 
     def countConnections(self):
         if len(self.servers) == 0:
-            log.msg("No more connections alive, stopping reactor...")
+            log.msg("No more connections alive, shutting down...")
             # If we have any connections that have been started but never finished, stop trying
             self.connectionFactory.stopTrying()
+            log.msg("Closing storage...")
+            if self.storageSync.running:
+                self.storageSync.stop()
+            self.storage.close()
             reactor.stop()
