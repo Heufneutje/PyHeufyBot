@@ -2,6 +2,14 @@
 PyHeufyBot Changelog
 ====================
 
+0.3
+===
+
+**0.3.0**
+  * API change: Addition of enable and disable module triggers.
+  * Various new modules.
+  * Various bug fixes.
+
 0.2
 ===
 
