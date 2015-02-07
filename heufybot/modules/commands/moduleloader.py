@@ -75,6 +75,8 @@ class ModuleLoaderCommands(BotCommand):
             elif command == "disable":
                 action = "disabled"
             output.cmdPRIVMSG(source, "Module(s) successfully {}: {}".format(action, ", ".join(success)))
+            if command == "load" or command == "unload" or command == "reload":
+                data.clear()
         for fail in failed:
             output.cmdPRIVMSG(source, fail)
 
