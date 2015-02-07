@@ -16,7 +16,9 @@ class WebUtils(BotModule):
         self.bot = bot
 
     def actions(self):
-        return [ ("fetch-url", 1, self.fetchURL) ]
+        return [ ("fetch-url", 1, self.fetchURL),
+                 ("post-url", 1, self.postURL),
+                 ("post-paste", 1, self.pasteEE) ]
 
     def fetchURL(self, url, params = None, extraHeaders = None):
         headers = { "user-agent": "Mozilla/5.0" }
@@ -32,6 +34,41 @@ class WebUtils(BotModule):
             return request
         except requests.RequestException as ex:
             logExceptionTrace("Error while fetching from {}: {}".format(url, ex))
+            return None
+
+    def postURL(self, url, data, extraHeaders = None):
+        headers = { "user-agent": "Mozilla/5.0" }
+        if extraHeaders:
+            headers.update(extraHeaders)
+        try:
+            request = requests.post(url, data=data, headers=headers)
+            pageType = request.headers["content-type"]
+            if not re.match("^(text/.*|application/((rss|atom|rdf)\+)?xml(;.*)?|application/(.*)json(;.*)?)$", pageType):
+                # Make sure we don't download any unwanted things
+                return None
+            log.msg(request.url, level=logging.DEBUG)
+            return request
+        except requests.RequestException as ex:
+            logExceptionTrace("Error while posting to {}: {}".format(url, ex))
+            return None
+
+    def pasteEE(self, description, data, expiration):
+        values = {
+            "key": "public",
+            "description": description,
+            "paste": data,
+            "expiration": expiration,
+            "format": "json"
+        }
+        result = self.postURL("http://paste.ee/api", values)
+        if not result:
+            return None
+        json = result.json()
+        if json["status"] == "error":
+            return "The Paste.ee API returned the following error: {}".format(json["error"])
+        elif json["status"] == "success":
+            return json["paste"]["link"]
+        else:
             return None
 
 webutils = WebUtils()
