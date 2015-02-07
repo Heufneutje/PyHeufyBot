@@ -49,6 +49,7 @@ class ApathyCommand(BotCommand):
                 self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "I already know that insult...")
                 return
             self.insults.append(" ".join(params[1:]))
+            self.bot.storage["insult_list"] = self.insults
             self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Alright, I suppose...")
         elif subcommand == "remove":
             regex = re.compile(" ".join(params[1:]), re.IGNORECASE)
@@ -59,6 +60,7 @@ class ApathyCommand(BotCommand):
                 self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "That matches way too many insults...")
             else:
                 self.insults.remove(matches[0])
+                self.bot.storage["insult_list"] = self.insults
                 self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Fine, I've forgotten about that one.")
 
 apathy = ApathyCommand()
