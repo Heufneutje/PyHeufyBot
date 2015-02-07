@@ -135,6 +135,10 @@ $- ModuleLoader
 # bot.
 #- Nick
 
+# OutOfContext: Enables the Ooc commands, which are used to keep track of a
+# list of quotes in a channel.
+#- OutOfContext
+
 # Part: Enables the Part command, whichs lets users request the bot to leave a
 # given channel.
 #- Part
