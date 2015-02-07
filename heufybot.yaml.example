@@ -102,6 +102,10 @@ $ functionality additional modules can be loaded.
 # commands.  To be able to use any of these command modules, the CommandHandler
 # module MUST be loaded.
 
+# Apathy: It does... things.  I can't be bothered to fill them out.  Find out
+# for yourself.
+#- Apathy
+
 # ConnectionControl: Enables the Connect, Disconnect, Reconnect, Shutdown and
 # Restart commands to provide control over the bot's connections at runtime.
 #- ConnectionControl
@@ -109,6 +113,10 @@ $ functionality additional modules can be loaded.
 # Help: Enables the Help commands to display a list of all enabled command
 # modules on a server or to get help for a specific command.
 #- Help
+
+# Ignore: Enables the Ignore and Unignore commands, to prevent some users from
+# using commands.
+#- Ignore
 
 # Join: Enables the Join command, which lets users request the bot in a given
 # channel.
