@@ -123,7 +123,7 @@ class OutOfContextCommand(BotCommand):
         if searchNickname:
             for x in self.ooclog[server][source]:
                 if x[21] == "*":
-                    match = re.search(regex, x[:x.find(" ", 21)])
+                    match = re.search(regex, x[:x.find(" ", 23)])
                     print match
                 else:
                     match = re.search(regex, x[x.find("<") + 1:x.find(">")])
@@ -147,7 +147,7 @@ class OutOfContextCommand(BotCommand):
         if searchNickname:
             for x in self.ooclog[server][source]:
                 if x[21] == "*":
-                    match = re.search(regex, x[:x.find(" ", 21)])
+                    match = re.search(regex, x[:x.find(" ", 23)])
                     print match
                 else:
                     match = re.search(regex, x[x.find("<") + 1:x.find(">")])
@@ -175,6 +175,9 @@ class OutOfContextCommand(BotCommand):
 
     def bufferMessage(self, server, channel, user, body):
         if not self.bot.moduleHandler.useModuleOnServer(self.name, server):
+            return
+        commandPrefix = self.bot.config.serverItemWithDefault(server, "command_prefix", "!")
+        if body.startswith(commandPrefix):
             return
         self._bufferLine(self.bot.servers[server], channel, "<{}> {}".format(user.nick, body))
 
