@@ -57,7 +57,7 @@ class OutOfContextCommand(BotCommand):
                 self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Sorry, that matches too many lines in my "
                                                                           "message buffer.")
             else:
-                todayDate = time.strftime("[%Y-%m-%d %H:%M]")
+                todayDate = time.strftime("[%Y-%m-%d] [%H:%M]")
                 quote = "{} {}".format(todayDate, matches[0])
                 if quote.lower() in [x.lower() for x in self.ooclog[server][source]]:
                     self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "That quote is already in the log!")
@@ -122,7 +122,7 @@ class OutOfContextCommand(BotCommand):
         matches = []
         if searchNickname:
             for x in self.ooclog[server][source]:
-                if x[19] == "*":
+                if x[21] == "*":
                     match = re.search(regex, x[:x.find(" ", 21)])
                     print match
                 else:
@@ -146,7 +146,7 @@ class OutOfContextCommand(BotCommand):
         matches = []
         if searchNickname:
             for x in self.ooclog[server][source]:
-                if x[19] == "*":
+                if x[21] == "*":
                     match = re.search(regex, x[:x.find(" ", 21)])
                     print match
                 else:
