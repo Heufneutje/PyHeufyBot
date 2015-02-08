@@ -122,7 +122,7 @@ class OutOfContextCommand(BotCommand):
         matches = []
         if searchNickname:
             for x in self.ooclog[server][source]:
-                if re.search(regex, x[x.find("<") + 1:x.find(">")]):
+                if re.search(regex, x[x.find("<") + 1:x.find(">")]) or re.search(regex, x[:x.find(" ", beg=21)]):
                     matches.append(x)
         else:
             for x in self.ooclog[server][source]:
@@ -141,7 +141,7 @@ class OutOfContextCommand(BotCommand):
         matches = []
         if searchNickname:
             for x in self.ooclog[server][source]:
-                if re.search(regex, x[x.find("<") + 1:x.find(">")]):
+                if re.search(regex, x[x.find("<") + 1:x.find(">")]) or re.search(regex, x[:x.find(" ", beg=21)]):
                     matches.append(x)
         else:
             for x in self.ooclog[server][source]:
