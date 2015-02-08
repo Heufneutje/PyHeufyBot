@@ -35,7 +35,7 @@ class OutOfContextCommand(BotCommand):
         if source not in self.ooclog[server]:
             self.ooclog[server][source] = []
         if len(params) == 0:
-            params[0] = "list"
+            params.append("list")
         subcommand = params.pop(0).lower()
         if subcommand not in ["add", "remove", "search", "searchnick", "random", "id", "list"]:
             self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Invalid subcommand. Subcommands are "
@@ -119,33 +119,37 @@ class OutOfContextCommand(BotCommand):
         if len(self.ooclog[server][source]) == 0:
             return "No quotes in the log."
         regex = re.compile(searchString, re.IGNORECASE)
+        matches = []
         if searchNickname:
-            toSearch = [x[x.find("<") + 1:x.find(">")] for x in self.ooclog[server][source]]
+            for x in self.ooclog[server][source]:
+                if re.search(regex, x[x.find("<") + 1:x.find(">")]):
+                    matches.append(x)
         else:
-            toSearch = [x[x.find(">") + 1:] for x in self.ooclog[server][source]]
-        matches = filter(regex.search, toSearch)
+            for x in self.ooclog[server][source]:
+                if re.search(regex, x[x.find(">") + 1:]):
+                    matches.append(x)
         if len(matches) == 0:
             return "No matches for \"{}\" found.".format(searchString)
         if index < 0 or index > len(matches) - 1:
             index = random.randint(0, len(matches) - 1)
-        return "Quote #{}/{}: {}".format(index + 1, len(matches),
-                                         self.ooclog[server][source][toSearch.index(matches[index])])
+        return "Quote #{}/{}: {}".format(index + 1, len(matches), matches[index])
 
     def _postList(self, server, source, searchString, searchNickname):
         if len(self.ooclog[server][source]) == 0:
             return "No quotes in the log."
         regex = re.compile(searchString, re.IGNORECASE)
+        matches = []
         if searchNickname:
-            toSearch = [x[x.find("<") + 1:x.find(">")] for x in self.ooclog[server][source]]
+            for x in self.ooclog[server][source]:
+                if re.search(regex, x[x.find("<") + 1:x.find(">")]):
+                    matches.append(x)
         else:
-            toSearch = [x[x.find(">") + 1:] for x in self.ooclog[server][source]]
-        matches = filter(regex.search, toSearch)
+            for x in self.ooclog[server][source]:
+                if re.search(regex, x[x.find(">") + 1:]):
+                    matches.append(x)
         if len(matches) == 0:
             return "No matches for \"{}\" found.".format(searchString)
-        matchlist = []
-        for match in matches:
-            matchlist.append(self.ooclog[server][source][toSearch.index(match)])
-        result = self.bot.moduleHandler.runActionUntilValue("post-paste", "OoC Log", "\n".join(matchlist), 10)
+        result = self.bot.moduleHandler.runActionUntilValue("post-paste", "OoC Log", "\n".join(matches), 10)
         if not result:
             return "An error occurred. The PasteEE API seems to be down right now."
         return "List posted: {}".format(result)
