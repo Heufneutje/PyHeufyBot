@@ -48,7 +48,7 @@ class OutOfContextCommand(BotCommand):
             if "channel" not in data:
                 self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "You can only add quotes from a channel.")
                 return
-            regex = re.compile(" ".join(params), re.IGNORECASE)
+            regex = re.compile(re.escape(" ".join(params)), re.IGNORECASE)
             matches = filter(regex.search, self.messageBuffer[self.bot.servers[server]][data["channel"]])
             if len(matches) == 0:
                 self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Sorry, that didn't match anything in my "
