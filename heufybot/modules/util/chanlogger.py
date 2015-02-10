@@ -12,9 +12,6 @@ class ChannelLogger(BotModule):
     name = "ChannelLogger"
     canDisable = False
 
-    def hookBot(self, bot):
-        self.bot = bot
-
     def actions(self):
         return [ ("ctcp-message", 100, self.logCTCP_ACTION),
                  ("channeljoin", 100, self.logJOIN),

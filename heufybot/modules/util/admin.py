@@ -9,9 +9,6 @@ class Admin(BotModule):
 
     name = "Admin"
 
-    def hookBot(self, bot):
-        self.bot = bot
-
     def actions(self):
         return [ ("checkadminpermission", 1, self.checkPermission) ]
 

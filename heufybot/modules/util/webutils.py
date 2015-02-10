@@ -12,9 +12,6 @@ class WebUtils(BotModule):
     name = "WebUtils"
     canDisable = False
 
-    def hookBot(self, bot):
-        self.bot = bot
-
     def actions(self):
         return [ ("fetch-url", 1, self.fetchURL),
                  ("post-url", 1, self.postURL),

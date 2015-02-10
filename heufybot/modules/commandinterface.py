@@ -5,9 +5,6 @@ from heufybot.utils.logutils import logExceptionTrace
 class BotCommand(BotModule):
     name = "UnknownCommand"
 
-    def hookBot(self, bot):
-        self.bot = bot
-
     def actions(self):
         return [ ("botmessage", 1, self.handleCommand),
                  ("commandhelp", 1, self.displayHelp) ]

@@ -9,9 +9,6 @@ class NickServIdentify(BotModule):
 
     name = "NickServIdentify"
 
-    def hookBot(self, bot):
-        self.bot = bot
-
     def actions(self):
         return [ ("welcome", 1, self.identify) ]
 

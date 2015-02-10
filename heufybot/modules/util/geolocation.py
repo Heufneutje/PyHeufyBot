@@ -10,9 +10,6 @@ class GeoLocation(BotModule):
     canDisable = False
     baseURL = "http://maps.googleapis.com/maps/api/geocode/json?"
 
-    def hookBot(self, bot):
-        self.bot = bot
-
     def actions(self):
         return [ ("geolocation-latlon", 1, self.geolocationForLatLon),
                  ("geolocation-place", 1, self.geolocationForPlace) ]

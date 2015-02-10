@@ -8,9 +8,6 @@ class CommandHandler(BotModule):
 
     name = "CommandHandler"
 
-    def hookBot(self, bot):
-        self.bot = bot
-
     def actions(self):
         return [ ("message-channel", 1, self.handleChannelMessage),
                  ("message-user", 1, self.handlePrivateMessage) ]

@@ -9,9 +9,6 @@ class UserLocationChatmap(BotModule):
     name = "UserLocationChatmap"
     baseURL = "http://tsukiakariusagi.net/chatmaplookup.php?"
 
-    def hookBot(self, bot):
-        self.bot = bot
-
     def actions(self):
         return [ ("userlocation", 1, self.userLocationFromDBChatmap) ]
 

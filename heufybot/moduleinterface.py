@@ -44,7 +44,7 @@ class BotModule(object):
     canDisable = True
 
     def hookBot(self, bot):
-        pass
+        self.bot = bot
 
     def actions(self):
         return []

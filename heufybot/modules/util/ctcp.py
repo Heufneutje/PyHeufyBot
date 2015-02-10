@@ -12,9 +12,6 @@ class CTCP(BotModule):
 
     name = "CTCP"
 
-    def hookBot(self, bot):
-        self.bot = bot
-
     def actions(self):
         return [ ("ctcp-message", 1, self.handleCTCP),
                  ("send-ctcp", 1, self.sendCTCPCommand) ]
