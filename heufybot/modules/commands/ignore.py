@@ -1,6 +1,7 @@
 from twisted.plugin import IPlugin
 from heufybot.moduleinterface import IBotModule
 from heufybot.modules.commandinterface import BotCommand
+from heufybot.utils import networkName
 from zope.interface import implements
 from fnmatch import fnmatch
 
@@ -20,9 +21,9 @@ class IgnoreCommand(BotCommand):
     def applyIgnores(self, data):
         if not self.bot.moduleHandler.useModuleOnServer(self.name, data["server"]):
             return
-        if data["server"] not in self.ignores:
+        if networkName(self.bot, data["server"]) not in self.ignores:
             return
-        for ignoredHost in self.ignores[data["server"]]:
+        for ignoredHost in self.ignores[networkName(self.bot, data["server"])]:
             if fnmatch(data["user"].fullUserPrefix(), ignoredHost):
                 data.clear()
                 break
@@ -42,23 +43,23 @@ class IgnoreCommand(BotCommand):
         return not self.bot.moduleHandler.runActionUntilFalse("checkadminpermission", server, source, user, "ignores")
 
     def execute(self, server, source, command, params, data):
-        if server not in self.ignores:
-            self.ignores[server] = []
+        if networkName(self.bot, server) not in self.ignores:
+            self.ignores[networkName(self.bot, server)] = []
         if len(params) == 0:
-            if len(self.ignores[server]) == 0:
+            if len(self.ignores[networkName(self.bot, server)]) == 0:
                 self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "There are no users that are ignored.")
             else:
-                ignoredUsers = ", ".join(self.ignores[server])
+                ignoredUsers = ", ".join(self.ignores[networkName(self.bot, server)])
                 self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Ignoring users: {}.".format(ignoredUsers))
             return
         success = []
         fail = []
         if command == "ignore":
             for ignore in params:
-                if ignore.lower() in self.ignores[server]:
+                if ignore.lower() in self.ignores[networkName(self.bot, server)]:
                     fail.append(ignore)
                 else:
-                    self.ignores[server].append(ignore.lower())
+                    self.ignores[networkName(self.bot, server)].append(ignore.lower())
                     success.append(ignore)
             if len(success) > 0:
                 self.bot.storage["ignore_list"] = self.ignores
@@ -69,8 +70,8 @@ class IgnoreCommand(BotCommand):
                                                                   "Already ignored: {}.".format(", ".join(fail)))
         elif command == "unignore":
             for ignore in params:
-                if ignore.lower() in self.ignores[server]:
-                    self.ignores[server].remove(ignore.lower())
+                if ignore.lower() in self.ignores[networkName(self.bot, server)]:
+                    self.ignores[networkName(self.bot, server)].remove(ignore.lower())
                     success.append(ignore)
                 else:
                     fail.append(ignore)

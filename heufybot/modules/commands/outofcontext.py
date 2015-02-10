@@ -2,7 +2,7 @@ from twisted.plugin import IPlugin
 from heufybot.channel import IRCChannel
 from heufybot.moduleinterface import IBotModule
 from heufybot.modules.commandinterface import BotCommand
-from heufybot.utils import isNumber
+from heufybot.utils import isNumber, networkName
 from zope.interface import implements
 from weakref import WeakKeyDictionary
 import random, re, time
@@ -30,10 +30,10 @@ class OutOfContextCommand(BotCommand):
         self.historySize = 20
 
     def execute(self, server, source, command, params, data):
-        if server not in self.ooclog:
-            self.ooclog[server] = {}
-        if source not in self.ooclog[server]:
-            self.ooclog[server][source] = []
+        if networkName(self.bot, server) not in self.ooclog:
+            self.ooclog[networkName(self.bot, server)] = {}
+        if source not in self.ooclog[networkName(self.bot, server)]:
+            self.ooclog[networkName(self.bot, server)][source] = []
         if len(params) == 0:
             params.append("list")
         subcommand = params.pop(0).lower()
@@ -59,10 +59,10 @@ class OutOfContextCommand(BotCommand):
             else:
                 todayDate = time.strftime("[%Y-%m-%d] [%H:%M]")
                 quote = "{} {}".format(todayDate, matches[0])
-                if quote.lower() in [x.lower() for x in self.ooclog[server][source]]:
+                if quote.lower() in [x.lower() for x in self.ooclog[networkName(self.bot, server)][source]]:
                     self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "That quote is already in the log!")
                 else:
-                    self.ooclog[server][source].append(quote)
+                    self.ooclog[networkName(self.bot, server)][source].append(quote)
                     self.bot.storage["ooclog"] = self.ooclog
                     self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Quote \"{}\" was added the "
                                                                               "log!".format(quote))
@@ -71,14 +71,14 @@ class OutOfContextCommand(BotCommand):
                 self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Remove what?")
                 return
             regex = re.compile(" ".join(params), re.IGNORECASE)
-            matches = filter(regex.search, self.ooclog[server][source])
+            matches = filter(regex.search, self.ooclog[networkName(self.bot, server)][source])
             if len(matches) == 0:
                 self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "That quote is not in the log.")
             elif len(matches) > 1:
                 self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Unable to remove quote, {} matches "
                                                                           "found.".format(len(matches)))
             else:
-                self.ooclog[server][source].remove(matches[0])
+                self.ooclog[networkName(self.bot, server)][source].remove(matches[0])
                 self.bot.storage["ooclog"] = self.ooclog
                 self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Quote \"{}\" was removed from "
                                                                           "log!".format(matches[0]))
@@ -116,12 +116,12 @@ class OutOfContextCommand(BotCommand):
             self.bot.servers[server].outputHandler.cmdPRIVMSG(source, result)
 
     def _getQuote(self, server, source, searchString, searchNickname, index):
-        if len(self.ooclog[server][source]) == 0:
+        if len(self.ooclog[networkName(self.bot, server)][source]) == 0:
             return "No quotes in the log."
         regex = re.compile(searchString, re.IGNORECASE)
         matches = []
         if searchNickname:
-            for x in self.ooclog[server][source]:
+            for x in self.ooclog[networkName(self.bot, server)][source]:
                 if x[21] == "*":
                     match = re.search(regex, x[:x.find(" ", 23)])
                     print match
@@ -130,7 +130,7 @@ class OutOfContextCommand(BotCommand):
                 if match:
                     matches.append(x)
         else:
-            for x in self.ooclog[server][source]:
+            for x in self.ooclog[networkName(self.bot, server)][source]:
                 if re.search(regex, x[x.find(">") + 1:]):
                     matches.append(x)
         if len(matches) == 0:
@@ -140,12 +140,12 @@ class OutOfContextCommand(BotCommand):
         return "Quote #{}/{}: {}".format(index + 1, len(matches), matches[index])
 
     def _postList(self, server, source, searchString, searchNickname):
-        if len(self.ooclog[server][source]) == 0:
+        if len(self.ooclog[networkName(self.bot, server)][source]) == 0:
             return "No quotes in the log."
         regex = re.compile(searchString, re.IGNORECASE)
         matches = []
         if searchNickname:
-            for x in self.ooclog[server][source]:
+            for x in self.ooclog[networkName(self.bot, server)][source]:
                 if x[21] == "*":
                     match = re.search(regex, x[:x.find(" ", 23)])
                     print match
@@ -154,7 +154,7 @@ class OutOfContextCommand(BotCommand):
                 if match:
                     matches.append(x)
         else:
-            for x in self.ooclog[server][source]:
+            for x in self.ooclog[networkName(self.bot, server)][source]:
                 if re.search(regex, x[x.find(">") + 1:]):
                     matches.append(x)
         if len(matches) == 0:
