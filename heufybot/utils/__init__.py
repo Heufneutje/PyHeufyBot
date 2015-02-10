@@ -23,3 +23,6 @@ def parseUserPrefix(prefix):
     # Not all "users" have idents and hostnames
     nick = prefix
     return nick, None, None
+
+def networkName(bot, server):
+    return bot.servers[server].supportHelper.network
