@@ -8,6 +8,7 @@ class HeufyBotFactory(ReconnectingClientFactory):
 
     def __init__(self, bot):
         self.bot = bot
+        self.currentlyDisconnecting = []
 
     def buildProtocol(self, addr):
         self.resetDelay()
@@ -22,10 +23,13 @@ class HeufyBotFactory(ReconnectingClientFactory):
         if connector.host in self.bot.moduleHandler.enabledModules:
             del self.bot.moduleHandler.enabledModules[connector.host]
 
+        del self.bot.servers[connector.host]
+
         # Check whether or not we should reconnect
-        if hasattr(connector.transport, "fullDisconnect") and connector.transport.fullDisconnect:
+        if connector.host in self.currentlyDisconnecting:
             log.msg("Connection to {} was closed cleanly.".format(connector.host))
             ClientFactory.clientConnectionLost(self, connector, reason)
+            self.currentlyDisconnecting.remove(connector.host)
             self.bot.countConnections()
         else:
             ReconnectingClientFactory.clientConnectionLost(self, connector, reason)

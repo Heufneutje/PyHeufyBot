@@ -68,10 +68,9 @@ class HeufyBotConnection(irc.IRC):
             twistedlog.msg("[{}] {}".format(self.name, " ".join(message)))
 
     def disconnect(self, reason = "Quitting...", fullDisconnect = False):
-        # TODO: Find a better solution to full disconnects
+        if fullDisconnect:
+            self.bot.connectionFactory.currentlyDisconnecting.append(self.name)
         self.outputHandler.cmdQUIT(reason)
-        del self.bot.servers[self.name]
-        self.transport.fullDisconnect = fullDisconnect
         self.transport.loseConnection()
 
     def setUserModes(self, modes):
