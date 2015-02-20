@@ -124,7 +124,6 @@ class OutOfContextCommand(BotCommand):
             for x in self.ooclog[networkName(self.bot, server)][source]:
                 if x[21] == "*":
                     match = re.search(regex, x[:x.find(" ", 23)])
-                    print match
                 else:
                     match = re.search(regex, x[x.find("<") + 1:x.find(">")])
                 if match:
@@ -148,7 +147,6 @@ class OutOfContextCommand(BotCommand):
             for x in self.ooclog[networkName(self.bot, server)][source]:
                 if x[21] == "*":
                     match = re.search(regex, x[:x.find(" ", 23)])
-                    print match
                 else:
                     match = re.search(regex, x[x.find("<") + 1:x.find(">")])
                 if match:
