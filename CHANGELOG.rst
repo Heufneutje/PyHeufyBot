@@ -5,6 +5,11 @@ PyHeufyBot Changelog
 0.3
 ===
 
+**0.3.1**
+  * API change: Removed the need to hook the bot in every module.
+  * A couple new modules.
+  * Various bug fixes.
+
 **0.3.0**
   * API change: Addition of enable and disable module triggers.
   * Various new modules.
