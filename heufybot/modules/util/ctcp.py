@@ -2,7 +2,7 @@ from twisted.plugin import IPlugin
 from heufybot import __version__
 from heufybot.channel import IRCChannel
 from heufybot.moduleinterface import BotModule, IBotModule
-from heufybot.utils.timeutils import now
+from heufybot.utils.timeutils import now, strftimeWithTimezone
 from zope.interface import implements
 from platform import platform
 
@@ -30,7 +30,7 @@ class CTCP(BotModule):
         elif message.upper() == "VERSION":
             self.sendCTCPReply(server, target, "VERSION", "PyHeufyBot v{} / {}".format(__version__, platform()))
         elif message.upper() == "TIME":
-            self.sendCTCPReply(server, target, "TIME", now().strftime("%Y-%m-%d %H:%M UTC"))
+            self.sendCTCPReply(server, target, "TIME", strftimeWithTimezone(now()))
         elif message.upper() == "SOURCE":
             self.sendCTCPReply(server, target, "SOURCE", "https://github.com/Heufneutje/PyHeufyBot/")
 

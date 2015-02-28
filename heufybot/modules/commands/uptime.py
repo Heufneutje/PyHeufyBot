@@ -1,7 +1,7 @@
 from twisted.plugin import IPlugin
 from heufybot.moduleinterface import IBotModule
 from heufybot.modules.commandinterface import BotCommand
-from heufybot.utils.timeutils import now, timeDeltaString
+from heufybot.utils.timeutils import now, strftimeWithTimezone, timeDeltaString
 from zope.interface import implements
 
 
@@ -17,7 +17,7 @@ class UptimeCommand(BotCommand):
         self.help = "Commands: uptime | Provides the current uptime of the bot."
 
     def execute(self, server, source, command, params, data):
-        start = now().strftime("%Y-%m-%d %H:%M UTC")
+        start = strftimeWithTimezone(self.bot.startTime)
         delta = timeDeltaString(now(), self.bot.startTime)
         self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "I have been up since {} ({}).".format(start, delta))
 
