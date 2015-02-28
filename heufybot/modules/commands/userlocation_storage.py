@@ -21,7 +21,8 @@ class UserLocationStorage(BotCommand):
         if not self.bot.moduleHandler.useModuleOnServer(self.name, server):
             return
 
-        if user.lower() in self.locations[networkName(self.bot, server)]:
+        if networkName(self.bot, server) in self.locations and user.lower() in self.locations[networkName(self.bot, \
+                server)]:
             return {
                 "success": True,
                 "place": self.locations[networkName(self.bot, server)][user.lower()]
@@ -44,15 +45,13 @@ class UserLocationStorage(BotCommand):
             self.bot.storage["userlocations"] = {}
         self.locations = self.bot.storage["userlocations"]
 
-    def enable(self, server):
-        if networkName(self.bot, server) not in self.locations:
-            self.locations[networkName(self.bot, server)] = {}
-
     def execute(self, server, source, command, params, data):
         if command == "addloc":
             if len(params) < 1:
                 self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "What do you want to do with your location?")
                 return
+            if networkName(self.bot, server) not in self.locations:
+                self.locations[networkName(self.bot, server)] = {}
             self.locations[networkName(self.bot, server)][data["user"].nick.lower()] = " ".join(params)
             self.bot.storage["userlocations"] = self.locations
             self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Your location has been updated.")
