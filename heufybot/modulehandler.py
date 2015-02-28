@@ -129,9 +129,9 @@ class ModuleHandler(object):
             self.enabledModules[server] = []
         for module in self.loadedModules.iterkeys():
             if "disabled_modules" not in self.bot.config["servers"][server]:
-                self.enabledModules[server].append(module)
+                self.enableModule(module, server)
             elif module not in self.bot.config["servers"][server]["disabled_modules"]:
-                self.enabledModules[server].append(module)
+                self.enableModule(module, server)
 
     def useModuleOnServer(self, module, server):
         if module not in self.loadedModules or server not in self.enabledModules:
