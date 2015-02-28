@@ -17,7 +17,8 @@ class UptimeCommand(BotCommand):
         self.help = "Commands: uptime | Provides the current uptime of the bot."
 
     def execute(self, server, source, command, params, data):
+        start = now().strftime("%Y-%m-%d %H:%M UTC")
         delta = timeDeltaString(now(), self.bot.startTime)
-        self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "I have been up for {}.".format(delta))
+        self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "I have been up since {} ({}).".format(start, delta))
 
 uptimeCommand = UptimeCommand()
