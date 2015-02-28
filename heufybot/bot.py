@@ -4,6 +4,7 @@ from twisted.python import log
 from heufybot.config import Config
 from heufybot.factory import HeufyBotFactory
 from heufybot.modulehandler import ModuleHandler
+from heufybot.utils.timeutils import now
 import logging, os, shelve, sys
 
 # Try to enable SSL support
@@ -22,6 +23,7 @@ class HeufyBot(object):
         self.servers = {}
         self.storage = None
         self.storageSync = None
+        self.startTime = now()
 
     def startup(self):
         if not sslSupported:

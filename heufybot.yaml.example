@@ -155,6 +155,10 @@ $- ModuleLoader
 # user when requested.  Requires WebUtils and GeoLocation to be loaded.
 #- Time
 
+# Uptime: Enables the Uptime command, which tells the user how long the bot
+# has been running.
+#- Uptime
+
 # UserLocationStorage: Provides utility functions to determine the location of
 # a user when they have registered their location with the bot.  Enables the
 # Addloc and Remloc commands.
