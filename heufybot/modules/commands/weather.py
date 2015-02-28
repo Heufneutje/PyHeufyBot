@@ -63,8 +63,11 @@ class WeatherCommand(BotCommand):
                 elif not userLoc["success"]:
                     return
             if userLoc and userLoc["success"]:
-                location = self.bot.moduleHandler.runActionUntilValue("geolocation-latlon", userLoc["lat"],
-                                                                      userLoc["lon"])
+                if "lat" in userLoc:
+                    location = self.bot.moduleHandler.runActionUntilValue("geolocation-latlon", userLoc["lat"],
+                                                                          userLoc["lon"])
+                else:
+                    location = self.bot.moduleHandler.runActionUntilValue("geolocation-place", userLoc["place"])
                 if not location:
                     self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "I can't determine locations at the "
                                                                               "moment. Try again later.")

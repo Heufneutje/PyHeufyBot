@@ -155,6 +155,11 @@ $- ModuleLoader
 # user when requested.  Requires WebUtils and GeoLocation to be loaded.
 #- Time
 
+# UserLocationStorage: Provides utility functions to determine the location of
+# a user when they have registered their location with the bot.  Enables the
+# Addloc and Remloc commands.
+#- UserLocationStorage
+
 # Weather: Enables the Weather and Forecast commmands, which provide the
 # weather or forecast for a place or user when requested.  Requires WebUtils
 # and GeoLocation to be loaded.
