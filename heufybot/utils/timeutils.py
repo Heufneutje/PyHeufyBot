@@ -15,6 +15,8 @@ def timeDeltaString(date1, date2):
     hourString = "{} hour{}".format(hours, "" if hours == 1 else "s")
     minutes = (delta.seconds // 60) % 60
     minuteString = "{} minute{}".format(minutes, "" if minutes == 1 else "s")
+    if delta.days == 0 and hours == 0 and minutes == 0:
+        return "just now"
     return "{}, {} and {}".format(dayString, hourString, minuteString)
 
 def durationToTimedelta(durStr):
