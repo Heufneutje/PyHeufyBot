@@ -24,8 +24,9 @@ class UserLocationChatmap(BotModule):
             self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Chatmap is currently unavailable. Try again "
                                                                       "later.")
             return None
-        if result.text == "," and displayErrors:
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "You are not on the chatmap.")
+        if result.text == ",":
+            if displayErrors:
+                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "You are not on the chatmap.")
             return {
                 "success": False
             }
