@@ -30,7 +30,7 @@ class CTCP(BotModule):
         elif message.upper() == "VERSION":
             self.sendCTCPReply(server, target, "VERSION", "PyHeufyBot v{} / {}".format(__version__, platform()))
         elif message.upper() == "TIME":
-            self.sendCTCPReply(server, target, "TIME", str(now()))
+            self.sendCTCPReply(server, target, "TIME", now().strftime("%Y-%m-%d %H:%M UTC"))
         elif message.upper() == "SOURCE":
             self.sendCTCPReply(server, target, "SOURCE", "https://github.com/Heufneutje/PyHeufyBot/")
 
