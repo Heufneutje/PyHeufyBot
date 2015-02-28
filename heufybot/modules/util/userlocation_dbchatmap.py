@@ -20,9 +20,10 @@ class UserLocationChatmap(BotModule):
             "nick": user
         }
         result = self.bot.moduleHandler.runActionUntilValue("fetch-url", self.baseURL, params)
-        if not result and displayErrors:
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Chatmap is currently unavailable. Try again "
-                                                                      "later.")
+        if not result:
+            if displayErrors:
+                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Chatmap is currently unavailable. Try again "
+                                                                          "later.")
             return None
         if result.text == ",":
             if displayErrors:
