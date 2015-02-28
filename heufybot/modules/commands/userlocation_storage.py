@@ -1,6 +1,7 @@
 from twisted.plugin import IPlugin
 from heufybot.moduleinterface import IBotModule
 from heufybot.modules.commandinterface import BotCommand
+from heufybot.utils import networkName
 from zope.interface import implements
 
 
@@ -20,10 +21,10 @@ class UserLocationStorage(BotCommand):
         if not self.bot.moduleHandler.useModuleOnServer(self.name, server):
             return
 
-        if user.lower() in self.locations[server]:
+        if user.lower() in self.locations[networkName(self.bot, server)]:
             return {
                 "success": True,
-                "place": self.locations[server][user.lower()]
+                "place": self.locations[networkName(self.bot, server)][user.lower()]
             }
         if displayErrors:
             error =  "Your location is not registered. Register your location by using the \"addloc\" command or by " \
@@ -44,22 +45,22 @@ class UserLocationStorage(BotCommand):
         self.locations = self.bot.storage["userlocations"]
 
     def enable(self, server):
-        if server not in self.locations:
-            self.locations[server] = {}
+        if networkName(self.bot, server) not in self.locations:
+            self.locations[networkName(self.bot, server)] = {}
 
     def execute(self, server, source, command, params, data):
         if command == "addloc":
             if len(params) < 1:
                 self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "What do you want to do with your location?")
                 return
-            self.locations[server][data["user"].nick.lower()] = " ".join(params)
+            self.locations[networkName(self.bot, server)][data["user"].nick.lower()] = " ".join(params)
             self.bot.storage["userlocations"] = self.locations
             self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Your location has been updated.")
         elif command == "remloc":
-            if data["user"].nick.lower() not in self.locations[server]:
+            if data["user"].nick.lower() not in self.locations[networkName(self.bot, server)]:
                 self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Your location is not registered!")
             else:
-                del self.locations[server][data["user"].nick.lower()]
+                del self.locations[networkName(self.bot, server)][data["user"].nick.lower()]
                 self.bot.storage["userlocations"] = self.locations
                 self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Your location has been removed.")
 
