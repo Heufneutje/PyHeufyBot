@@ -15,7 +15,8 @@ class WebUtils(BotModule):
     def actions(self):
         return [ ("fetch-url", 1, self.fetchURL),
                  ("post-url", 1, self.postURL),
-                 ("post-paste", 1, self.pasteEE) ]
+                 ("post-paste", 1, self.pasteEE),
+                 ("shorten-url", 1, self.shortenURL) ]
 
     def fetchURL(self, url, params = None, extraHeaders = None):
         headers = { "user-agent": "Mozilla/5.0" }
@@ -67,5 +68,20 @@ class WebUtils(BotModule):
             return json["paste"]["link"]
         else:
             return None
+
+    def shortenURL(self, url):
+        if url.startswith("http:"):
+            j = "{{\"longUrl\": \"{}\"}}".format(url)
+        else:
+            j = "{{\"longUrl\": \"http://{}/\"\}}".format(url)
+        apiURL = "https://www.googleapis.com/urlshortener/v1/url"
+        result = self.postURL(apiURL, j, { "Content-Type": "application/json" })
+        print result
+        if not result:
+            return None
+        json = result.json()
+        if "id" not in json:
+            return None
+        return json["id"]
 
 webutils = WebUtils()
