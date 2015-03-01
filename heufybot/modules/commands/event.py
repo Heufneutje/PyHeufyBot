@@ -18,6 +18,22 @@ class EventCommand(BotCommand):
         return ["event", "events", "timetill", "timesince", "dateof", "revent", "subevent", "unsubevent"]
 
     def load(self):
+        self.help = "Commands: event <yyyy-MM-dd> (<HH:mm>) <event>, events (<days>), timetill <event>, timesinze " \
+                    "<event>, dateof <event>, revent <event>, subevent, unsubevent | Add, request or remove an event " \
+                    "or subscribe to them."
+        self.commandHelp = {
+            "event": "event <yyyy-MM-dd> (<HH:mm>) <event> | Add an event to the events database.",
+            "events": "events <days> | Request all events that occur within the given number of days. The default is "
+                      "a week. The maximum is a year.",
+            "timetill": "timetill <event> | Request the amount of time until a specified event occurs.",
+            "timesince": "timesince <event> | Request the amount of time since a specified event occurred.",
+            "dateof": "dateof <event> | Request the date of a specified event.",
+            "revent": "revent <event> | Remove a specified event that was added by you from the events database.",
+            "subevent": "subevent | Subscribe to event announcements. PM to subscribe to them in PM. Requires admin "
+                        "permission to subscribe channels.",
+            "ubsubevent": "unsubevent | Unsubscribe to event announcements. PM to unsubscribe from them in PM. "
+                          "Requires admin permission to unsubscribe channels."
+        }
         if "events" not in self.bot.storage:
             self.bot.storage["events"] = {}
         self.events = self.bot.storage["events"]
@@ -127,7 +143,7 @@ class EventCommand(BotCommand):
             if len(params) == 0 or not isNumber(params[0]):
                 days = 7
             else:
-                days = int(params[0]) if int(params[0]) < 100 else 100
+                days = int(params[0]) if int(params[0]) < 356 else 356
             events = [x["event"] for x in self.events[networkName(self.bot, server)] if x["date"] > now() and x[
                 "date"] <= now() + timedelta(days)]
             dayString = "" if days == 1 else "s"
