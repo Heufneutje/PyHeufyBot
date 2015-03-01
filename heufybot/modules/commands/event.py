@@ -31,7 +31,7 @@ class EventCommand(BotCommand):
             "revent": "revent <event> | Remove a specified event that was added by you from the events database.",
             "subevent": "subevent | Subscribe to event announcements. PM to subscribe to them in PM. Requires admin "
                         "permission to subscribe channels.",
-            "ubsubevent": "unsubevent | Unsubscribe to event announcements. PM to unsubscribe from them in PM. "
+            "unbsubevent": "unsubevent | Unsubscribe to event announcements. PM to unsubscribe from them in PM. "
                           "Requires admin permission to unsubscribe channels."
         }
         if "events" not in self.bot.storage:
