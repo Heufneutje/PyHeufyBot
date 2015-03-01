@@ -151,7 +151,8 @@ class EventCommand(BotCommand):
                     self.bot.servers[server].outputHandler.cmdPRIVMSG(source, m)
                     break
             else:
-                events = [x for x in self.events[networkName(self.bot, server)] if x["date"] < now()]
+                events = [x for x in self.events[networkName(self.bot, server)] if x["date"] < now() and x[
+                    "user"].lower() == data["user"].nick.lower()]
                 events.sort(key=lambda item:item["date"], reverse=True)
                 for event in events:
                     if re.search(" ".join(params), event["event"], re.IGNORECASE):
@@ -162,7 +163,7 @@ class EventCommand(BotCommand):
                         self.bot.servers[server].outputHandler.cmdPRIVMSG(source, m)
                         break
                 else:
-                    m = "No events matching \"{}\" were found in the events database.".format(" ".join(params))
+                    m = "No events matching \"{}\" by you were found in the events database.".format(" ".join(params))
                     self.bot.servers[server].outputHandler.cmdPRIVMSG(source, m)
         elif command == "subevent" or command == "unsubevent":
             if networkName(self.bot, server) not in self.subscriptions:
