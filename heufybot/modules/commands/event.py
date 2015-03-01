@@ -184,9 +184,11 @@ class EventCommand(BotCommand):
             events = []
             for i in range(0, len(self.events[network])):
                 event = self.events[network][i]
-                if event["date"] < now() and not event["fired"]:
+                if event["date"] < now() and event["fired"] == False:
                     events.append(event)
                     self.events[network][i]["fired"] = True
+            if len(events) == 0:
+                continue
             self.bot.storage["events"] = self.events
             for source in sources:
                 for event in events:
