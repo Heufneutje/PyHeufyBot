@@ -151,6 +151,10 @@ $- ModuleLoader
 # of the bot.
 #- Source
 
+# Tell: Enabels the Tell, Tellafter, Stells and Rtell commands, which provide
+# a messaging system.
+#- Tell
+
 # Time: Enables the Time command, which provides the local time for a place or
 # user when requested.  Requires WebUtils and GeoLocation to be loaded.
 #- Time
