@@ -139,6 +139,12 @@ $- ModuleLoader
 # bot.
 #- Nick
 
+# NowPlaying: Enables the NP and NPLink commands, which let users request their
+# currently playing music from LastFM or link their nickname to their LastFM
+# account.  Requires beautifulsoup4 to be installed.  See
+# optional-requirements.txt.
+#- NowPlaying
+
 # OutOfContext: Enables the Ooc commands, which are used to keep track of a
 # list of quotes in a channel.
 #- OutOfContext
