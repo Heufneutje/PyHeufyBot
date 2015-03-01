@@ -156,11 +156,11 @@ class EventCommand(BotCommand):
                 for event in events:
                     if re.search(" ".join(params), event["event"], re.IGNORECASE):
                         self.events[networkName(self.bot, server)].remove(event)
-                    self.bot.storage["events"] = self.events
-                    m = "{}'s event \"{}\" with date {} has been removed from the events database.".format(
-                        event["user"], event["event"], strftimeWithTimezone(event["date"]))
-                    self.bot.servers[server].outputHandler.cmdPRIVMSG(source, m)
-                    break
+                        self.bot.storage["events"] = self.events
+                        m = "{}'s event \"{}\" with date {} has been removed from the events database.".format(
+                            event["user"], event["event"], strftimeWithTimezone(event["date"]))
+                        self.bot.servers[server].outputHandler.cmdPRIVMSG(source, m)
+                        break
                 else:
                     m = "No events matching \"{}\" were found in the events database.".format(" ".join(params))
                     self.bot.servers[server].outputHandler.cmdPRIVMSG(source, m)
