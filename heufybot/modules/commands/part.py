@@ -14,6 +14,7 @@ class PartCommand(BotCommand):
 
     def load(self):
         self.help = "Commands: part <channel> | Make the bot leave a given channel. Requires admin permissions."
+        self.commandHelp = {}
 
     def checkPermissions(self, server, source, user, command):
         return not self.bot.moduleHandler.runActionUntilFalse("checkadminpermission", server, source, user,

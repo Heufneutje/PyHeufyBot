@@ -14,6 +14,7 @@ class JoinCommand(BotCommand):
 
     def load(self):
         self.help = "Commands: join <channel> | Make the bot join a given channel."
+        self.commandHelp = {}
 
     def execute(self, server, source, command, params, data):
         if len(params) < 1:

@@ -18,6 +18,7 @@ class TimeCommand(BotCommand):
     def load(self):
         self.help = "Commands: time <lat> <lon>, time <place>, time <nickname> | Get the current local time for the " \
                     "given latlon, place or user."
+        self.commandHelp = {}
 
     def execute(self, server, source, command, params, data):
         # Use the user's nickname as a parameter if none were given

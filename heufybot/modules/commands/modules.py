@@ -14,6 +14,7 @@ class ModulesCommand(BotCommand):
 
     def load(self):
         self.help = "Commands: modules | Show a list of all loaded modules."
+        self.commandHelp = {}
 
     def execute(self, server, source, command, params, data):
         loadedModules = sorted(self.bot.moduleHandler.loadedModules.keys())

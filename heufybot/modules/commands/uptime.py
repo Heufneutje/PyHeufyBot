@@ -15,6 +15,7 @@ class UptimeCommand(BotCommand):
 
     def load(self):
         self.help = "Commands: uptime | Provides the current uptime of the bot."
+        self.commandHelp = {}
 
     def execute(self, server, source, command, params, data):
         start = strftimeWithTimezone(self.bot.startTime)

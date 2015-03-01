@@ -16,6 +16,7 @@ class LogCommand(BotCommand):
 
     def load(self):
         self.help = "Commands: log | Provides a link to the source code of the bot."
+        self.commandHelp = {}
 
     def execute(self, server, source, command, params, data):
         if "channel" not in data:

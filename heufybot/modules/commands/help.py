@@ -15,6 +15,7 @@ class HelpCommand(BotCommand):
     def load(self):
         self.help = "Commands: help (<command/trigger>) | Displays help for a given command module or command trigger " \
                     "or show a list of all enabled command modules."
+        self.commandHelp = {}
 
     def execute(self, server, source, command, params, data):
         if len(params) < 1:

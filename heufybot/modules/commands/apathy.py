@@ -28,6 +28,7 @@ class ApathyCommand(BotCommand):
 
     def load(self):
         self.help = "Meh."
+        self.commandHelp = {}
         if "insult_list" not in self.bot.storage:
             self.bot.storage["insult_list"] = []
         self.insults = self.bot.storage["insult_list"]

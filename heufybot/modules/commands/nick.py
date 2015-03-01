@@ -14,6 +14,7 @@ class NickCommand(BotCommand):
 
     def load(self):
         self.help = "Commands: nick | Change the nickname of the bot."
+        self.commandHelp = {}
 
     def checkPermissions(self, server, source, user, command):
         return not self.bot.moduleHandler.runActionUntilFalse("checkadminpermission", server, source, user,

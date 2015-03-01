@@ -24,6 +24,7 @@ class OutOfContextCommand(BotCommand):
     def load(self):
         self.help = "Commands: ooc (add/remove/search/searchnick/random/id/list) | The log of Out of Context quotes! " \
                     "Without a subcommand this will post a link to the log."
+        self.commandHelp = {}
         if "ooclog" not in self.bot.storage:
             self.bot.storage["ooclog"] = {}
         self.ooclog = self.bot.storage["ooclog"]

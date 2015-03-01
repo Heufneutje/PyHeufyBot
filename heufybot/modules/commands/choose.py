@@ -15,6 +15,7 @@ class ChooseCommand(BotCommand):
 
     def load(self):
         self.help = "Commands: choose/choice <choice1>, <choice2> | Makes a choice out of the given options at random."
+        self.commandHelp = {}
 
     def execute(self, server, source, command, params, data):
         if len(params) < 1:
