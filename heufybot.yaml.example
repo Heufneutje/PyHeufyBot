@@ -110,6 +110,10 @@ $ functionality additional modules can be loaded.
 # Restart commands to provide control over the bot's connections at runtime.
 #- ConnectionControl
 
+# Event: Enables the Event, TimeTill, TimeSince, DateOf, Events, REvent,
+# SubEvent and UnsubEvent commands to create and count down to certain events
+# that are happening, as well as subscribing to them.
+
 # Help: Enables the Help commands to display a list of all enabled command
 # modules on a server or to get help for a specific command.
 #- Help
