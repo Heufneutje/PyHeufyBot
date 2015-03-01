@@ -43,12 +43,15 @@ class NowPlayingCommand(BotCommand):
             else:
                 soup = BeautifulSoup(result.text)
                 firstItem = soup.find("item")
-                title = firstItem.find("title").text.split(u"–")
-                longLink = firstItem.find("link").text
-                link = self.bot.moduleHandler.runActionUntilValue("shorten-url", longLink)
-                if not link:
-                    link = longLink
-                m = "\"{}\" by {} | {}".format(title[1].strip(), title[0].strip(), link)
+                if not firstItem:
+                    m = "No recently played music was found for user \"{}\"".format(name)
+                else:
+                    title = firstItem.find("title").text.split(u"–")
+                    longLink = firstItem.find("link").text
+                    link = self.bot.moduleHandler.runActionUntilValue("shorten-url", longLink)
+                    if not link:
+                        link = longLink
+                    m = "\"{}\" by {} | {}".format(title[1].strip(), title[0].strip(), link)
             self.bot.servers[server].outputHandler.cmdPRIVMSG(source, m)
         elif command == "nplink":
             if len(params) == 0:
