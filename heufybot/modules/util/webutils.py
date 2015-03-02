@@ -76,7 +76,6 @@ class WebUtils(BotModule):
             j = "{{\"longUrl\": \"http://{}/\"\}}".format(url)
         apiURL = "https://www.googleapis.com/urlshortener/v1/url"
         result = self.postURL(apiURL, j, { "Content-Type": "application/json" })
-        print result
         if not result:
             return None
         json = result.json()
