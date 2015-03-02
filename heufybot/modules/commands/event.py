@@ -18,7 +18,7 @@ class EventCommand(BotCommand):
         return ["event", "events", "timetill", "timesince", "dateof", "revent", "subevent", "unsubevent"]
 
     def load(self):
-        self.help = "Commands: event <yyyy-MM-dd> (<HH:mm>) <event>, events (<days>), timetill <event>, timesinze " \
+        self.help = "Commands: event <yyyy-MM-dd> (<HH:mm>) <event>, events (<days>), timetill <event>, timesince " \
                     "<event>, dateof <event>, revent <event>, subevent, unsubevent | Add, request or remove an event " \
                     "or subscribe to them."
         self.commandHelp = {
