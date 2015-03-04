@@ -192,6 +192,8 @@ class EventCommand(BotCommand):
 
     def checkEvents(self):
         for network in self.subscriptions:
+            if network not in self.events:
+                continue
             try:
                 server = [x for x in self.bot.servers.itervalues() if x.supportHelper.network == network][0].name
             except IndexError: # We're not currently connected to this network
@@ -201,8 +203,6 @@ class EventCommand(BotCommand):
             if len(sources) == 0:
                 continue # Only fire events if there's a channel or user to fire them at
             events = []
-            if network not in self.events:
-                continue
             for i in range(0, len(self.events[network])):
                 event = self.events[network][i]
                 if event["date"] < now() and event["fired"] == False:
