@@ -2,6 +2,13 @@
 PyHeufyBot Changelog
 ====================
 
+0.4
+===
+**0.4.0**
+  * A couple new modules.
+  * A critical bug fix related to status unsetting in the core.
+  * Various other bug fixes.
+
 0.3
 ===
 
