@@ -80,7 +80,7 @@ class EventCommand(BotCommand):
                 "event": " ".join(params[eventOffset:]),
                 "date": date,
                 "user": data["user"].nick,
-                "fired": False
+                "fired": True if date < now() else False
             }
             self.events[networkName(self.bot, server)].append(event)
             self.bot.storage["events"] = self.events
