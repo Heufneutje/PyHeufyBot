@@ -201,6 +201,8 @@ class EventCommand(BotCommand):
             if len(sources) == 0:
                 continue # Only fire events if there's a channel or user to fire them at
             events = []
+            if network not in self.events:
+                continue
             for i in range(0, len(self.events[network])):
                 event = self.events[network][i]
                 if event["date"] < now() and event["fired"] == False:
