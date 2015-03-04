@@ -44,7 +44,7 @@ class IRCChannel(object):
                         modesAdded.append(mode)
                         paramsAdded.append(user)
                     elif not adding and mode in self.ranks[user]:
-                        self.ranks[user].replace(mode, "")
+                        self.ranks[user] = self.ranks[user].replace(mode, "")
                         modesRemoved.append(mode)
                         paramsRemoved.append(user)
             elif supportedChanModes[mode] == ModeType.LIST:
