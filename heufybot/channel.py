@@ -103,3 +103,14 @@ class IRCChannel(object):
             if status in self.ranks[user.nick]:
                 return self.connection.supportHelper.statusModes[status]
         return ""
+
+    def userIsChanOp(self, user):
+        if user.nick not in self.ranks:
+            return False
+
+        for status in self.connection.supportHelper.statusModes:
+            if status in self.ranks[user.nick]:
+                return True
+            if status == "o": # We consider anyone with +o or higher to be an op
+                break
+        return False

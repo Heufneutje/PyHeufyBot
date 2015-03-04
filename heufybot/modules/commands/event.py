@@ -44,10 +44,12 @@ class EventCommand(BotCommand):
         self.announcementLoopCall.start(300, now=True) # Announce events every 5 minutes
 
     def checkPermissions(self, server, source, user, command):
-        if command == "subevent" or command == "unsubevent":
-            if source[0] in self.bot.servers[server].supportHelper.chanTypes:
-                return not self.bot.moduleHandler.runActionUntilFalse("checkadminpermission", server, source, user,
-                                                                      "event-subscribe")
+        if command in ["subevent", "unsubevent"] and source[0] in self.bot.servers[server].supportHelper.chanTypes:
+            channel = self.bot.servers[server].channels[source]
+            if channel.userIsChanOp(user):
+                return True
+            return not self.bot.moduleHandler.runActionUntilFalse("checkadminpermission", server, source, user,
+                                                                  "event-subscribe")
         return True
 
     def execute(self, server, source, command, params, data):
