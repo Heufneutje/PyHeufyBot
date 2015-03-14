@@ -18,12 +18,15 @@ class WebUtils(BotModule):
                  ("post-paste", 1, self.pasteEE),
                  ("shorten-url", 1, self.shortenURL) ]
 
+    def load(self):
+        self.timeout = self.bot.config.itemWithDefault("webrequest_timeout", 10)
+
     def fetchURL(self, url, params = None, extraHeaders = None):
         headers = { "user-agent": "Mozilla/5.0" }
         if extraHeaders:
             headers.update(extraHeaders)
         try:
-            request = requests.get(url, params=params, headers=headers)
+            request = requests.get(url, params=params, headers=headers, timeout=self.timeout)
             pageType = request.headers["content-type"]
             if not re.match("^(text/.*|application/((rss|atom|rdf)\+)?xml(;.*)?|application/(.*)json(;.*)?)$", pageType):
                 # Make sure we don't download any unwanted things
@@ -39,7 +42,7 @@ class WebUtils(BotModule):
         if extraHeaders:
             headers.update(extraHeaders)
         try:
-            request = requests.post(url, data=data, headers=headers)
+            request = requests.post(url, data=data, headers=headers, timeout=self.timeout)
             pageType = request.headers["content-type"]
             if not re.match("^(text/.*|application/((rss|atom|rdf)\+)?xml(;.*)?|application/(.*)json(;.*)?)$", pageType):
                 # Make sure we don't download any unwanted things

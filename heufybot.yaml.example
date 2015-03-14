@@ -214,3 +214,8 @@ $- ModuleLoader
 # If this is enabled, some modules that can make use of user locations will
 # utilize this.
 #use_userlocation: false
+
+# webrequest_timeout: int (WebUtils, default: 10)
+# The number of seconds to wait for the server to respond when using a web
+# request.
+#webrequest_timeout: 10
