@@ -33,7 +33,7 @@ class WebUtils(BotModule):
                 return None
             log.msg(request.url, level=logging.DEBUG)
             return request
-        except requests.RequestException as ex:
+        except (requests.RequestException, requests.ConnectionError) as ex:
             logExceptionTrace("Error while fetching from {}: {}".format(url, ex))
             return None
 
@@ -49,7 +49,7 @@ class WebUtils(BotModule):
                 return None
             log.msg(request.url, level=logging.DEBUG)
             return request
-        except requests.RequestException as ex:
+        except (requests.RequestException, requests.ConnectionError) as ex:
             logExceptionTrace("Error while posting to {}: {}".format(url, ex))
             return None
 
