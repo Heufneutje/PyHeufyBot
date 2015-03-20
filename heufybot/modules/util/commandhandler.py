@@ -33,11 +33,17 @@ class CommandHandler(BotModule):
 
     def _handleCommand(self, message):
         commandPrefix = self.bot.config.serverItemWithDefault(message["server"], "command_prefix", "!")
-        if not message["body"].startswith(commandPrefix):
-            return # We don't need to be handling things that aren't bot commands
+        botNick = self.bot.servers[message["server"]].nick.lower()
         params = message["body"].split()
-        message["command"] = params[0][params[0].index(commandPrefix) + len(commandPrefix):]
-        del params[0]
+
+        if message["body"].startswith(commandPrefix):
+            message["command"] = params[0][params[0].index(commandPrefix) + len(commandPrefix):]
+            del params[0]
+        elif message["body"].lower().startswith(botNick):
+            message["command"] = params[1]
+            del params[0:2]
+        else:
+            return # We don't need to be handling things that aren't bot commands
         message["params"] = params
         self.bot.moduleHandler.runProcessingAction("botmessage", message)
 
