@@ -66,7 +66,7 @@ class OutOfContextCommand(BotCommand):
                 else:
                     self.ooclog[networkName(self.bot, server)][source].append(quote)
                     self.bot.storage["ooclog"] = self.ooclog
-                    self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Quote \"{}\" was added the "
+                    self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Quote \"{}\" was added to the "
                                                                               "log!".format(quote))
         elif subcommand == "remove":
             if len(params) == 0:
@@ -82,7 +82,7 @@ class OutOfContextCommand(BotCommand):
             else:
                 self.ooclog[networkName(self.bot, server)][source].remove(matches[0])
                 self.bot.storage["ooclog"] = self.ooclog
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Quote \"{}\" was removed from "
+                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Quote \"{}\" was removed from the "
                                                                           "log!".format(matches[0]))
         elif subcommand == "random":
             self.bot.servers[server].outputHandler.cmdPRIVMSG(source, self._getQuote(server, source, "", False, -1))
