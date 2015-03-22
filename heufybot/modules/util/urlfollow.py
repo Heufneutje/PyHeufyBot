@@ -32,6 +32,8 @@ class URLFollow(BotModule):
             self._searchURLs(server, user.nick, body)
 
     def _searchURLs(self, server, source, body):
+        if not self.bot.moduleHandler.useModuleOnServer(self.name, server):
+            return
         regex = re.compile(r"(https?://|www\.)[^\s]+", re.IGNORECASE)
         for url in filter(regex.match, body.split(" ")):
             response = self._handleURL(url)
@@ -56,7 +58,7 @@ class URLFollow(BotModule):
             return None
         parsed_uri = urlparse(result.url)
         soup = BeautifulSoup(result.content)
-        title = soup.find("title").text
+        title = soup.find("title").text.encode("utf-8", "ignore")
         if len(title) > 300:
             title = title[:297] + "..."
         return "[Standard URL] Title: {} (at host: {}).".format(title, parsed_uri.hostname)
