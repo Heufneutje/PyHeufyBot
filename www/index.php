@@ -31,7 +31,7 @@ if ($network === FALSE) echo 'No network name provided!';
 elseif ($channel === FALSE) echo 'No channel name provided!';
 elseif($date === FALSE) echo 'No date provided!';
 else {
-	$filename = '/home/stefan/logs/'.$network.'/#'.$channel.'/'.$date.'.log';
+	$filename = '/logpath/'.$network.'/#'.$channel.'/'.$date.'.log';
 	$lines = file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES); 
 
 	if ($lines === FALSE) echo 'Error while trying to open log file.';
