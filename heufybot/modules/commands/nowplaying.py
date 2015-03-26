@@ -58,7 +58,7 @@ class NowPlayingCommand(BotCommand):
                 m = "You must provide a LastFM name to link to your nickname."
             else:
                 self.links[networkName(self.bot, server)][data["user"].nick.lower()] = params[0].lower()
-                self.bot.storage["links"] = self.links
+                self.bot.storage["lastfm-links"] = self.links
                 m = "The nickname \"{}\" is now linked to LastFM name \"{}\"".format(data["user"].nick, params[0])
             self.bot.servers[server].outputHandler.cmdPRIVMSG(source, m)
 
