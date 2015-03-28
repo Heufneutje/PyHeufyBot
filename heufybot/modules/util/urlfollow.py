@@ -58,7 +58,7 @@ class URLFollow(BotModule):
             return None
         parsed_uri = urlparse(result.url)
         soup = BeautifulSoup(result.content)
-        title = soup.find("title").text.encode("utf-8", "ignore")
+        title = soup.find("title").text.encode("utf-8", "ignore").replace("\r", "").replace("\n", " ")
         if len(title) > 300:
             title = title[:297] + "..."
         return "[Standard URL] Title: {} (at host: {}).".format(title, parsed_uri.hostname)
