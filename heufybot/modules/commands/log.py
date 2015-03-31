@@ -15,7 +15,8 @@ class LogCommand(BotCommand):
         return ["log"]
 
     def load(self):
-        self.help = "Commands: log | Provides a link to the source code of the bot."
+        self.help = "Commands: log (<YYYY-MM-DD>/-<numberofdays>) | Provides a log of the current channel for " \
+                    "today, or another date if specified."
         self.commandHelp = {}
 
     def execute(self, server, source, command, params, data):
