@@ -29,7 +29,7 @@ class OutOfContextCommand(BotCommand):
             self.bot.storage["ooclog"] = {}
         self.ooclog = self.bot.storage["ooclog"]
         self.messageBuffer = WeakKeyDictionary()
-        self.historySize = 20
+        self.historySize = 30
 
     def execute(self, server, source, command, params, data):
         if networkName(self.bot, server) not in self.ooclog:
