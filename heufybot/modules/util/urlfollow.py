@@ -84,7 +84,8 @@ class URLFollow(BotModule):
             duration = time.strftime("%M:%S", time.gmtime(durSeconds))
         else:
             duration = time.strftime("%H:%M:%S", time.gmtime(durSeconds))
-        return "[YouTube] Video Title: {} | {} | {}".format(title, duration, description)
+        return "[YouTube] Video Title: {} | {} | {}".format(title.encode("utf-8", "ignore"), duration,
+                                                            description.encode("utf-8", "ignore"))
 
     def _handleImgur(self, imgurID):
         if not self.imgurClientID:
