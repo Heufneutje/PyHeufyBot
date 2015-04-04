@@ -125,7 +125,7 @@ class URLFollow(BotModule):
             data.append("{}x{}".format(j["width"], j["height"]))
         if "size" in j:
             data.append("Size: {} kB".format(int(j["size"])/1024))
-        data.append("Views: {}".format(j["size"]))
+        data.append("Views: {}".format(j["views"]))
         return "[Imgur] {}".format(" | ".join(data))
 
 urlFollow = URLFollow()
