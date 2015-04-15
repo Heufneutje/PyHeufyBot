@@ -1,4 +1,4 @@
-PyHeufyBot
+PyHeufyBot [![Ready](https://badge.waffle.io/heufneutje/pyheufybot.svg?label=ready&title=Ready)](https://waffle.io/heufneutje/pyheufybot)
 ==========
 
 A rewrite of my Java IRC bot [RE_HeufyBot](https://github.com/Heufneutje/RE_HeufyBot) in Python, 
