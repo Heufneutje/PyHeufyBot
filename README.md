@@ -42,7 +42,7 @@ Design goals for PyHeufyBot
   features based on those through its modules.
 - An action system. This will be the way the core and the modules can communicate with each other
   and also how modules can interact with other modules. This is based on the action system used in
-  [txircd](https://github.com/DesertBus/txircd) and ElementalAlchemist deserves credit for it.
+  [txircd](https://github.com/ElementalAlchemist/txircd) and ElementalAlchemist deserves credit for it.
 - Better control over connections. With RE_HeufyBot it was impossible to start any new connections 
   after the config files had been loaded. Reconnecting was impossible as stated before. By making 
   use of a Twisted factory, this should go a lot smoother.
