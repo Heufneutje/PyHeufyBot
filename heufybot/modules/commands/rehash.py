@@ -10,6 +10,9 @@ class RehashCommand(BotCommand):
 
     name = "Rehash"
 
+    def triggers(self):
+        return ["rehash"]
+
     def load(self):
         self.help = "Commands: rehash | Rehashes the bot's configuration files."
         self.commandHelp = {}
