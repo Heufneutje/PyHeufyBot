@@ -153,6 +153,9 @@ $- ModuleLoader
 # given channel.
 #- Part
 
+# Rehash: Enables the Rehash command, used to reload the configuration files.
+#- Rehash
+
 # Say: Enables the Say command, which lets the bot echo a message or action
 # given by the user.
 #- Say
