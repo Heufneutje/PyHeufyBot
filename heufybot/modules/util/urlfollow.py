@@ -67,7 +67,7 @@ class URLFollow(BotModule):
         title = soup.find("title").text.encode("utf-8", "ignore").replace("\r", "").replace("\n", " ")
         if len(title) > 300:
             title = title[:297] + "..."
-        return "[Standard URL] Title: {} (at host: {}).".format(title, parsed_uri.hostname)
+        return "[URL] {} (at host: {}).".format(title, parsed_uri.hostname)
 
     def _handleYouTube(self, videoID):
         url = "https://gdata.youtube.com/feeds/api/videos/{}?v=2&alt=json".format(videoID)
@@ -84,7 +84,7 @@ class URLFollow(BotModule):
             duration = time.strftime("%M:%S", time.gmtime(durSeconds))
         else:
             duration = time.strftime("%H:%M:%S", time.gmtime(durSeconds))
-        return "[YouTube] Video Title: {} | {} | {}".format(title.encode("utf-8", "ignore"), duration,
+        return "[YouTube] {} | {} | {}".format(title.encode("utf-8", "ignore"), duration,
                                                             description.encode("utf-8", "ignore"))
 
     def _handleImgur(self, imgurID):
@@ -110,7 +110,7 @@ class URLFollow(BotModule):
         j = j["data"]
         data = []
         if j["title"]:
-            data.append("Title: {}".format(j["title"]))
+            data.append("{}".format(j["title"]))
         else:
             data.append("No title")
         if j["nsfw"]:
