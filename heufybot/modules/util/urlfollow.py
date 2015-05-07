@@ -48,9 +48,9 @@ class URLFollow(BotModule):
                 self.bot.servers[server].outputHandler.cmdPRIVMSG(source, response)
 
     def _handleURL(self, url):
-        ytMatch = re.search(r"(youtube\.com/watch.+v=|youtu\.be/)(?P<videoID>[^&#\?]{11})", url)
-        if ytMatch:
-            return self._handleYouTube(ytMatch.group("videoID"))
+        # ytMatch = re.search(r"(youtube\.com/watch.+v=|youtu\.be/)(?P<videoID>[^&#\?]{11})", url)
+        # if ytMatch:
+        #     return self._handleYouTube(ytMatch.group("videoID"))
         imgurMatch = re.search(r"(i\.)?imgur\.com/(?P<imgurID>[^\.]+)", url)
         if imgurMatch:
             return self._handleImgur(imgurMatch.group("imgurID"))
