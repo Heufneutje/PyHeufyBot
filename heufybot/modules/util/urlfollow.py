@@ -3,6 +3,7 @@ from heufybot.channel import IRCChannel
 from heufybot.moduleinterface import BotModule, IBotModule
 from zope.interface import implements
 from bs4 import BeautifulSoup
+from isodate import parse_duration
 from urlparse import urlparse
 import re, time
 
@@ -33,10 +34,13 @@ class URLFollow(BotModule):
 
     def load(self):
         self.imgurClientID = None
+        self.ytKey = None
         if "api-keys" not in self.bot.storage:
             self.bot.storage["api-keys"] = {}
         if "imgur" in self.bot.storage["api-keys"]:
             self.imgurClientID = self.bot.storage["api-keys"]["imgur"]
+        if "google" in self.bot.storage["api-keys"]:
+            self.ytKey = self.bot.storage["api-keys"]["google"]
 
     def _searchURLs(self, server, source, body):
         if not self.bot.moduleHandler.useModuleOnServer(self.name, server):
@@ -48,9 +52,9 @@ class URLFollow(BotModule):
                 self.bot.servers[server].outputHandler.cmdPRIVMSG(source, response)
 
     def _handleURL(self, url):
-        # ytMatch = re.search(r"(youtube\.com/watch.+v=|youtu\.be/)(?P<videoID>[^&#\?]{11})", url)
-        # if ytMatch:
-        #     return self._handleYouTube(ytMatch.group("videoID"))
+        ytMatch = re.search(r"(youtube\.com/watch.+v=|youtu\.be/)(?P<videoID>[^&#\?]{11})", url)
+        if ytMatch:
+            return self._handleYouTube(ytMatch.group("videoID"))
         imgurMatch = re.search(r"(i\.)?imgur\.com/(?P<imgurID>[^\.]+)", url)
         if imgurMatch:
             return self._handleImgur(imgurMatch.group("imgurID"))
@@ -70,22 +74,30 @@ class URLFollow(BotModule):
         return "[URL] {} (at host: {}).".format(title, parsed_uri.hostname)
 
     def _handleYouTube(self, videoID):
-        url = "https://gdata.youtube.com/feeds/api/videos/{}?v=2&alt=json".format(videoID)
+        fields = "items(id,snippet(title,description),contentDetails(duration))"
+        parts = "snippet,contentDetails"
+        if self.ytKey:
+            url = "https://www.googleapis.com/youtube/v3/videos?id={}&fields={}&part={}&key={}".format(
+                videoID, fields,parts, self.ytKey)
+        else:
+            url = "https://www.googleapis.com/youtube/v3/videos?id={}&fields={}&part={}".format(videoID, fields, parts)
         result = self.bot.moduleHandler.runActionUntilValue("fetch-url", url)
         if not result:
             return None
         j = result.json()
-        title = j["entry"]["media$group"]["media$title"]["$t"].replace("\r", "").replace("\n", " ")
-        description = j["entry"]["media$group"]["media$description"]["$t"].replace("\r", "").replace("\n", " ")
-        durSeconds = int(j["entry"]["media$group"]["yt$duration"]["seconds"])
+        if len(j["items"]) < 1:
+            return None
+        snippet = j["items"][0]["snippet"]
+        title = snippet["title"].replace("\r", "").replace("\n", " ").encode("utf-8", "ignore")
+        description = snippet["description"].replace("\r", "").replace("\n", " ").encode("utf-8", "ignore")
+        durSeconds = parse_duration(j["items"][0]["contentDetails"]["duration"]).total_seconds()
         if len(description) > 149:
             description = description[:147] + "..."
         if durSeconds < 3600:
             duration = time.strftime("%M:%S", time.gmtime(durSeconds))
         else:
             duration = time.strftime("%H:%M:%S", time.gmtime(durSeconds))
-        return "[YouTube] {} | {} | {}".format(title.encode("utf-8", "ignore"), duration,
-                                                            description.encode("utf-8", "ignore"))
+        return "[YouTube] {} | {} | {}".format(title, duration, description)
 
     def _handleImgur(self, imgurID):
         if not self.imgurClientID:
