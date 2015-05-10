@@ -83,7 +83,7 @@ class WebUtils(BotModule):
         else:
             j = "{{\"longUrl\": \"http://{}/\"\}}".format(url)
         if self.googleKey:
-            apiURL = "https://www.googleapis.com/urlshortener/v1/url&key={}".format(self.googleKey)
+            apiURL = "https://www.googleapis.com/urlshortener/v1/url?key={}".format(self.googleKey)
         else:
             apiURL = "https://www.googleapis.com/urlshortener/v1/url"
         result = self.postURL(apiURL, j, { "Content-Type": "application/json" })
