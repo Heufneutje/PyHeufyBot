@@ -20,6 +20,11 @@ class WebUtils(BotModule):
 
     def load(self):
         self.timeout = self.bot.config.itemWithDefault("webrequest_timeout", 10)
+        self.googleKey = None
+        if "api-keys" not in self.bot.storage:
+            self.bot.storage["api-keys"] = {}
+        if "google" in self.bot.storage["api-keys"]:
+            self.googleKey = self.bot.storage["api-keys"]["google"]
 
     def fetchURL(self, url, params = None, extraHeaders = None):
         headers = { "user-agent": "Mozilla/5.0" }
@@ -77,7 +82,10 @@ class WebUtils(BotModule):
             j = "{{\"longUrl\": \"{}\"}}".format(url)
         else:
             j = "{{\"longUrl\": \"http://{}/\"\}}".format(url)
-        apiURL = "https://www.googleapis.com/urlshortener/v1/url"
+        if self.googleKey:
+            apiURL = "https://www.googleapis.com/urlshortener/v1/url&key={}".format(self.googleKey)
+        else:
+            apiURL = "https://www.googleapis.com/urlshortener/v1/url"
         result = self.postURL(apiURL, j, { "Content-Type": "application/json" })
         if not result:
             return None
