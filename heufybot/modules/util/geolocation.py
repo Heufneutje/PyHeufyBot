@@ -8,11 +8,18 @@ class GeoLocation(BotModule):
 
     name = "GeoLocation"
     canDisable = False
-    baseURL = "http://maps.googleapis.com/maps/api/geocode/json?"
+    baseURL = "https://maps.googleapis.com/maps/api/geocode/json?"
 
     def actions(self):
         return [ ("geolocation-latlon", 1, self.geolocationForLatLon),
                  ("geolocation-place", 1, self.geolocationForPlace) ]
+
+    def load(self):
+        self.googleKey = None
+        if "api-keys" not in self.bot.storage:
+            self.bot.storage["api-keys"] = {}
+        if "google" in self.bot.storage["api-keys"]:
+            self.googleKey = self.bot.storage["api-keys"]["google"]
 
     def geolocationForLatLon(self, lat, lon):
         params = {
@@ -29,6 +36,8 @@ class GeoLocation(BotModule):
     def _sendLocationRequest(self, params):
         params["sensor"] = "false"
         params["language"] = "english"
+        if self.googleKey:
+            params["key"] = self.googleKey
         result = self.bot.moduleHandler.runActionUntilValue("fetch-url", self.baseURL, params)
         if not result:
             return None
