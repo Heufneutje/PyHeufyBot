@@ -2,6 +2,17 @@
 PyHeufyBot Changelog
 ====================
 
+0.5
+===
+**0.5.0**
+  * Added the URLFollow and Rehash modules.
+  * Made the timeout on web requests configurable
+  * Made the bot respond to its name along with its command character.
+  * Added a tool to add API keys.
+  * Fixed various bugs.
+
+Full changelog: https://github.com/Heufneutje/PyHeufyBot/compare/v0.4.0...v0.5.0
+
 0.4
 ===
 **0.4.0**
