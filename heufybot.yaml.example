@@ -90,7 +90,7 @@ $ functionality additional modules can be loaded.
 
 # URLFollow: Enables the bot to look up the content details of posted URLs.
 # Requires isodate to be installed.  See optional-requirements.txt.
-- URLFollow
+#- URLFollow
 
 # UserLocationChatmap: Provides utility functions to determine the location of
 # a user on the Desert Bus Chatmap.  Requires WebUtils to be loaded.
