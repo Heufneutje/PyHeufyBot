@@ -39,7 +39,7 @@ class CommandHandler(BotModule):
         if message["body"].startswith(commandPrefix):
             message["command"] = params[0][params[0].index(commandPrefix) + len(commandPrefix):]
             del params[0]
-        elif message["body"].lower().startswith(botNick):
+        elif message["body"].lower().startswith(botNick) and len(params) > 1:
             message["command"] = params[1]
             del params[0:2]
         else:
