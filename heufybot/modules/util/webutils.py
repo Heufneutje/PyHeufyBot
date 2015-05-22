@@ -1,9 +1,8 @@
 from twisted.plugin import IPlugin
-from twisted.python import log
 from heufybot.moduleinterface import BotModule, IBotModule
-from heufybot.utils.logutils import logExceptionTrace
+from traceback import format_exc
 from zope.interface import implements
-import logging, re, requests
+import re, requests
 
 
 class WebUtils(BotModule):
@@ -36,10 +35,10 @@ class WebUtils(BotModule):
             if not re.match("^(text/.*|application/((rss|atom|rdf)\+)?xml(;.*)?|application/(.*)json(;.*)?)$", pageType):
                 # Make sure we don't download any unwanted things
                 return None
-            log.msg(request.url, level=logging.DEBUG)
+            self.bot.log.debug(request.url)
             return request
-        except (requests.RequestException, requests.ConnectionError) as ex:
-            logExceptionTrace("Error while fetching from {}: {}".format(url, ex))
+        except (requests.RequestException, requests.ConnectionError):
+            self.bot.log.failure("Error while fetching from {url}:\n {ex}", url=url, ex=format_exc())
             return None
 
     def postURL(self, url, data, extraHeaders = None):
@@ -52,10 +51,10 @@ class WebUtils(BotModule):
             if not re.match("^(text/.*|application/((rss|atom|rdf)\+)?xml(;.*)?|application/(.*)json(;.*)?)$", pageType):
                 # Make sure we don't download any unwanted things
                 return None
-            log.msg(request.url, level=logging.DEBUG)
+            self.bot.log.debug(request.url)
             return request
-        except (requests.RequestException, requests.ConnectionError) as ex:
-            logExceptionTrace("Error while posting to {}: {}".format(url, ex))
+        except (requests.RequestException, requests.ConnectionError):
+            self.bot.log.failure("Error while posting to {url}:\n {ex}", url=url, ex=format_exc())
             return None
 
     def pasteEE(self, description, data, expiration):

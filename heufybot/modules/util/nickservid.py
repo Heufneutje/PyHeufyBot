@@ -18,13 +18,13 @@ class NickServIdentify(BotModule):
 
         if "nickserv_nick" not in self.bot.config and "nickserv_nick" not in self.bot.config["servers"][serverName]:
             nick = "NickServ"
-            self.bot.servers[serverName].log("No valid NickServ nickname was found; defaulting to NickServ...",
-                                             level=logging.WARNING)
+            self.bot.log.warn("[{connection}] No valid NickServ nickname was found; defaulting to NickServ...",
+                              connection=serverName)
         else:
             nick = self.bot.config.serverItemWithDefault(serverName, "nickserv_nick", "NickServ")
         if "nickserv_pass" not in self.bot.config and "nickserv_pass" not in self.bot.config["servers"][serverName]:
-            self.bot.servers[serverName].log("No NickServ password found. Aborting authentication...",
-                                             level=logging.ERROR)
+            self.bot.log.warn("[{connection}] No NickServ password found. Aborting authentication...",
+                              connection=serverName)
             return
         password = self.bot.config.serverItemWithDefault(serverName, "nickserv_pass", None)
         self.bot.servers[serverName].outputHandler.cmdPRIVMSG(nick, "IDENTIFY {}".format(password))

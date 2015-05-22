@@ -1,7 +1,6 @@
 from heufybot.channel import IRCChannel
 from heufybot.user import IRCUser
 from heufybot.utils import ModeType, parseUserPrefix, timeutils
-import logging
 
 
 class InputHandler(object):
@@ -32,7 +31,7 @@ class InputHandler(object):
         pass
 
     def _handleERROR(self, nick, ident, host, params):
-        self.connection.log("Connection terminated ({}).".format(params[0]))
+        self._logInfo("Connection terminated ({}).".format(params[0]))
 
     def _handleINVITE(self, nick, ident, host, params):
         if nick in self.connection.users:
@@ -61,13 +60,11 @@ class InputHandler(object):
 
     def _handleKICK(self, nick, ident, host, params):
         if params[0] not in self.connection.channels:
-            self.connection.log("Received KICK message for unknown channel {}.".format(params[0]),
-                                level=logging.WARNING)
+            self._logWarning("Received KICK message for unknown channel {}.".format(params[0]))
             return
         channel = self.connection.channels[params[0]]
         if params[1] not in channel.users:
-            self.connection.log("Received KICK message for unknown user {} in channel {}.".format(nick, params[0]),
-                                level=logging.WARNING)
+            self._logWarning("Received KICK message for unknown user {} in channel {}.".format(nick, params[0]))
             return
         if nick not in self.connection.users:
             # Technically opers could KICK a user despite not being in the channel themselves
@@ -97,8 +94,7 @@ class InputHandler(object):
             modeParams = []
         if params[0][0] in self.connection.supportHelper.chanTypes:
             if params[0] not in self.connection.channels:
-                self.connection.log("Received MODE message for unknown channel {}.".format(params[0]),
-                                level=logging.WARNING)
+                self._logWarning("Received MODE message for unknown channel {}.".format(params[0]))
                 return
             channel = self.connection.channels[params[0]]
             modes = channel.setModes(params[1], modeParams)
@@ -121,7 +117,7 @@ class InputHandler(object):
 
     def _handleNICK(self, nick, ident, host, params):
         if nick not in self.connection.users:
-            self.connection.log("Received NICK message for unknown user {}.".format(nick), level=logging.WARNING)
+            self._logWarning("Received NICK message for unknown user {}.".format(nick))
             return
         user = self.connection.users[nick]
         newNick = params[0]
@@ -161,13 +157,11 @@ class InputHandler(object):
 
     def _handlePART(self, nick, ident, host, params):
         if params[0] not in self.connection.channels:
-            self.connection.log("Received PART message for unknown channel {}.".format(params[0]),
-                                level=logging.WARNING)
+            self._logWarning("Received PART message for unknown channel {}.".format(params[0]))
             return
         channel = self.connection.channels[params[0]]
         if nick not in channel.users:
-            self.connection.log("Received PART message for unknown user {} in channel {}.".format(nick, params[0]),
-                                level=logging.WARNING)
+            self._logWarning("Received PART message for unknown user {} in channel {}.".format(nick, params[0]))
             return
         reason = ""
         if len(params) > 1:
@@ -211,7 +205,7 @@ class InputHandler(object):
 
     def _handleQUIT(self, nick, ident, host, params):
         if nick not in self.connection.users:
-            self.connection.log("Received a QUIT message for unknown user {}.".format(nick), level=logging.WARNING)
+            self._logWarning("Received a QUIT message for unknown user {}.".format(nick))
             return
         reason = ""
         if len(params) > 0:
@@ -225,8 +219,7 @@ class InputHandler(object):
 
     def _handleTOPIC(self, nick, ident, host, params):
         if params[0] not in self.connection.channels:
-            self.connection.log("Received TOPIC message for unknown channel {}.".format(params[0]),
-                                level=logging.WARNING)
+            self._logWarning("Received TOPIC message for unknown channel {}.".format(params[0]))
             return
         channel = self.connection.channels[params[0]]
         if nick not in self.connection.users:
@@ -319,8 +312,7 @@ class InputHandler(object):
     def _handleNumeric352(self, prefix, params):
         # 352: RPL_WHOREPLY
         if params[5] not in self.connection.users:
-            self.connection.log("Received WHO reply for unknown user {}.".format(params[5]),
-                                level=logging.WARNING)
+            self._logWarning("Received WHO reply for unknown user {}.".format(params[5]))
             return
         user = self.connection.users[params[5]]
         user.ident = params[2]
@@ -376,6 +368,12 @@ class InputHandler(object):
     def _handleNumeric433(self, prefix, params):
         # 433: ERR_NICKNAMEINUSE
         newNick = "{}_".format(self.connection.nick)
-        self.connection.log("Nickname {} is in use, retrying with {} ...".format(self.connection.nick, newNick))
+        self._logInfo("Nickname {} is in use, retrying with {} ...".format(self.connection.nick, newNick))
         self.connection.nick = newNick
         self.connection.outputHandler.cmdNICK(self.connection.nick)
+
+    def _logInfo(self, info):
+        self.connection.bot.log.warn("{connection.name} {info}", connection=self.connection, warning=info)
+
+    def _logWarning(self, warning):
+        self.connection.bot.log.warn("{connection.name} {warning}", connection=self.connection, warning=warning)

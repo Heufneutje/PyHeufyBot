@@ -1,8 +1,10 @@
-from twisted.python import log
+from twisted.logger import FileLogObserver, FilteringLogObserver, globalLogPublisher, InvalidLogLevelError, \
+    Logger, LogLevel, LogLevelFilterPredicate
+from twisted.python.logfile import DailyLogFile
 from heufybot.bot import HeufyBot
-from heufybot.utils.logutils import LevelLoggingObserver
+from heufybot.utils.logutils import consoleLogObserver, logFormat
 from signal import signal, SIGINT
-import argparse, logging
+import argparse
 
 
 if __name__ == "__main__":
@@ -12,24 +14,36 @@ if __name__ == "__main__":
     parser.add_argument("-f", "--logfile", help="The file the log will be written to", type=str, default="heufybot.log")
     parser.add_argument("-l", "--loglevel", help="The logging level the bot will use", type=str, default="INFO")
     options = parser.parse_args()
-    
+
+    # Start the bot
+    heufybot = HeufyBot(options.config)
+
     # Determine the logging level
-    numericLevel = getattr(logging, options.loglevel.upper(), None)
-    invalidLogLevel = False
-    if not isinstance(numericLevel, int):
-        numericLevel = logging.INFO
+    logFilter = LogLevelFilterPredicate()
+    try:
+        logFilter.setLogLevelForNamespace("heufybot", LogLevel.levelWithName(options.loglevel.lower()))
+        invalidLogLevel = False
+    except InvalidLogLevelError:
+        logFilter.setLogLevelForNamespace("heufybot", LogLevel.info)
         invalidLogLevel = True
 
     # Set up logging
-    observer = LevelLoggingObserver(open(options.logfile, "a"), numericLevel)
-    observer.start()
+    logFile = DailyLogFile("heufybot.log", "")
+    fileObserver = FileLogObserver(logFile, logFormat)
+    fileFilterObserver = FilteringLogObserver(fileObserver, (logFilter,))
+    consoleFilterObserver = FilteringLogObserver(consoleLogObserver, (logFilter,))
+    heufybot.log = Logger("heufybot")
+    globalLogPublisher.addObserver(fileFilterObserver)
+    globalLogPublisher.addObserver(consoleFilterObserver)
+
+    heufybot.log.info("Starting bot...")
 
     # Yell at the user if they specified an invalid log level
     if invalidLogLevel:
-        log.msg("Picked up invalid log level {}; defaulting to INFO.".format(options.loglevel), level=logging.WARNING)
+        heufybot.log.info("Picked up invalid log level {invalidLevel}, level has been set to INFO instead.",
+                          invalidLevel=options.loglevel.lower())
+    else:
+        heufybot.log.info("Log level has been set to {logLevel}.", logLevel=options.loglevel.upper())
 
-    # Start the bot
-    log.msg("Starting bot...")
-    heufybot = HeufyBot(options.config)
     signal(SIGINT, lambda signal, stack: heufybot.shutdown())
     heufybot.startup()

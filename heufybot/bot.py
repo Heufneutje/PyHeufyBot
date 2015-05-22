@@ -1,24 +1,23 @@
 from twisted.internet import reactor
 from twisted.internet.task import LoopingCall
-from twisted.python import log
 from heufybot.config import Config
 from heufybot.factory import HeufyBotFactory
 from heufybot.modulehandler import ModuleHandler
 from heufybot.utils.timeutils import now
-import logging, os, shelve, sys
+import os, shelve, sys
 
 # Try to enable SSL support
 try:
     from twisted.internet import ssl
-    sslSupported = True
 except ImportError:
-    sslSupported = False
+    ssl = None
 
 
 class HeufyBot(object):
     def __init__(self, configFile):
         self.config = Config(configFile)
         self.connectionFactory = HeufyBotFactory(self)
+        self.log = None
         self.moduleHandler = ModuleHandler(self)
         self.servers = {}
         self.storage = None
@@ -26,20 +25,19 @@ class HeufyBot(object):
         self.startTime = now()
 
     def startup(self):
-        if not sslSupported:
-            log.msg("The PyOpenSSL package was not found. You will not be able to connect to servers using SSL.",
-                    level=logging.WARNING)
-        log.msg("Loading configuration file...")
+        if ssl is None:
+            self.log.warn("The PyOpenSSL package was not found. You will not be able to connect to servers using SSL.")
+        self.log.info("Loading configuration file...")
         self.config.loadConfig()
-        log.msg("Loading storage...")
+        self.log.info("Loading storage...")
         self.storage = shelve.open(self.config.itemWithDefault("storage_path", "heufybot.db"))
         self.storageSync = LoopingCall(self.storage.sync)
         self.storageSync.start(self.config.itemWithDefault("storage_sync_interval", 5), now=False)
-        log.msg("Loading modules...")
+        self.log.info("Loading modules...")
         self.moduleHandler.loadAllModules()
-        log.msg("Initiating connections...")
+        self.log.info("Initiating connections...")
         self._initiateConnections()
-        log.msg("Starting reactor...")
+        self.log.info("Starting reactor...")
         reactor.run()
 
     def _initiateConnections(self):
@@ -49,35 +47,35 @@ class HeufyBot(object):
     def connectServer(self, host):
         if host in self.servers:
             error = "A connection to {} was requested, but already exists.".format(host)
-            log.msg(error, level=logging.WARNING)
+            self.log.warn(error)
             return error
         if host not in self.config["servers"]:
             error = "A connection to {} was requested, but there is no config data for this server.".format(host)
-            log.msg(error, level=logging.WARNING)
+            self.log.warn(error)
             return error
         port = int(self.config.serverItemWithDefault(host, "port", 6667))
         if self.config.serverItemWithDefault(host, "ssl", False):
-            log.msg("Attempting secure connection to {}/{}...".format(host, port))
-            if sslSupported:
+            self.log.info("Attempting secure connection to {host}/{port}...", host=host, port=port)
+            if ssl is not None:
                 reactor.connectSSL(host, port, self.connectionFactory, ssl.ClientContextFactory())
             else:
-                log.msg("Can't connect to {}/{}; PyOpenSSL is required to allow secure connections.".
-                        format(host, port), level=logging.ERROR)
+                self.log.error("Can't connect to {host}/{port}; PyOpenSSL is required to allow secure connections.",
+                               host=host, port=port)
         else:
-            log.msg("Attempting connection to {}/{}...".format(host, port))
+            self.log.info("Attempting connection to {host}/{port}...", host=host, port=port)
             reactor.connectTCP(host, port, self.connectionFactory)
 
     def disconnectServer(self, host, quitMessage = "Quitting..."):
         if host not in self.servers:
             error = "A disconnect from {} was requested, but this connection doesn't exist.".format(host)
-            log.msg(error, level=logging.WARNING)
+            self.log.warn(error)
             return error
         self.servers[host].disconnect(quitMessage, True)
 
     def reconnectServer(self, host, quitMessage = "Reconnecting..."):
         if host not in self.servers:
             error = "A reconnect to {} was requested, but this connection doesn't exist.".format(host)
-            log.msg(error, level=logging.WARNING)
+            self.log.warn(error)
             return error
         self.servers[host].disconnect(quitMessage)
 
@@ -92,14 +90,14 @@ class HeufyBot(object):
 
     def countConnections(self):
         if len(self.servers) == 0:
-            log.msg("No more connections alive, shutting down...")
+            self.log.info("No more connections alive, shutting down...")
             # If we have any connections that have been started but never finished, stop trying
             self.connectionFactory.stopTrying()
-            log.msg("Closing storage...")
+            self.log.info("Closing storage...")
             if self.storageSync.running:
                 self.storageSync.stop()
             self.storage.close()
-            log.msg("Unloading modules...")
+            self.log.info("Unloading modules...")
             self.moduleHandler.unloadAllModules()
-            log.msg("Stopping reactor...")
+            self.log.info("Stopping reactor...")
             reactor.stop()

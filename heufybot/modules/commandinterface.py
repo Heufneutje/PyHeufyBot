@@ -1,5 +1,5 @@
 from heufybot.moduleinterface import BotModule
-from heufybot.utils.logutils import logExceptionTrace
+from traceback import format_exc
 
 
 class BotCommand(BotModule):
@@ -23,7 +23,7 @@ class BotCommand(BotModule):
             except Exception as ex:
                 error = "Python execution error while running command: {}: {}".format(type(ex).__name__, ex.message)
                 self.bot.servers[data["server"]].outputHandler.cmdPRIVMSG(data["source"], error)
-                logExceptionTrace(ex)
+                self.bot.log.failure("Error while running command:\n {ex}", ex=format_exc())
 
     def displayHelp(self, server, request):
         if not self.bot.moduleHandler.useModuleOnServer(self.name, server):

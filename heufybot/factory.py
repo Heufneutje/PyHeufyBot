@@ -15,7 +15,8 @@ class HeufyBotFactory(ReconnectingClientFactory):
         return self.protocol(self.bot)
 
     def clientConnectionFailed(self, connector, reason):
-        log.msg("Client connection to {} failed (Reason: {}).".format(connector.host, reason.value))
+        self.bot.log.info("Client connection to {connector.host} failed (Reason: {reason.value}).",
+                          connector=connector, reason=reason)
         ReconnectingClientFactory.clientConnectionFailed(self, connector, reason)
 
     def clientConnectionLost(self, connector, reason):
@@ -27,7 +28,7 @@ class HeufyBotFactory(ReconnectingClientFactory):
 
         # Check whether or not we should reconnect
         if connector.host in self.currentlyDisconnecting:
-            log.msg("Connection to {} was closed cleanly.".format(connector.host))
+            self.bot.log.info("Connection to {connector.host} was closed cleanly.", connector=connector)
             ClientFactory.clientConnectionLost(self, connector, reason)
             self.currentlyDisconnecting.remove(connector.host)
             self.bot.countConnections()

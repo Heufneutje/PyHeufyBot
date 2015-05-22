@@ -1,9 +1,8 @@
 from twisted.plugin import getPlugins
-from twisted.python import log
 from twisted.python.rebuild import rebuild
 from heufybot.moduleinterface import IBotModule
 from heufybot.utils import ModuleLoadType
-import heufybot.modules, importlib, logging
+import heufybot.modules, importlib
 
 
 class ModuleHandler(object):
@@ -117,7 +116,7 @@ class ModuleHandler(object):
             try:
                 self.loadModule(module)
             except ModuleLoaderError as e:
-                log.msg("Module {} failed to load: {}".format(module, e.message), level=logging.ERROR)
+                self.bot.log.error("Module {module} failed to load: {error.message}", module=module, error=e)
 
     def unloadAllModules(self):
         modules = self.loadedModules.keys()

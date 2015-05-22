@@ -29,15 +29,16 @@ class IRCChannel(object):
             elif mode == "-":
                 adding = False
             elif mode not in supportedChanModes and mode not in supportedStatuses:
-                self.connection.log("Received unknown MODE char {} in MODE string {}.".format(mode, modes),
-                                    level=logging.WARNING)
+                self.connection.bot.log.warn("{connection.name} Received unknown MODE char {mode} in MODE string {"
+                                             "modes}.", connection=self.connection, mode=mode, modes=modes)
                 # We received a mode char that's unknown to use, so we abort parsing to prevent desync.
                 return None
             elif mode in supportedStatuses:
                 user = params.pop(0)
                 if user not in self.users:
-                    self.connection.log("Received status MODE for unknown user {} in channel {}.".format(user,
-                                        self.name), level=logging.WARNING)
+                    self.connection.bot.log.warn("{connection.name} Received status MODE for unknown user {user} in "
+                                                 "channel {channel}.", connection=self.connection, user=user,
+                                                 channel=self.name)
                 else:
                     if adding:
                         self.ranks[user] += mode
