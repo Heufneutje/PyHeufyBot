@@ -40,10 +40,8 @@ if __name__ == "__main__":
 
     # Yell at the user if they specified an invalid log level
     if invalidLogLevel:
-        heufybot.log.info("Picked up invalid log level {invalidLevel}, level has been set to INFO instead.",
+        heufybot.log.warn("Picked up invalid log level {invalidLevel}, level has been set to INFO instead.",
                           invalidLevel=options.loglevel.lower())
-    else:
-        heufybot.log.info("Log level has been set to {logLevel}.", logLevel=options.loglevel.upper())
 
     signal(SIGINT, lambda signal, stack: heufybot.shutdown())
     heufybot.startup()
