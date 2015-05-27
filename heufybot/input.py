@@ -373,7 +373,7 @@ class InputHandler(object):
         self.connection.outputHandler.cmdNICK(self.connection.nick)
 
     def _logInfo(self, info):
-        self.connection.bot.log.warn("{connection.name} {info}", connection=self.connection, warning=info)
+        self.connection.bot.log.info("{connection.name} {info}", connection=self.connection, info=info)
 
     def _logWarning(self, warning):
         self.connection.bot.log.warn("{connection.name} {warning}", connection=self.connection, warning=warning)
