@@ -74,14 +74,15 @@ class URLFollow(BotModule):
         return "[URL] {} (at host: {}).".format(title, parsed_uri.hostname)
 
     def _handleYouTube(self, videoID):
-        fields = "items(id,snippet(title,description),contentDetails(duration))"
-        parts = "snippet,contentDetails"
+        params = {
+            "id": videoID,
+            "fields": "items(id,snippet(title,description),contentDetails(duration))",
+            "parts": "snippet,contentDetails",
+        }
         if self.ytKey:
-            url = "https://www.googleapis.com/youtube/v3/videos?id={}&fields={}&part={}&key={}".format(
-                videoID, fields,parts, self.ytKey)
-        else:
-            url = "https://www.googleapis.com/youtube/v3/videos?id={}&fields={}&part={}".format(videoID, fields, parts)
-        result = self.bot.moduleHandler.runActionUntilValue("fetch-url", url)
+            params["key"] = self.ytKey
+        url = "https://www.googleapis.com/youtube/v3/videos"
+        result = self.bot.moduleHandler.runActionUntilValue("fetch-url", url, params)
         if not result:
             return None
         j = result.json()
