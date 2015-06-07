@@ -41,7 +41,7 @@ class WordCounterCommand(BotCommand):
             return True
 
     def execute(self, server, source, command, params, data):
-        self.commandUsed = False
+        self.commandUsed = True
         if "channel" not in data:
             self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Word counters can only be used in channels.")
             return
@@ -95,6 +95,7 @@ class WordCounterCommand(BotCommand):
 
     def _countWords(self, server, source, user, body):
         if self.commandUsed:
+            self.commandUsed = False
             return
         if server not in self.wordCounters:
             return
