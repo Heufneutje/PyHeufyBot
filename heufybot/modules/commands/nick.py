@@ -13,7 +13,7 @@ class NickCommand(BotCommand):
         return ["nick"]
 
     def load(self):
-        self.help = "Commands: nick | Change the nickname of the bot."
+        self.help = "Commands: nick <newnick> | Change the nickname of the bot."
         self.commandHelp = {}
 
     def checkPermissions(self, server, source, user, command):
