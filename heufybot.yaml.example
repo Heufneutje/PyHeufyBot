@@ -130,6 +130,10 @@ $ functionality additional modules can be loaded.
 # channel.
 #- Join
 
+# LogSearch: Enables the FirstSeen, LastSeen, LastSaw, FirstSaid and LastSaid
+# commands for searching the logs.
+#- LogSearch
+
 # ModuleLoader: Enables the Load, Unload, Reload, Enable and Disable commands.
 # These commands are used to control what modules are loaded and used at
 # runtime.
