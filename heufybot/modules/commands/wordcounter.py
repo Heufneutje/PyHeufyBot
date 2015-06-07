@@ -2,6 +2,7 @@ from twisted.plugin import IPlugin
 from heufybot.channel import IRCChannel
 from heufybot.moduleinterface import IBotModule
 from heufybot.modules.commandinterface import BotCommand
+from heufybot.utils import networkName
 from zope.interface import implements
 import operator
 
@@ -47,23 +48,24 @@ class WordCounterCommand(BotCommand):
         if len(params) < 1:
             self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "You didn't specify a word.")
             return
-        if server not in self.wordCounters:
-            self.wordCounters[server] = {}
-        if source not in self.wordCounters[server]:
-            self.wordCounters[server][source] = {}
+        network = networkName(self.bot, server)
+        if network not in self.wordCounters:
+            self.wordCounters[network] = {}
+        if source not in self.wordCounters[network]:
+            self.wordCounters[network][source] = {}
         word = params[0].lower()
         if command == "addwordcount":
-            if word in self.wordCounters[server][source]:
+            if word in self.wordCounters[network][source]:
                 self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "A counter for \"{}\" already "
                                                                           "exists.".format(word))
             else:
-                self.wordCounters[server][source][word] = {}
+                self.wordCounters[network][source][word] = {}
                 self.bot.storage["wordcounts"] = self.wordCounters
                 self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "A counter for \"{}\" has been "
                                                                           "added.".format(word))
         elif command == "remwordcount":
-            if word in self.wordCounters[server][source]:
-                del self.wordCounters[server][source][word]
+            if word in self.wordCounters[network][source]:
+                del self.wordCounters[network][source][word]
                 self.bot.storage["wordcounts"] = self.wordCounters
                 self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "The counter for \"{}\" has been "
                                                                           "removed.".format(word))
@@ -73,26 +75,30 @@ class WordCounterCommand(BotCommand):
                                                                           "exist.".format(word))
         elif command == "wordcount":
             self.commandUsed = True
-            if word not in self.wordCounters[server][source]:
+            if word not in self.wordCounters[network][source]:
                 self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "A counter for \"{}\" does not "
                                                                           "exist.".format(word))
                 return
-            total = sum(self.wordCounters[server][source][word].itervalues())
+            total = sum(self.wordCounters[network][source][word].itervalues())
             result = "The word \"{}\" has been said {} times.".format(word, total)
             if result > 0:
-                top = max(self.wordCounters[server][source][word].iteritems(), key=operator.itemgetter(1))
+                top = max(self.wordCounters[network][source][word].iteritems(), key=operator.itemgetter(1))
                 result = "{} The top contributor is {} with {} times.".format(result, top[0], top[1])
             self.bot.servers[server].outputHandler.cmdPRIVMSG(source, result)
 
     def countMessage(self, server, channel, user, body):
-        self._countWords(server, channel.name, user.nick, body)
+        self._countWords(networkName(self.bot, server), channel.name, user.nick, body)
 
     def countAction(self, server, source, user, body):
         if body.upper().startswith("ACTION") and isinstance(source, IRCChannel):
-            self._countWords(server, source.name, user.nick, body)
+            self._countWords(networkName(self.bot, server), source.name, user.nick, body)
 
     def _countWords(self, server, source, user, body):
         if self.commandUsed:
+            return
+        if server not in self.wordCounters:
+            return
+        if source not in self.wordCounters[server]:
             return
         for word, users in self.wordCounters[server][source].iteritems():
             if word in body:
