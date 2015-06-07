@@ -194,6 +194,11 @@ $- ModuleLoader
 # and GeoLocation to be loaded.
 #- Weather
 
+# WordCounter: Enables the AddWordCount, RemWordCount and WordCount commands
+# for keeping track of how many times a certain word has been said in a
+# channel.
+#- WordCounter
+
 
 # MODULE CONFIGURATION
 # Some modules provide additional configuration options.  They can also
