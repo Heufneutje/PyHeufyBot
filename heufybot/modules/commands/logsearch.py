@@ -79,7 +79,7 @@ class LogsearchCommand(BotCommand):
                 else:
                     lines = logfile.readlines()
             if reverse and includeToday:
-                lines = list(lines)[5:]
+                lines = list(lines)[1:]
             for line in lines:
                 if pattern.match(line.rstrip()):
                     found = line.rstrip()
