@@ -26,7 +26,7 @@ class WebUtils(BotModule):
             self.googleKey = self.bot.storage["api-keys"]["google"]
 
     def fetchURL(self, url, params = None, extraHeaders = None):
-        headers = { "user-agent": "Mozilla/5.0" }
+        headers = { "User-Agent": "Mozilla/5.0", "Accept-Language": "en-us,en;q=0.5" }
         if extraHeaders:
             headers.update(extraHeaders)
         try:
@@ -42,7 +42,7 @@ class WebUtils(BotModule):
             return None
 
     def postURL(self, url, data, extraHeaders = None):
-        headers = { "user-agent": "Mozilla/5.0" }
+        headers = { "User-Agent": "Mozilla/5.0" }
         if extraHeaders:
             headers.update(extraHeaders)
         try:
