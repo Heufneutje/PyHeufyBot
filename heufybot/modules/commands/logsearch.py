@@ -42,6 +42,7 @@ class LogsearchCommand(BotCommand):
         for (dirpath, dirnames, filenames) in walk(logPath):
             logs.extend(filenames)
             break
+        logs.sort()
 
         result = None
         if command == "firstseen":
@@ -77,7 +78,7 @@ class LogsearchCommand(BotCommand):
                     lines = reversed(logfile.readlines())
                 else:
                     lines = logfile.readlines()
-            if reverse and includeToday and not searchForNick:
+            if reverse and includeToday:
                 lines = list(lines)[5:]
             for line in lines:
                 if pattern.match(line.rstrip()):
