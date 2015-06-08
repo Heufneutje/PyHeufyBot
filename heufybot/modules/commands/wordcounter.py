@@ -36,7 +36,7 @@ class WordCounterCommand(BotCommand):
     def checkPermissions(self, server, source, user, command):
         if command == "addwordcount" or command == "remwordcount":
             return not self.bot.moduleHandler.runActionUntilFalse("checkadminpermission", server, source, user,
-                                                                  "bot-conversation")
+                                                                  "word-counter")
         else:
             return True
 
