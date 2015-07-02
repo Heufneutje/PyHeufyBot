@@ -134,9 +134,12 @@ class WeatherCommand(BotCommand):
         windspeed = json["wind"]["speed"]
         windspeedMiles = round(windspeed, 1)
         windspeedKmph = round(windspeed * 1.60934, 1)
-        winddir = self._convertWindDegToCardinal(float(json["wind"]["deg"]))
+        if "deg" in json["wind"]:
+            winddir = self._convertWindDegToCardinal(float(json["wind"]["deg"]))
+        else:
+            winddir = "Unknown"
+            self.bot.log.error(json)
         latestUpdate = (timestamp(now()) - int(json["dt"])) / 60
-
         latestUpdateStr = "{} minute(s) ago".format(latestUpdate) if latestUpdate > 0 else "just now"
         return "Temp: {}°C / {}°F | Weather: {} | Humidity {}% | Wind Speed: {} kmph / {} mph | Wind Direction: {} | " \
                "Latest Update: {}.".format(tempC, tempF, description, humidity, windspeedKmph, windspeedMiles,
