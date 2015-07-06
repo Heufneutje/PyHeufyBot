@@ -28,12 +28,13 @@ class BotCommand(BotModule):
     def displayHelp(self, server, request):
         if not self.bot.moduleHandler.useModuleOnServer(self.name, server):
             return None
-        if request.lower() == self.name.lower():
+        request = request.lower()
+        if request == self.name.lower():
             return self.help
-        if request.lower() in [x.lower() for x in self.triggers()]:
-            try:
-                return self.commandHelp[request.lower()]
-            except KeyError:
+        if request in [x.lower() for x in self.triggers()]:
+            if request in self.commandHelp:
+                return self.commandHelp[request]
+            else:
                 return self.help
         return None
 
