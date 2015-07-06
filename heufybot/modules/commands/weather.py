@@ -138,7 +138,6 @@ class WeatherCommand(BotCommand):
             winddir = self._convertWindDegToCardinal(float(json["wind"]["deg"]))
         else:
             winddir = "Unknown"
-            self.bot.log.error(json)
         latestUpdate = (timestamp(now()) - int(json["dt"])) / 60
         latestUpdateStr = "{} minute(s) ago".format(latestUpdate) if latestUpdate > 0 else "just now"
         return "Temp: {}°C / {}°F | Weather: {} | Humidity {}% | Wind Speed: {} kmph / {} mph | Wind Direction: {} | " \
