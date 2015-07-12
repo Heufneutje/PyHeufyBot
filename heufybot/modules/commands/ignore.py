@@ -24,7 +24,7 @@ class IgnoreCommand(BotCommand):
         if networkName(self.bot, data["server"]) not in self.ignores:
             return
         for ignoredHost in self.ignores[networkName(self.bot, data["server"])]:
-            if fnmatch(data["user"].fullUserPrefix(), ignoredHost):
+            if fnmatch(data["user"].fullUserPrefix().lower(), ignoredHost.lower()):
                 data.clear()
                 break
 
