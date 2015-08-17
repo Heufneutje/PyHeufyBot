@@ -192,6 +192,7 @@ class InputHandler(object):
                 user = IRCUser(nick, ident, host)
         elif nick in self.connection.users:
             source = self.connection.users[nick]
+            user = source
         else:
             # We got a message from an unknown user. Create a temporary IRCUser object for them.
             source = IRCUser(nick, ident, host)
