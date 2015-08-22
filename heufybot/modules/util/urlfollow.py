@@ -123,7 +123,7 @@ class URLFollow(BotModule):
         j = j["data"]
         data = []
         if j["title"]:
-            data.append("{}".format(j["title"]))
+            data.append("{}".format(j["title"].encode("utf-8", "ignore")))
         else:
             data.append("No title")
         if j["nsfw"]:
