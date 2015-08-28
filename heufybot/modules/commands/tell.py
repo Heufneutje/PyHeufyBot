@@ -64,18 +64,19 @@ class TellCommand(BotCommand):
             elif len(params) == 1 or len(params) == 2 and command == "tellafter":
                 self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Tell {} what?".format(params[0]))
                 return
+            sentTells = []
+            if command == "tellafter":
+                try:
+                    date = datetime.strptime(params[1], "%Y-%m-%d")
+                except ValueError:
+                    date = now() + durationToTimedelta(params[1])
+            else:
+                date = now()
             for recep in params[0].split("&"):
                 if recep.lower() == self.bot.servers[server].nick.lower():
                     self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Thanks for telling me that, {}."
                                                                       .format(data["user"].nick))
                     continue
-                if command == "tellafter":
-                    try:
-                        date = datetime.strptime(params[1], "%Y-%m-%d")
-                    except ValueError:
-                        date = now() + durationToTimedelta(params[1])
-                else:
-                    date = now()
                 message = {
                     "to": recep.lower(),
                     "body": " ".join(params[1:]) if command == "tell" else " ".join(params[2:]),
@@ -87,10 +88,13 @@ class TellCommand(BotCommand):
                 if networkName(self.bot, server) not in self.tells:
                     self.tells[networkName(self.bot, server)] = []
                 self.tells[networkName(self.bot, server)].append(message)
+                sentTells.append(recep)
+            if len(sentTells) > 0:
                 if command == "tellafter":
-                    m = "Okay, I'll tell {} that when they speak after {}.".format(recep, strftimeWithTimezone(date))
+                    m = "Okay, I'll tell {} that when they speak after {}.".format("&".join(sentTells),
+                                                                                   strftimeWithTimezone(date))
                 else:
-                    m = "Okay, I'll tell {} that next time they speak.".format(recep)
+                    m = "Okay, I'll tell {} that next time they speak.".format("&".join(sentTells))
                 self.bot.servers[server].outputHandler.cmdPRIVMSG(source, m)
             self.bot.storage["tells"] = self.tells
         elif command == "stells":
