@@ -1,10 +1,8 @@
-# -*- coding: utf-8 -*-
 from twisted.plugin import IPlugin
 from heufybot.moduleinterface import IBotModule
 from heufybot.modules.commandinterface import BotCommand
 from heufybot.utils import networkName
 from zope.interface import implements
-from bs4 import BeautifulSoup
 
 
 class NowPlayingCommand(BotCommand):
@@ -25,8 +23,15 @@ class NowPlayingCommand(BotCommand):
         if "lastfm-links" not in self.bot.storage:
             self.bot.storage["lastfm-links"] = {}
         self.links = self.bot.storage["lastfm-links"]
+        self.lastfmKey = None
+        if "lastfm" in self.bot.storage["api-keys"]:
+            self.lastfmKey = self.bot.storage["api-keys"]["lastfm"]
 
     def execute(self, server, source, command, params, data):
+        if not self.lastfmKey:
+            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "No Last.fm API key was found.")
+            return
+
         if networkName(self.bot, server) not in self.links:
             self.links[networkName(self.bot, server)] = {}
         if command == "np":
@@ -36,23 +41,31 @@ class NowPlayingCommand(BotCommand):
                 name = params[0].lower()
             if name in self.links[networkName(self.bot, server)]:
                 name = self.links[networkName(self.bot, server)][name]
-            url = "http://ws.audioscrobbler.com/1.0/user/{}/recenttracks.rss".format(name)
-            result = self.bot.moduleHandler.runActionUntilValue("fetch-url", url)
+            url = "http://ws.audioscrobbler.com/2.0/"
+            params = {
+                "method": "user.getrecenttracks",
+                "limit": "1",
+                "format": "json",
+                "user": name,
+                "api_key": self.lastfmKey
+            }
+            result = self.bot.moduleHandler.runActionUntilValue("fetch-url", url, params)
             if not result:
-                m = "No user with the name \"{}\" could be found on LastFM.".format(name)
+                m = "An error occurred while retrieving data from last.fm."
             else:
-                soup = BeautifulSoup(result.text)
-                firstItem = soup.find("item")
-                if not firstItem:
+                j = result.json()
+                if "error" in j and j["error"] == 6:
+                    m = "No user with the name \"{}\" could be found on LastFM.".format(name)
+                elif len(j["recenttracks"]["track"]) == 0:
                     m = "No recently played music was found for user \"{}\"".format(name)
                 else:
-                    title = firstItem.find("title").text.split(u"–")
-                    longLink = firstItem.find("link").text
+                    track = j["recenttracks"]["track"][0]
+                    artist = track["artist"]["#text"].encode("utf-8", "ignore")
+                    songTitle = track["name"].encode("utf-8", "ignore")
+                    longLink = track["url"]
                     link = self.bot.moduleHandler.runActionUntilValue("shorten-url", longLink)
                     if not link:
                         link = longLink
-                    songTitle = title[1].strip().encode("utf-8", "ignore")
-                    artist = title[0].strip().encode("utf-8", "ignore")
                     m = "\"{}\" by {} | {}".format(songTitle, artist, link)
             self.bot.servers[server].outputHandler.cmdPRIVMSG(source, m)
         elif command == "nplink":
