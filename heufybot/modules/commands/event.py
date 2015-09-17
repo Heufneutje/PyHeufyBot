@@ -145,7 +145,7 @@ class EventCommand(BotCommand):
             if len(params) == 0 or not isNumber(params[0]):
                 days = 7
             else:
-                days = int(params[0]) if int(params[0]) < 356 else 356
+                days = int(params[0]) if int(params[0]) < 365 else 365
             events = [x["event"] for x in self.events[networkName(self.bot, server)] if x["date"] > now() and x[
                 "date"] <= now() + timedelta(days)]
             dayString = "" if days == 1 else "s"
