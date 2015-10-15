@@ -27,8 +27,15 @@ class WeatherCommand(BotCommand):
             "forecast": "forecast <lat> <lon>, forecast <place>, forecast <nickname> | Get the forecast for the given "
                         "latlon, place or user."
         }
+        self.apiKey = None
+        if "openweathermap" in self.bot.storage["api-keys"]:
+            self.apiKey = self.bot.storage["api-keys"]["openweathermap"]
 
     def execute(self, server, source, command, params, data):
+        if not self.apiKey:
+            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "No API key found.")
+            return
+
         # Use the user's nickname as a parameter if none were given
         if len(params) == 0:
             params.append(data["user"].nick)
@@ -103,7 +110,8 @@ class WeatherCommand(BotCommand):
     def _getWeather(self, lat, lon):
         params = {
             "lat": lat,
-            "lon": lon
+            "lon": lon,
+            "appid": self.apiKey
         }
         result = self.bot.moduleHandler.runActionUntilValue("fetch-url", self.weatherBaseURL, params)
         if not result:
@@ -116,7 +124,8 @@ class WeatherCommand(BotCommand):
         params = {
             "lat": lat,
             "lon": lon,
-            "cnt": 4
+            "cnt": 4,
+            "appid": self.apiKey
         }
         result = self.bot.moduleHandler.runActionUntilValue("fetch-url", self.forecastBastURL, params)
         if not result:
