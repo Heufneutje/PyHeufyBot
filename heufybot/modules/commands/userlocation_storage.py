@@ -28,8 +28,8 @@ class UserLocationStorage(BotCommand):
                 "place": self.locations[networkName(self.bot, server)][user.lower()]
             }
         if displayErrors:
-            error =  "Your location is not registered. Register your location by using the \"addloc\" command or by " \
-                     "providing a location."
+            error =  "Your location is not registered. Register your location by using the \"addloc\" command or " \
+                     "provide a location."
             self.bot.servers[server].outputHandler.cmdPRIVMSG(source, error)
             return {
                 "success": False
