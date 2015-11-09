@@ -91,6 +91,7 @@ class UserLocationStorage(BotCommand):
                     skipped += 1
                     continue
                 self.locations[networkName(self.bot, server)][nick] = location
+            self.bot.storage["userlocations"] = self.locations
             msg = "Imported {} location(s). Skipped {} location(s) because of a nickname conflict."\
                 .format(len(j) - skipped, skipped)
             self.bot.servers[server].outputHandler.cmdPRIVMSG(source, msg)
