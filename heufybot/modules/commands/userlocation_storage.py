@@ -92,8 +92,11 @@ class UserLocationStorage(BotCommand):
                     continue
                 self.locations[networkName(self.bot, server)][nick] = location
             self.bot.storage["userlocations"] = self.locations
-            msg = "Imported {} location(s). Skipped {} location(s) because of a nickname conflict."\
-                .format(len(j) - skipped, skipped)
+            if skipped == 0:
+                msg = "Imported {} location(s).".format(len(j))
+            else:
+                msg = "Imported {} location(s). Skipped {} location(s) because of a nickname conflict."\
+                    .format(len(j) - skipped, skipped)
             self.bot.servers[server].outputHandler.cmdPRIVMSG(source, msg)
         elif command == "locexport":
             if len(params) < 1:
