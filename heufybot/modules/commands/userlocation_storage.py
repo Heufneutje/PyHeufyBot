@@ -3,6 +3,7 @@ from heufybot.moduleinterface import IBotModule
 from heufybot.modules.commandinterface import BotCommand
 from heufybot.utils import networkName
 from zope.interface import implements
+import json, os.path
 
 
 class UserLocationStorage(BotCommand):
@@ -11,7 +12,7 @@ class UserLocationStorage(BotCommand):
     name = "UserLocationStorage"
 
     def triggers(self):
-        return ["addloc", "remloc"]
+        return ["addloc", "remloc", "locimport", "locexport"]
 
     def actions(self):
         return super(UserLocationStorage, self).actions() + [
@@ -45,6 +46,12 @@ class UserLocationStorage(BotCommand):
             self.bot.storage["userlocations"] = {}
         self.locations = self.bot.storage["userlocations"]
 
+    def checkPermissions(self, server, source, user, command):
+        if command == "locimport" or command == "locexport":
+            return not self.bot.moduleHandler.runActionUntilFalse("checkadminpermission", server, source, user,
+                                                                  "location-import-export")
+        return True
+
     def execute(self, server, source, command, params, data):
         if command == "addloc":
             if len(params) < 1:
@@ -62,5 +69,42 @@ class UserLocationStorage(BotCommand):
                 del self.locations[networkName(self.bot, server)][data["user"].nick.lower()]
                 self.bot.storage["userlocations"] = self.locations
                 self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Your location has been removed.")
+        elif command == "locimport":
+            if len(params) < 1:
+                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Import locations from where?")
+                return
+            if not os.path.isfile(params[0]):
+                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Import file doesn't exist.")
+                return
+            with open(params[0]) as importFile:
+                try:
+                    j = json.load(importFile)
+                except ValueError as e:
+                    self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "An error occurred while reading the "
+                                                                              "import file: {0}.".format(e))
+                    return
+            if networkName(self.bot, server) not in self.locations:
+                self.locations[networkName(self.bot, server)] = {}
+            skipped = 0
+            for nick, location in j.iteritems():
+                if nick in self.locations[networkName(self.bot, server)]:
+                    skipped += 1
+                    continue
+                self.locations[networkName(self.bot, server)][nick] = location
+            msg = "Imported {} location(s). Skipped {} location(s) because of a nickname conflict."\
+                .format(len(j) - skipped, skipped)
+            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, msg)
+        elif command == "locexport":
+            if len(params) < 1:
+                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Export locations to where?")
+                return
+            with open(params[0], "w") as exportFile:
+                if networkName(self.bot, server) not in self.locations:
+                    self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "No locations to export.")
+                    return
+                locations = self.locations[networkName(self.bot, server)]
+                json.dump(locations, exportFile, sort_keys=True, indent=4)
+                self.bot.servers[server].outputHandler.cmdPRIVMSG(source,
+                                                                  "Exported {} location(s).".format(len(locations)))
 
 userLocStorage = UserLocationStorage()
