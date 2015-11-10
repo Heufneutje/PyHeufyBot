@@ -4,6 +4,10 @@ PyHeufyBot Changelog
 
 0.5
 ===
+**0.5.1**
+  * Added import/export functionality to user locations.
+  * Fixed various bugs.
+
 **0.5.0**
   * Added the URLFollow and Rehash modules.
   * Made the timeout on web requests configurable
