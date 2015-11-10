@@ -146,11 +146,13 @@ class EventCommand(BotCommand):
                 days = 7
             else:
                 days = int(params[0]) if int(params[0]) < 365 else 365
-            events = [x["event"] for x in self.events[networkName(self.bot, server)] if x["date"] > now() and x[
+            events = [x for x in self.events[networkName(self.bot, server)] if x["date"] > now() and x[
                 "date"] <= now() + timedelta(days)]
             dayString = "" if days == 1 else "s"
             if len(events) > 0:
-                m = "Events occurring in the next {} day{}: {}.".format(days, dayString, ", ".join(events))
+                events.sort(key=lambda item:item["date"])
+                eventNames = [x["event"] for x in events]
+                m = "Events occurring in the next {} day{}: {}.".format(days, dayString, ", ".join(eventNames))
             else:
                 m = "No events are occurring in the next {} day{}.".format(days, dayString)
             self.bot.servers[server].outputHandler.cmdPRIVMSG(source, m)
