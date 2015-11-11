@@ -60,7 +60,7 @@
 
 # MODULES
 # With only the core the bot will not do much more than idle.  For extra
-$ functionality additional modules can be loaded.
+# functionality additional modules can be loaded.
 
 # modules: list (default: empty list)
 # The modules the bot will load on startup.
@@ -137,7 +137,7 @@ $ functionality additional modules can be loaded.
 # ModuleLoader: Enables the Load, Unload, Reload, Enable and Disable commands.
 # These commands are used to control what modules are loaded and used at
 # runtime.
-$- ModuleLoader
+#- ModuleLoader
 
 # Modules: Enables the Modules command, which lists all the modules that are
 # currently loaded.
