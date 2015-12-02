@@ -139,7 +139,10 @@ class WeatherCommand(BotCommand):
         tempC = round((tempK - 273.15), 1)
         tempF = round((tempK - 273.15) * 9 / 5 + 32, 1)
         description = json["weather"][0]["description"].title()
-        humidity = json["main"]["humidity"]
+        if "humidity" in json["main"]:
+            humidity = "{}%".format(json["main"]["humidity"])
+        else:
+            humidity = "Unknown"
         windspeed = json["wind"]["speed"]
         windspeedMiles = round(windspeed, 1)
         windspeedKmph = round(windspeed * 1.60934, 1)
@@ -149,7 +152,7 @@ class WeatherCommand(BotCommand):
             winddir = "Unknown"
         latestUpdate = (timestamp(now()) - int(json["dt"])) / 60
         latestUpdateStr = "{} minute(s) ago".format(latestUpdate) if latestUpdate > 0 else "just now"
-        return "Temp: {}°C / {}°F | Weather: {} | Humidity {}% | Wind Speed: {} kmph / {} mph | Wind Direction: {} | " \
+        return "Temp: {}°C / {}°F | Weather: {} | Humidity: {} | Wind Speed: {} kmph / {} mph | Wind Direction: {} | " \
                "Latest Update: {}.".format(tempC, tempF, description, humidity, windspeedKmph, windspeedMiles,
                                            winddir, latestUpdateStr)
 
