@@ -45,14 +45,18 @@ class LogCommand(BotCommand):
                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, error)
                return
 
-        logPath = os.path.join(basePath, network, source, "{}.log".format(logDate.strftime("%Y-%m-%d")))
+        strLogDate = logDate.strftime("%Y-%m-%d")
+        logPath = os.path.join(basePath, network, source, "{}.log".format(strLogDate))
         if not os.path.exists(logPath):
             self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "I don't have that log.")
             return
 
-        url = "Log for {0} on {1}: http://heufneutje.net/logs/?channel={2}&network={3}&date={1}".format(source,
-              logDate.strftime("%Y-%m-%d"), source[1:], network)
+        url = "http://heufneutje.net/logs/?channel={0}&network={1}&date={2}".format(source[1:], network, strLogDate)
+        shortUrl = self.bot.moduleHandler.runActionUntilValue("shorten-url", url)
+        if not shortUrl:
+            shortUrl = url
+        msg = "Log for {0} on {1}: {2}".format(source, strLogDate, shortUrl)
 
-        self.bot.servers[server].outputHandler.cmdPRIVMSG(source, url)
+        self.bot.servers[server].outputHandler.cmdPRIVMSG(source, msg)
 
 logCommand = LogCommand()
