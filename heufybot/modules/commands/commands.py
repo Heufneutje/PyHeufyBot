@@ -13,7 +13,7 @@ class CommandsCommand(BotCommand):
         return ["commands"]
 
     def load(self):
-        self.help = "Commands: commands | Lists all bot commands from the modules tht are enabled for this server."
+        self.help = "Commands: commands | Lists all bot commands from the modules that are enabled for this server."
         self.commandHelp = {}
 
     def execute(self, server, source, command, params, data):
