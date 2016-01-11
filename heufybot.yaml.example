@@ -110,7 +110,7 @@
 # for yourself.
 #- Apathy
 
-# Commands: Enabled the Commands command to provide a list of all commands that
+# Commands: Enables the Commands command to provide a list of all commands that
 # are available through the modules that are enabled for the current server.
 #- Commands
 
