@@ -144,17 +144,18 @@ class WeatherCommand(BotCommand):
         else:
             humidity = "Unknown"
         windspeed = json["wind"]["speed"]
-        windspeedMiles = round(windspeed, 1)
-        windspeedKmph = round(windspeed * 1.60934, 1)
+        windspeedMiles = round(windspeed * 2.236936, 1)
+        windspeedMs = round(windspeed, 1)
+
         if "deg" in json["wind"]:
             winddir = self._convertWindDegToCardinal(float(json["wind"]["deg"]))
         else:
             winddir = "Unknown"
         latestUpdate = (timestamp(now()) - int(json["dt"])) / 60
         latestUpdateStr = "{} minute(s) ago".format(latestUpdate) if latestUpdate > 0 else "just now"
-        return "Temp: {}°C / {}°F | Weather: {} | Humidity: {} | Wind Speed: {} kmph / {} mph | Wind Direction: {} | " \
-               "Latest Update: {}.".format(tempC, tempF, description, humidity, windspeedKmph, windspeedMiles,
-                                           winddir, latestUpdateStr)
+        return "Temp: {}°C / {}°F | Weather: {} | Humidity: {} | Wind Speed: {} m/s / {} mph | Wind Direction: {} " \
+               "| Latest Update: {}.".format(tempC, tempF, description, humidity, windspeedMs, windspeedMiles,
+                                             winddir, latestUpdateStr)
 
     def _parseForecast(self, json):
         daysList = json["list"]
