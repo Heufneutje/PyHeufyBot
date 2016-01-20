@@ -121,7 +121,7 @@ class TellCommand(BotCommand):
             tells = [x for x in self.tells[networkName(self.bot, server)] if x["from"].lower() == data[
                 "user"].nick.lower()]
             for tell in tells:
-                if re.search(" ".join(params), tell["body"]):
+                if re.search(" ".join(params), tell["body"], re.IGNORECASE):
                     self.tells[networkName(self.bot, server)].remove(tell)
                     self.bot.storage["tells"] = self.tells
                     m = "Message \"{}\" was removed from the message database.".format(self._parseSentTell(tell))
