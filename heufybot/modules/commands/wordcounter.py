@@ -23,7 +23,7 @@ class WordCounterCommand(BotCommand):
 
     def load(self):
         self.help = "Commands: addwordcount <word>, remwordcount <word>, wordcount <word> | Add or remove a word that" \
-                    " should be counted in the channel or requst how many times a given word has been said."
+                    " should be counted in the channel or request how many times a given word has been said."
         self.commandHelp = {
             "addwordcount": "addwordcount <word> | Add a word to be counted.",
             "remwordcount": "remwordcount <word> | Remove a word that is being counted.",
