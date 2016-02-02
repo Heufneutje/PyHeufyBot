@@ -51,7 +51,8 @@ class LogCommand(BotCommand):
             self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "I don't have that log.")
             return
 
-        url = "http://heufneutje.net/logs/?channel={0}&network={1}&date={2}".format(source[1:], network, strLogDate)
+        baseUrl = self.bot.config.serverItemWithDefault(server, "logurl", "irc.example.com")
+        url = "{}?channel={}&network={}&date={}".format(baseUrl, source[1:], network, strLogDate)
         shortUrl = self.bot.moduleHandler.runActionUntilValue("shorten-url", url)
         if not shortUrl:
             shortUrl = url

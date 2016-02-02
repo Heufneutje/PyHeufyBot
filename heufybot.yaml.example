@@ -135,6 +135,11 @@
 # channel.
 #- Join
 
+# Log: Enables the Log command, which lets users request the log of a given
+# channel. Requires ChannelLogger to be loaded. Additional configuration is
+# also necessary and can be found in the module configuration section.
+#- Log
+
 # LogSearch: Enables the FirstSeen, LastSeen, LastSaw, FirstSaid and LastSaid
 # commands for searching the logs.
 #- LogSearch
@@ -218,6 +223,10 @@
 # logpath: string (ChannelLogger, default: "logs")
 # The folder where the channel logs will be stored.
 #logpath: "logs"
+
+# logurl: string (Log, default: "irc.example.com")
+# The URL from which the logs are accessible when the Log command is used.
+#logurl: "irc.example.com"
 
 # command_prefix: string (CommandHandler, default: "!")
 # The prefix that has to be used to run a bot command.
