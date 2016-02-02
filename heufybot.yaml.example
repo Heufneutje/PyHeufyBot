@@ -121,6 +121,7 @@
 # Event: Enables the Event, TimeTill, TimeSince, DateOf, Events, REvent,
 # SubEvent and UnsubEvent commands to create and count down to certain events
 # that are happening, as well as subscribing to them.
+#- Event
 
 # Help: Enables the Help commands to display a list of all enabled command
 # modules on a server or to get help for a specific command.
