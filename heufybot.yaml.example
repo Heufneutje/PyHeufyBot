@@ -224,13 +224,13 @@
 # The folder where the channel logs will be stored.
 #logpath: "logs"
 
-# logurl: string (Log, default: "irc.example.com")
-# The URL from which the logs are accessible when the Log command is used.
-#logurl: "irc.example.com"
-
 # command_prefix: string (CommandHandler, default: "!")
 # The prefix that has to be used to run a bot command.
 #command_prefix: "!"
+
+# logurl: string (Log, default: "irc.example.com")
+# The URL from which the logs are accessible when the Log command is used.
+#logurl: "irc.example.com"
 
 # nickserv_nick: string (NickServIdentify, default: "NickServ")
 # The name of authentication service.
