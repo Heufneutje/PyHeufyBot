@@ -34,6 +34,10 @@ class IRCChannel(object):
                 # We received a mode char that's unknown to use, so we abort parsing to prevent desync.
                 return None
             elif mode in supportedStatuses:
+                if len(params) < 1:
+                    self.connection.bot.log.warn("{connection.name} Received a broken MODE string for channel "
+                                                 "{channel}!", connection=self.connection, channel=self.name)
+                    return {}
                 user = params.pop(0)
                 if user not in self.users:
                     self.connection.bot.log.warn("{connection.name} Received status MODE for unknown user {user} in "
@@ -49,6 +53,10 @@ class IRCChannel(object):
                         modesRemoved.append(mode)
                         paramsRemoved.append(user)
             elif supportedChanModes[mode] == ModeType.LIST:
+                if len(params) < 1:
+                    self.connection.bot.log.warn("{connection.name} Received a broken MODE string for channel "
+                                                 "{channel}!", connection=self.connection, channel=self.name)
+                    return {}
                 param = params.pop(0)
                 if mode not in self.modes:
                     self.modes[mode] = set()
@@ -62,6 +70,10 @@ class IRCChannel(object):
                     paramsRemoved.append(param)
             elif supportedChanModes[mode] == ModeType.PARAM_SET:
                 if adding:
+                    if len(params) < 1:
+                        self.connection.bot.log.warn("{connection.name} Received a broken MODE string for channel "
+                                                     "{channel}!", connection=self.connection, channel=self.name)
+                        return {}
                     param = params.pop(0)
                     self.modes[mode] = param
                     modesAdded.append(mode)
@@ -71,6 +83,10 @@ class IRCChannel(object):
                     modesRemoved.append(mode)
                     paramsRemoved.append(None)
             elif supportedChanModes == ModeType.PARAM_UNSET:
+                if len(params) < 1:
+                    self.connection.bot.log.warn("{connection.name} Received a broken MODE string for channel "
+                                                 "{channel}!", connection=self.connection, channel=self.name)
+                    return {}
                 param = params.pop(0)
                 if adding:
                     self.modes[mode] = param
