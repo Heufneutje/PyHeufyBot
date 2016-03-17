@@ -2,6 +2,12 @@
 PyHeufyBot Changelog
 ====================
 
+0.6
+===
+**0.6.0**
+  * Added a new module.
+  * Fixed various bugs.
+
 0.5
 ===
 **0.5.1**
