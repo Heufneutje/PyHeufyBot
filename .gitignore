@@ -55,3 +55,4 @@ docs/_build/
 *.yaml
 *.db
 dropin.cache
+!heufybot-example.yaml
