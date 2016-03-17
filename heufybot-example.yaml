@@ -92,10 +92,6 @@
 # Requires isodate to be installed.  See optional-requirements.txt.
 #- URLFollow
 
-# UserLocationChatmap: Provides utility functions to determine the location of
-# a user on the Desert Bus Chatmap.  Requires WebUtils to be loaded.
-#- UserLocationChatmap
-
 # WebUtils: Enables fetch and posting of URLs.  Requires Requests to be
 # installed.  See optional-requirements.txt.
 #- WebUtils
