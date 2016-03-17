@@ -76,7 +76,7 @@
 # CommandHandler: Enables the use of bot commands.
 #- CommandHandler
 
-# CTCP: Enables replying to CTCP commands.  The supported comamnds are PING,
+# CTCP: Enables replying to CTCP commands.  The supported commands are PING,
 # VERSION, TIME and SOURCE.
 #- CTCP
 
