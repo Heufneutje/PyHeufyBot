@@ -24,25 +24,31 @@ class HeufyBotConnection(irc.IRC):
     def connectionMade(self):
         self.bot.moduleHandler.runGenericAction("connect", self.name)
 
-        # Connection finalizing
+        # Connection finalizing.
         self.name = self.transport.addr[0]
         self.bot.log.info("[{connection}] Connection established.", connection=self.name)
         self.supportHelper.network = self.name
         self.transport.fullDisconnect = False
         self.bot.servers[self.name] = self
 
-        # Enable modules
+        # Enable modules.
         self.bot.moduleHandler.enableModulesForServer(self.name)
 
-        # Start logging in
+        # Initialize login data from the config.
         self.nick = self.bot.config.serverItemWithDefault(self.name, "nickname", "HeufyBot")
         self.ident = self.bot.config.serverItemWithDefault(self.name, "username", self.nick)
         self.gecos = self.bot.config.serverItemWithDefault(self.name, "realname", self.nick)
-        self.bot.log.info("[{connection}] Logging in as {nick}!{ident} :{gecos}...", connection=self.name,
-                          nick=self.nick, ident=self.ident, gecos=self.gecos)
+
+        # Send a server password if defined.
         password = self.bot.config.serverItemWithDefault(self.name, "password", None)
         if password:
+            self.bot.log.info("[{connection}] Sending network password...", connection=self.name)
             self.outputHandler.cmdPASS(password)
+
+        # Start logging in.
+        self.bot.moduleHandler.runGenericAction("prelogin", self.name)
+        self.bot.log.info("[{connection}] Logging in as {nick}!{ident} :{gecos}...", connection=self.name,
+                          nick=self.nick, ident=self.ident, gecos=self.gecos)
         self.outputHandler.cmdNICK(self.nick)
         self.outputHandler.cmdUSER(self.ident, self.gecos)
 
