@@ -17,18 +17,11 @@ class InputHandler(object):
         method = getattr(self, "_handle{}".format(command), None)
         if method:
             method(nick, ident, host, params)
-        else:
-            self.handleUnknown(command, prefix, params)
 
     def handleNumeric(self, numeric, prefix, params):
         method = getattr(self, "_handleNumeric{}".format(numeric), None)
         if method:
             method(prefix, params)
-        else:
-            self.handleUnknown(numeric, prefix, params)
-
-    def handleUnknown(self, command, prefix, params):
-        pass
 
     def _handleERROR(self, nick, ident, host, params):
         self._logInfo("Connection terminated ({}).".format(params[0]))
