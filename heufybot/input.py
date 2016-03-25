@@ -39,7 +39,7 @@ class InputHandler(object):
             inviter = self.connection.users[nick]
         else:
             inviter = IRCUser(nick, ident, host)
-        self.moduleHandler.runGenericAction("channelinvite", params[1], inviter)
+        self.moduleHandler.runGenericAction("channelinvite", self.connection.name, params[1], inviter)
         self.connection.outputHandler.cmdJOIN(params[1])
 
     def _handleJOIN(self, nick, ident, host, params):
