@@ -14,14 +14,22 @@ class InputHandler(object):
         ident = parsedPrefix[1]
         host = parsedPrefix[2]
 
-        method = getattr(self, "_handle{}".format(command), None)
-        if method:
-            method(nick, ident, host, params)
+        if not self.moduleHandler.runActionUntilTrue("pre-handlecommand-{}".format(command), self.connection.name,
+                                                     nick, ident, host, params):
+            method = getattr(self, "_handle{}".format(command), None)
+            if method:
+                method(nick, ident, host, params)
+            self.moduleHandler.runActionUntilTrue("post-handlecommand-{}".format(command), self.connection.name,
+                                                  nick, ident, host, params)
 
     def handleNumeric(self, numeric, prefix, params):
-        method = getattr(self, "_handleNumeric{}".format(numeric), None)
-        if method:
-            method(prefix, params)
+        if not self.moduleHandler.runActionUntilTrue("pre-handlenumeric-{}".format(numeric), self.connection.name,
+                                                     prefix, params):
+            method = getattr(self, "_handleNumeric{}".format(numeric), None)
+            if method:
+                method(prefix, params)
+            self.moduleHandler.runActionUntilTrue("post-handlenumeric-{}".format(numeric), self.connection.name,
+                                                  prefix, params)
 
     def _handleERROR(self, nick, ident, host, params):
         self._logInfo("Connection terminated ({}).".format(params[0]))
