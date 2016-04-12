@@ -12,7 +12,7 @@ would like to play around with it, do the following:
 already have it. You could also just install the requirements on your machine itself, but a
 virtualenv is easier to work with.
 3. Once the virtualenv is activated, run `pip install -r requirements.txt`.
-4. Create a config file and run `python app.py`.
+4. Create a config file (or copy the example one)  and run `python app.py`.
 
 Will add more here as time goes on.
 
