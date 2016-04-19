@@ -1,5 +1,4 @@
 from twisted.internet.protocol import ClientFactory, ReconnectingClientFactory
-from twisted.python import log
 from heufybot.connection import HeufyBotConnection
 
 
