@@ -22,7 +22,8 @@ class HeufyBotFactory(ReconnectingClientFactory):
     def clientConnectionLost(self, connector, reason):
         # Disable modules
         if connector.host in self.bot.moduleHandler.enabledModules:
-            del self.bot.moduleHandler.enabledModules[connector.host]
+            for module in self.bot.moduleHandler.enabledModules[connector.host]:
+                self.bot.moduleHandler.disableModule(module, connector.host, True)
 
         del self.bot.servers[connector.host]
 
