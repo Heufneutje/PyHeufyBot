@@ -24,6 +24,7 @@ class HeufyBotFactory(ReconnectingClientFactory):
             for module in self.bot.moduleHandler.enabledModules[connector.host]:
                 self.bot.moduleHandler.disableModule(module, connector.host, True)
 
+        self.bot.moduleHandler.runGenericAction("disconnect", connector.host)
         del self.bot.servers[connector.host]
 
         # Check whether or not we should reconnect
