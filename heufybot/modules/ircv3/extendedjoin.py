@@ -18,6 +18,9 @@ class IRCv3ExtendedJoin(BotModule):
         caps.append("extended-join")
 
     def handleExtendedJoin(self, server, nick, ident, host, params):
+        if not self.bot.moduleHandler.runActionUntilTrue("hascapenabled", server, "extended-join"):
+            return False
+
         if nick not in self.bot.servers[server].users:
             user = IRCUser(nick, ident, host)
             if params[1] != "*":
