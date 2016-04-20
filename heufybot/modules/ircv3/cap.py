@@ -1,3 +1,5 @@
+from string import capitalize
+
 from twisted.plugin import IPlugin
 from heufybot.moduleinterface import BotModule, IBotModule
 from zope.interface import implements
@@ -13,7 +15,8 @@ class IRCv3Cap(BotModule):
         return [ ("prelogin", 1, self.enableCapabilities),
                  ("disconnect", 1, self.clearCapabilities),
                  ("pre-handlecommand-CAP", 1, self.handleCap),
-                 ("pre-handlenumeric-401", 1, self.handleNotSupported) ]
+                 ("pre-handlenumeric-401", 1, self.handleNotSupported),
+                 ("hascapenabled", 1, self.checkCapEnabled) ]
 
     def enableCapabilities(self, server):
         if server in self.capabilities:
@@ -67,6 +70,11 @@ class IRCv3Cap(BotModule):
         if params[0] == "CAP":
             self.bot.log.info("[{server}] Server does not support capability negotiation.", server=server)
             self.capabilities[server]["initializing"] = False
+
+    def checkCapEnabled(self, server, capName):
+        if server not in self.capabilities:
+            return False
+        return capName in self.capabilities[server]["enabled"]
 
     def _checkNegotiationFinished(self, server):
         if len(self.capabilities[server]["requested"]) == 0 and self.capabilities[server]["initializing"]:
