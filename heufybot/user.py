@@ -8,6 +8,7 @@ class IRCUser(object):
         self.hops = 0
         self.isOper = False
         self.isAway = False
+        self.awayMessage = None
         self.account = None
 
     def fullUserPrefix(self):
