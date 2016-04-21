@@ -21,7 +21,7 @@ class IRCv3AwayNotify(BotModule):
 
         if nick not in self.bot.servers[server].users:
             self.bot.log.warn("[{server}] Received AWAY message for unknown user {nick}", server=server, nick=nick)
-            return
+            return False
 
         user = self.bot.servers[server].users[nick]
         if len(params) == 1:
@@ -30,5 +30,7 @@ class IRCv3AwayNotify(BotModule):
         else:
             user.isAway = False
             user.awayMessage = None
+
+        return False
 
 awayNotify = IRCv3AwayNotify()
