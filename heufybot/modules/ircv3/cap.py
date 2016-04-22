@@ -59,8 +59,10 @@ class IRCv3Cap(BotModule):
                 self.capabilities[server]["enabled"].extend([x for x in capList if x not in self.capabilities[
                     server]["enabled"]])
                 self.bot.log.info("[{server}] Acknowledged capability changes: {caps}.", server=server, caps=params[2])
+                self.bot.moduleHandler.runGenericAction("caps-acknowledged", server, capList)
             else:
                 self.bot.log.info("[{server}] Rejected capability changes: {caps}.", server=server, caps=params[2])
+                self.bot.moduleHandler.runGenericAction("caps-rejected", server, capList)
             self._checkNegotiationFinished(server)
 
     def handleNotSupported(self, server, prefix, params):
