@@ -1,3 +1,4 @@
+from twisted.internet.interfaces import ISSLTransport
 from twisted.words.protocols import irc
 from heufybot.input import InputHandler
 from heufybot.output import OutputHandler
@@ -13,6 +14,7 @@ class HeufyBotConnection(irc.IRC):
         self.outputHandler = OutputHandler(self)
         self.supportHelper = ISupport()
         self.loggedIn = False
+        self.secureConnection = False
         self.name = None
         self.nick = None
         self.ident = None
@@ -25,6 +27,9 @@ class HeufyBotConnection(irc.IRC):
         self.bot.moduleHandler.runGenericAction("connect", self.name)
 
         # Connection finalizing.
+        if ISSLTransport.providedBy(self.transport):
+            self.secureConnection = True
+
         self.name = self.transport.addr[0]
         self.bot.log.info("[{connection}] Connection established.", connection=self.name)
         self.supportHelper.network = self.name
