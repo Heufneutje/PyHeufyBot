@@ -13,6 +13,7 @@ class IRCv3StartTLS(BotModule):
     implements(IPlugin, IBotModule)
 
     name = "StartTLS"
+    capName = "tls"
 
     def actions(self):
         return [ ("listcaps", 1, self.addToCapList),
@@ -22,10 +23,10 @@ class IRCv3StartTLS(BotModule):
 
     def addToCapList(self, server, caps):
         if not self.bot.servers[server].secureConnection and ssl is not None:
-            caps.append("tls")
+            caps.append(self.capName)
 
     def requestNegotiation(self, server, caps):
-        if "tls" in caps:
+        if self.capName in caps:
             self.bot.log.info("[{server}] Trying to initiate StartTLS...", server=server)
             self.bot.servers[server].sendMessage("STARTTLS")
 
@@ -36,10 +37,12 @@ class IRCv3StartTLS(BotModule):
         if ISSLTransport.providedBy(self.bot.servers[server].transport):
             self.bot.servers[server].secureConnection = True
         self.bot.log.info("[{server}] TLS handshake successful. Connection is now secure.", server=server)
+        self.bot.moduleHandler.runGenericAction("cap-handler-finished", server, self.capName)
         return True
 
     def negotiationFailed(self, server, prefix, params):
         self.bot.log.warn("[{server}] StartTLS failed, reason: \"{reply}\".", server=server, reply=params[1])
+        self.bot.moduleHandler.runGenericAction("cap-handler-finished", server, self.capName)
         return True
 
 

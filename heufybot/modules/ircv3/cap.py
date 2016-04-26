@@ -8,13 +8,15 @@ class IRCv3Cap(BotModule):
 
     name = "Cap"
     capabilities = {}
+    coreCapabilities = ["multi-prefix"]  # Enable multi-prefix by default since it's handled in the core
 
     def actions(self):
         return [ ("prelogin", 1, self.enableCapabilities),
                  ("disconnect", 1, self.clearCapabilities),
                  ("pre-handlecommand-CAP", 1, self.handleCap),
                  ("pre-handlenumeric-401", 1, self.handleNotSupported),
-                 ("hascapenabled", 1, self.checkCapEnabled) ]
+                 ("has-cap-enabled", 1, self.checkCapEnabled),
+                 ("cap-handler-finished", 1, self.handleCapHandlerFinished) ]
 
     def enableCapabilities(self, server):
         if server in self.capabilities:
@@ -24,9 +26,10 @@ class IRCv3Cap(BotModule):
 
         self.capabilities[server] = {
             "initializing": True,
-            "available": [ "multi-prefix" ], # Enable multi-prefix by default since it's handled in the core
+            "available": self.coreCapabilities,
             "requested": [],
-            "enabled": []
+            "enabled": [],
+            "finished": []
         }
 
         caps = []
@@ -56,8 +59,12 @@ class IRCv3Cap(BotModule):
             self.capabilities[server]["requested"] = [x for x in self.capabilities[server]["requested"] if x not in
                                                       capList]
             if params[1] == "ACK":
-                self.capabilities[server]["enabled"].extend([x for x in capList if x not in self.capabilities[
-                    server]["enabled"]])
+                for capName in capList:
+                    if capName not in self.capabilities[server]["enabled"]:
+                        self.capabilities[server]["enabled"].append(capName)
+                    if capName in self.coreCapabilities and capName not in self.capabilities[server]["finished"]:
+                        self.capabilities[server]["finished"].append(capName)
+
                 self.bot.log.info("[{server}] Acknowledged capability changes: {caps}.", server=server, caps=params[2])
                 self.bot.moduleHandler.runGenericAction("caps-acknowledged", server, capList)
             else:
@@ -71,16 +78,24 @@ class IRCv3Cap(BotModule):
             self.bot.log.info("[{server}] Server does not support capability negotiation.", server=server)
             self.capabilities[server]["initializing"] = False
 
+    def handleCapHandlerFinished(self, server, capName):
+        self.capabilities[server]["finished"].append(capName)
+        self._checkNegotiationFinished(server)
+
     def checkCapEnabled(self, server, capName):
         if server not in self.capabilities:
             return False
         return capName in self.capabilities[server]["enabled"]
 
     def _checkNegotiationFinished(self, server):
-        if len(self.capabilities[server]["requested"]) == 0 and self.capabilities[server]["initializing"]:
+        if not self.capabilities[server]["initializing"] or len(self.capabilities[server]["requested"]) != 0:
+            return
+
+        if set(self.capabilities[server]["enabled"]) == set(self.capabilities[server]["finished"]):
             self.bot.servers[server].sendMessage("CAP", "END")
             self.bot.log.info("[{server}] Capability negotiation completed.", server=server)
             self.capabilities[server]["initializing"] = False
+
 
 def _parseCapReply(reply):
     parsedReply = {}

@@ -7,16 +7,18 @@ class IRCv3AccountNotify(BotModule):
     implements(IPlugin, IBotModule)
 
     name = "AccountNotify"
+    capName = "account-notify"
 
     def actions(self):
         return [ ("listcaps", 1, self.addToCapList),
-                 ("pre-handlecommand-ACCOUNT", 1, self.handleAccountNotify) ]
+                 ("pre-handlecommand-ACCOUNT", 1, self.handleAccountNotify),
+                 ("caps-acknowledged", 1, self.finishHandler) ]
 
     def addToCapList(self, server, caps):
-        caps.append("account-notify")
+        caps.append(self.capName)
 
     def handleAccountNotify(self, server, nick, ident, host, params):
-        if not self.bot.moduleHandler.runActionUntilTrue("hascapenabled", server, "account-notify"):
+        if not self.bot.moduleHandler.runActionUntilTrue("has-cap-enabled", server, self.capName):
             return False
 
         if nick not in self.bot.servers[server].users:
@@ -30,6 +32,10 @@ class IRCv3AccountNotify(BotModule):
             user.account = params[0]
 
         return False
+
+    def finishHandler(self, server, caps):
+        if self.capName in caps:
+            self.bot.moduleHandler.runGenericAction("cap-handler-finished", server, self.capName)
 
 
 accountNotify = IRCv3AccountNotify()

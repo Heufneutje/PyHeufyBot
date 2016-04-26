@@ -7,16 +7,18 @@ class IRCv3AwayNotify(BotModule):
     implements(IPlugin, IBotModule)
 
     name = "AwayNotify"
+    capName = "away-notify"
 
     def actions(self):
         return [ ("listcaps", 1, self.addToCapList),
-                 ("pre-handlecommand-AWAY", 1, self.handleAwayNotify) ]
+                 ("pre-handlecommand-AWAY", 1, self.handleAwayNotify),
+                 ("caps-acknowledged", 1, self.finishHandler) ]
 
     def addToCapList(self, server, caps):
-        caps.append("away-notify")
+        caps.append(self.capName)
 
     def handleAwayNotify(self, server, nick, ident, host, params):
-        if not self.bot.moduleHandler.runActionUntilTrue("hascapenabled", server, "away-notify"):
+        if not self.bot.moduleHandler.runActionUntilTrue("has-cap-enabled", server, self.capName):
             return False
 
         if nick not in self.bot.servers[server].users:
@@ -32,5 +34,10 @@ class IRCv3AwayNotify(BotModule):
             user.awayMessage = None
 
         return False
+
+    def finishHandler(self, server, caps):
+        if self.capName in caps:
+            self.bot.moduleHandler.runGenericAction("cap-handler-finished", server, self.capName)
+
 
 awayNotify = IRCv3AwayNotify()

@@ -9,16 +9,18 @@ class IRCv3ExtendedJoin(BotModule):
     implements(IPlugin, IBotModule)
 
     name = "ExtendedJoin"
+    capName = "extended-join"
 
     def actions(self):
         return [ ("listcaps", 1, self.addToCapList),
-                 ("pre-handlecommand-JOIN", 1, self.handleExtendedJoin) ]
+                 ("pre-handlecommand-JOIN", 1, self.handleExtendedJoin),
+                 ("caps-acknowledged", 1, self.finishHandler) ]
 
     def addToCapList(self, server, caps):
-        caps.append("extended-join")
+        caps.append(self.capName)
 
     def handleExtendedJoin(self, server, nick, ident, host, params):
-        if not self.bot.moduleHandler.runActionUntilTrue("hascapenabled", server, "extended-join"):
+        if not self.bot.moduleHandler.runActionUntilTrue("has-cap-enabled", server,self.capName):
             return False
 
         if nick not in self.bot.servers[server].users:
@@ -40,5 +42,10 @@ class IRCv3ExtendedJoin(BotModule):
         channel.ranks[nick] = ""
         self.bot.moduleHandler.runGenericAction("channeljoin", self.bot.servers[server].name, channel, user)
         return True  # Override the core JOIN handler
+
+    def finishHandler(self, server, caps):
+        if self.capName in caps:
+            self.bot.moduleHandler.runGenericAction("cap-handler-finished", server, self.capName)
+
 
 extendedJoin = IRCv3ExtendedJoin()
