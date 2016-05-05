@@ -44,6 +44,12 @@ class OutOfContextCommand(BotCommand):
         self.ooclog = self.bot.storage["ooclog"]
         self.messageBuffer = WeakKeyDictionary()
 
+    def checkPermissions(self, server, source, user, command):
+        if command == "oocremove" or command == "oocremoveid":
+            return not self.bot.moduleHandler.runActionUntilFalse("checkadminpermission", server, source, user,
+                                                                  "remove-quote")
+        return True
+
     def execute(self, server, source, command, params, data):
         if networkName(self.bot, server) not in self.ooclog:
             self.ooclog[networkName(self.bot, server)] = {}
