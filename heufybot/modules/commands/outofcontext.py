@@ -29,7 +29,7 @@ class OutOfContextCommand(BotCommand):
             "oocadd": "oocadd <quote> | Add a new quote to the OutOfContext log. The quote will be pulled from a {} "
                       "line message buffer".format(self.historySize),
             "oocid": "oocid <quoteid> | Look up the quote that has the given ID",
-            "ooclist": "ooclist (<search/searchnick <regex>) | Post the OutOfContext log to Paste.EE. A search regex "
+            "ooclist": "ooclist (<search/searchnick <regex>>) | Post the OutOfContext log to Paste.EE. A search regex "
                        "can be provided to filter the list.",
             "oocrandom": "oocrandom | Return a random quote from the OutOfContext log",
             "oocremove": "oocremove <regex> | Remove a quote from the OutOfContext log.",
