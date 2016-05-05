@@ -19,7 +19,7 @@ class OutOfContextCommand(BotCommand):
     def actions(self):
         return super(OutOfContextCommand, self).actions() + [
             ("ctcp-message", 1, self.bufferAction),
-            ("message-channel", 1, self.bufferMessage) ]
+            ("message-channel", 1, self.bufferMessage)]
 
     def load(self):
         self.help = "Commands: ooc (add/remove/search/searchnick/random/id/list) | The log of Out of Context quotes! " \
@@ -39,9 +39,10 @@ class OutOfContextCommand(BotCommand):
         if len(params) == 0:
             params.append("list")
         subcommand = params.pop(0).lower()
-        if subcommand not in ["add", "remove", "search", "searchnick", "random", "id", "list"]:
+        if subcommand not in ["add", "remove", "search", "searchnick", "random", "removeid", "id", "list"]:
             self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Invalid subcommand. Subcommands are "
-                                                                      "add/remove/search/searchnick/random/id/list.")
+                                                                      "add/remove/removeid/search/searchnick/random"
+                                                                      "/id/list.")
             return
         if subcommand == "add":
             if len(params) == 0:
@@ -51,6 +52,10 @@ class OutOfContextCommand(BotCommand):
                 self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "You can only add quotes from a channel.")
                 return
             regex = re.compile(re.escape(" ".join(params)), re.IGNORECASE)
+            if len(self.messageBuffer) == 0:
+                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Sorry, there are no lines in my "
+                                                                          "message buffer.")
+                return
             matches = filter(regex.search, self.messageBuffer[self.bot.servers[server]][data["channel"]])
             if len(matches) == 0:
                 self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Sorry, that didn't match anything in my "
@@ -80,10 +85,17 @@ class OutOfContextCommand(BotCommand):
                 self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Unable to remove quote, {} matches "
                                                                           "found.".format(len(matches)))
             else:
-                self.ooclog[networkName(self.bot, server)][source].remove(matches[0])
-                self.bot.storage["ooclog"] = self.ooclog
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Quote \"{}\" was removed from the "
-                                                                          "log!".format(matches[0]))
+                self._removeQuote(server, source, matches[0])
+        elif subcommand == "removeid":
+            if len(params) == 0 or not isNumber(params[0]):
+                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "You didn't specify a valid ID.")
+            else:
+                index = int(params[0]) - 1
+                quotes = self.ooclog[networkName(self.bot, server)][source]
+                if index < len(quotes):
+                    self._removeQuote(server, source, quotes[index])
+                else:
+                    self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "That quote is not in the log.")
         elif subcommand == "random":
             self.bot.servers[server].outputHandler.cmdPRIVMSG(source, self._getQuote(server, source, "", False, -1))
         elif subcommand == "searchnick" or subcommand == "search":
@@ -164,6 +176,12 @@ class OutOfContextCommand(BotCommand):
             return "An error occurred. The PasteEE API seems to be down right now."
         return "List posted: {}".format(result)
 
+    def _removeQuote(self, server, source, quote):
+        self.ooclog[networkName(self.bot, server)][source].remove(quote)
+        self.bot.storage["ooclog"] = self.ooclog
+        self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Quote \"{}\" was removed from the "
+                                                                  "log!".format(quote))
+
     def bufferAction(self, server, source, user, body):
         if not self.bot.moduleHandler.useModuleOnServer(self.name, server):
             return
@@ -188,5 +206,6 @@ class OutOfContextCommand(BotCommand):
             self.messageBuffer[server][source] = []
         self.messageBuffer[server][source].append(line)
         self.messageBuffer[server][source] = self.messageBuffer[server][source][-self.historySize:]
+
 
 ooc = OutOfContextCommand()
