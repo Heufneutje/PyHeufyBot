@@ -19,7 +19,7 @@ class OutOfContextCommand(BotCommand):
     def actions(self):
         return super(OutOfContextCommand, self).actions() + [
             ("ctcp-message", 1, self.bufferAction),
-            ("message-channel", 1, self.bufferMessage)]
+            ("message-channel", 1, self.bufferMessage) ]
 
     def load(self):
         self.help = "Commands: ooc (add/remove/search/searchnick/random/id/list) | The log of Out of Context quotes! " \
@@ -40,64 +40,58 @@ class OutOfContextCommand(BotCommand):
             params.append("list")
         subcommand = params.pop(0).lower()
         if subcommand not in ["add", "remove", "search", "searchnick", "random", "removeid", "id", "list"]:
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Invalid subcommand. Subcommands are "
-                                                                      "add/remove/removeid/search/searchnick/random"
-                                                                      "/id/list.")
+            self.replyPRIVMSG(server, source, "Invalid subcommand. Subcommands are add/remove/removeid/search/"
+                                              "searchnick/random/id/list.")
             return
         if subcommand == "add":
             if len(params) == 0:
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Add what?")
+                self.replyPRIVMSG(server, source, "Add what?")
                 return
             if "channel" not in data:
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "You can only add quotes from a channel.")
+                self.replyPRIVMSG(server, source, "You can only add quotes from a channel.")
                 return
             regex = re.compile(re.escape(" ".join(params)), re.IGNORECASE)
             if len(self.messageBuffer) == 0:
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Sorry, there are no lines in my "
-                                                                          "message buffer.")
+                self.replyPRIVMSG(server, source, "Sorry, there are no lines in my message buffer.")
                 return
             matches = filter(regex.search, self.messageBuffer[self.bot.servers[server]][data["channel"]])
             if len(matches) == 0:
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Sorry, that didn't match anything in my "
-                                                                          "message buffer.")
+                self.replyPRIVMSG(server, source, "Sorry, that didn't match anything in my message buffer.")
             elif len(matches) > 1:
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Sorry, that matches too many lines in my "
-                                                                          "message buffer.")
+                self.replyPRIVMSG(server, source, "Sorry, that matches too many lines in my message buffer.")
             else:
                 todayDate = time.strftime("[%Y-%m-%d] [%H:%M]")
                 quote = "{} {}".format(todayDate, matches[0])
                 if quote.lower() in [x.lower() for x in self.ooclog[networkName(self.bot, server)][source]]:
-                    self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "That quote is already in the log!")
+                    self.replyPRIVMSG(server, source, "That quote is already in the log!")
                 else:
                     self.ooclog[networkName(self.bot, server)][source].append(quote)
                     self.bot.storage["ooclog"] = self.ooclog
-                    self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Quote \"{}\" was added to the "
-                                                                              "log!".format(quote))
+                    self.replyPRIVMSG(server, source, "Quote \"{}\" was added to the log!".format(quote))
         elif subcommand == "remove":
             if len(params) == 0:
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Remove what?")
+                self.replyPRIVMSG(server, source, "Remove what?")
                 return
             regex = re.compile(" ".join(params), re.IGNORECASE)
             matches = filter(regex.search, self.ooclog[networkName(self.bot, server)][source])
             if len(matches) == 0:
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "That quote is not in the log.")
+                self.replyPRIVMSG(server, source, "That quote is not in the log.")
             elif len(matches) > 1:
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Unable to remove quote, {} matches "
-                                                                          "found.".format(len(matches)))
+                self.replyPRIVMSG(server, source, "Unable to remove quote, {} matches found.".format(len(matches)))
             else:
                 self._removeQuote(server, source, matches[0])
         elif subcommand == "removeid":
             if len(params) == 0 or not isNumber(params[0]):
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "You didn't specify a valid ID.")
+                self.replyPRIVMSG(server, source, "You didn't specify a valid ID.")
             else:
                 index = int(params[0]) - 1
                 quotes = self.ooclog[networkName(self.bot, server)][source]
                 if index < len(quotes):
                     self._removeQuote(server, source, quotes[index])
                 else:
-                    self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "That quote is not in the log.")
+                    self.replyPRIVMSG(server, source, "That quote is not in the log.")
         elif subcommand == "random":
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, self._getQuote(server, source, "", False, -1))
+            self.replyPRIVMSG(server, source, self._getQuote(server, source, "", False, -1))
         elif subcommand == "searchnick" or subcommand == "search":
             searchNick = subcommand == "searchnick"
             if len(params) == 0:
@@ -109,13 +103,13 @@ class OutOfContextCommand(BotCommand):
                                        int(params[len(params) - 1]) - 1)
             else:
                 quote = self._getQuote(server, source, " ".join(params), searchNick, -1)
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, quote)
+            self.replyPRIVMSG(server, source, quote)
         elif subcommand == "id":
             if len(params) == 0 or not isNumber(params[0]):
                 quote = "You didn't specify a valid ID."
             else:
                 quote = self._getQuote(server, source, "", False, int(params[0]) - 1)
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, quote)
+            self.replyPRIVMSG(server, source, quote)
         elif subcommand == "list":
             if len(params) > 0:
                 subsubcommand = params.pop(0).lower()
@@ -127,7 +121,7 @@ class OutOfContextCommand(BotCommand):
                     result = self._postList(server, source, "", False)
             else:
                 result = self._postList(server, source, "", False)
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, result)
+            self.replyPRIVMSG(server, source, result)
 
     def _getQuote(self, server, source, searchString, searchNickname, index):
         if len(self.ooclog[networkName(self.bot, server)][source]) == 0:
@@ -179,8 +173,7 @@ class OutOfContextCommand(BotCommand):
     def _removeQuote(self, server, source, quote):
         self.ooclog[networkName(self.bot, server)][source].remove(quote)
         self.bot.storage["ooclog"] = self.ooclog
-        self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Quote \"{}\" was removed from the "
-                                                                  "log!".format(quote))
+        self.replyPRIVMSG(server, source, "Quote \"{}\" was removed from the log!".format(quote))
 
     def bufferAction(self, server, source, user, body):
         if not self.bot.moduleHandler.useModuleOnServer(self.name, server):

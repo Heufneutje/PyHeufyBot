@@ -33,7 +33,7 @@ class WeatherCommand(BotCommand):
 
     def execute(self, server, source, command, params, data):
         if not self.apiKey:
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "No API key found.")
+            self.replyPRIVMSG(server, source, "No API key found.")
             return
 
         # Use the user's nickname as a parameter if none were given
@@ -49,17 +49,15 @@ class WeatherCommand(BotCommand):
             lon = float(params[1])
             location = self.bot.moduleHandler.runActionUntilValue("geolocation-latlon", lat, lon)
             if not location:
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "I can't determine locations at the moment. "
-                                                                          "Try again later.")
+                self.replyPRIVMSG(server, source, "I can't determine locations at the moment. Try again later.")
                 return
             if not location["success"]:
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "I don't think that's even a location in "
-                                                                          "this multiverse...")
+                self.replyPRIVMSG(server, source, "I don't think that's even a location in this multiverse...")
                 return
             self._handleCommandWithLocation(server, source, command, location)
             return
         except (IndexError, ValueError):
-            pass # The user did not give a latlon, so continue using other methods
+            pass  # The user did not give a latlon, so continue using other methods
 
         # Try to determine the user's location from a nickname
         if self.bot.config.serverItemWithDefault(server, "use_userlocation", False):
@@ -76,12 +74,10 @@ class WeatherCommand(BotCommand):
                 else:
                     location = self.bot.moduleHandler.runActionUntilValue("geolocation-place", userLoc["place"])
                 if not location:
-                    self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "I can't determine locations at the "
-                                                                              "moment. Try again later.")
+                    self.replyPRIVMSG(server, source, "I can't determine locations at the moment. Try again later.")
                     return
                 if not location["success"]:
-                    self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "I don't think that's even a location in "
-                                                                              "this multiverse...")
+                    self.replyPRIVMSG(server, source, "I don't think that's even a location in this multiverse...")
                     return
                 self._handleCommandWithLocation(server, source, command, location)
                 return
@@ -89,12 +85,10 @@ class WeatherCommand(BotCommand):
         # Try to determine the location by the name of the place
         location = self.bot.moduleHandler.runActionUntilValue("geolocation-place", " ".join(params))
         if not location:
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "I can't determine locations at the moment. "
-                                                                      "Try again later.")
+            self.replyPRIVMSG(server, source, "I can't determine locations at the moment. Try again later.")
             return
         if not location["success"]:
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "I don't think that's even a location "
-                                                                      "in this multiverse...")
+            self.replyPRIVMSG(server, source, "I don't think that's even a location in this multiverse...")
             return
         self._handleCommandWithLocation(server, source, command, location)
 
@@ -104,8 +98,7 @@ class WeatherCommand(BotCommand):
             weather = self._getWeather(location["latitude"], location["longitude"])
         elif command == "forecast":
             weather = self._getForecast(location["latitude"], location["longitude"])
-        self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Location: {} | {}".format(location["locality"],
-                                                                                             weather))
+        self.replyPRIVMSG(server, source, "Location: {} | {}".format(location["locality"], weather))
 
     def _getWeather(self, lat, lon):
         params = {
@@ -174,9 +167,10 @@ class WeatherCommand(BotCommand):
         return " | ".join(formattedDays)
 
     def _convertWindDegToCardinal(self, degrees):
-        directions = [ "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW",
-                       "NNW" ]
+        directions = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW",
+                      "NNW"]
         i = int((degrees + 11.25) / 22.5)
         return directions[i % 16]
+
 
 weatherCommand = WeatherCommand()

@@ -17,6 +17,7 @@ class SourceCommand(BotCommand):
         self.commandHelp = {}
 
     def execute(self, server, source, command, params, data):
-        self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "https://github.com/Heufneutje/PyHeufyBot")
+        self.replyPRIVMSG(server, source, "https://github.com/Heufneutje/PyHeufyBot")
+
 
 sourceCommand = SourceCommand()

@@ -14,15 +14,14 @@ class ApathyCommand(BotCommand):
         return ["insult"]
 
     def actions(self):
-        return super(ApathyCommand, self).actions() + [
-            ("botmessage", 10, self.beLazy) ]
+        return super(ApathyCommand, self).actions() + [ ("botmessage", 10, self.beLazy) ]
 
     def beLazy(self, data):
         if not self.bot.moduleHandler.useModuleOnServer(self.name, data["server"]):
             return
         if random.randint(0, 500) == 0 and len(self.insults) > 0:
             insult = random.choice(self.insults).replace("<nick>", data["user"].nick)
-            self.bot.servers[data["server"]].outputHandler.cmdPRIVMSG(data["source"], insult)
+            self.replyPRIVMSG(data["server"], data["source"], insult)
             data.clear()
 
     def load(self):
@@ -42,25 +41,26 @@ class ApathyCommand(BotCommand):
             return
         subcommand = params[0].lower()
         if subcommand not in ["add", "remove"]:
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Invalid subcommand. Subcommands are add/remove.")
+            self.replyPRIVMSG(server, source, "Invalid subcommand. Subcommands are add/remove.")
             return
         if subcommand == "add":
             if " ".join(params[1:]).lower() in [x.lower() for x in self.insults]:
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "I already know that insult...")
+                self.replyPRIVMSG(server, source, "I already know that insult...")
                 return
             self.insults.append(" ".join(params[1:]))
             self.bot.storage["insult_list"] = self.insults
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Alright, I suppose...")
+            self.replyPRIVMSG(server, source, "Alright, I suppose...")
         elif subcommand == "remove":
             regex = re.compile(" ".join(params[1:]), re.IGNORECASE)
             matches = filter(regex.search, self.insults)
             if len(matches) == 0:
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "I don't even know that insult...")
+                self.replyPRIVMSG(server, source, "I don't even know that insult...")
             elif len(matches) > 1:
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "That matches way too many insults...")
+                self.replyPRIVMSG(server, source, "That matches way too many insults...")
             else:
                 self.insults.remove(matches[0])
                 self.bot.storage["insult_list"] = self.insults
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Fine, I've forgotten about that one.")
+                self.replyPRIVMSG(server, source, "Fine, I've forgotten about that one.")
+
 
 apathy = ApathyCommand()

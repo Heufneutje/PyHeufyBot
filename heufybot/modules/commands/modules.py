@@ -18,6 +18,7 @@ class ModulesCommand(BotCommand):
 
     def execute(self, server, source, command, params, data):
         loadedModules = sorted(self.bot.moduleHandler.loadedModules.keys())
-        self.bot.servers[server].outputHandler.cmdNOTICE(source, "Loaded modules: {}".format(", ".join(loadedModules)))
+        self.replyNOTICE(server, source, "Loaded modules: {}".format(", ".join(loadedModules)))
+
 
 modulesCommand = ModulesCommand()

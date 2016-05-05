@@ -29,7 +29,7 @@ class LogsearchCommand(BotCommand):
 
     def execute(self, server, source, command, params, data):
         if len(params) < 1:
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Search what?")
+            self.replyPRIVMSG(server, source, "Search what?")
             return
 
         basePath = self.bot.config.serverItemWithDefault(server, "logpath", "logs")
@@ -56,7 +56,7 @@ class LogsearchCommand(BotCommand):
         elif command == "lastsaid":
             result = self._search(params[0], logPath, logs, False, True, True)
 
-        self.bot.servers[server].outputHandler.cmdPRIVMSG(source, result)
+        self.replyPRIVMSG(server, source, result)
 
     def _search(self, searchTerms, logPath, files, searchForNick, includeToday, reverse):
         if searchForNick:
@@ -87,5 +87,6 @@ class LogsearchCommand(BotCommand):
             if found:
                 return "[{}] {}".format(filename[:10], found)
         return "Nothing that matches your search terms has been found in the log."
+
 
 logsearch = LogsearchCommand()

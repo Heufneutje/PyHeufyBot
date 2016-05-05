@@ -29,21 +29,20 @@ class ModuleLoaderCommands(BotCommand):
                                                               "module-control")
 
     def execute(self, server, source, command, params, data):
-        output = self.bot.servers[server].outputHandler
         if command == "load" and len(params) < 1:
-            output.cmdPRIVMSG(source, "Load what?")
+            self.replyPRIVMSG(server, source, "Load what?")
             return
         elif command == "unload" and len(params) < 1:
-            output.cmdPRIVMSG(source, "Unload what?")
+            self.replyPRIVMSG(server, source, "Unload what?")
             return
         elif command == "reload" and len(params) < 1:
-            output.cmdPRIVMSG(source, "Reload what?")
+            self.replyPRIVMSG(server, source, "Reload what?")
             return
         elif command == "enable" and len(params) < 1:
-            output.cmdPRIVMSG(source, "Enable what?")
+            self.replyPRIVMSG(server, source, "Enable what?")
             return
         elif command == "disable" and len(params) < 1:
-            output.cmdPRIVMSG(source, "Disable what?")
+            self.replyPRIVMSG(server, source, "Disable what?")
             return
 
         success = []
@@ -74,10 +73,11 @@ class ModuleLoaderCommands(BotCommand):
                 action = "enabled"
             elif command == "disable":
                 action = "disabled"
-            output.cmdPRIVMSG(source, "Module(s) successfully {}: {}".format(action, ", ".join(success)))
+            self.replyPRIVMSG(server, source, "Module(s) successfully {}: {}".format(action, ", ".join(success)))
             if command == "load" or command == "unload" or command == "reload":
                 data.clear()
         for fail in failed:
-            output.cmdPRIVMSG(source, fail)
+            self.replyPRIVMSG(server, source, fail)
+
 
 moduleCommands = ModuleLoaderCommands()

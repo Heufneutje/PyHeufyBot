@@ -47,10 +47,10 @@ class IgnoreCommand(BotCommand):
             self.ignores[networkName(self.bot, server)] = []
         if len(params) == 0:
             if len(self.ignores[networkName(self.bot, server)]) == 0:
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "There are no users that are ignored.")
+                self.replyPRIVMSG(server, source, "There are no users that are ignored.")
             else:
                 ignoredUsers = ", ".join(self.ignores[networkName(self.bot, server)])
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Ignoring users: {}.".format(ignoredUsers))
+                self.replyPRIVMSG(server, source, "Ignoring users: {}.".format(ignoredUsers))
             return
         success = []
         fail = []
@@ -63,11 +63,9 @@ class IgnoreCommand(BotCommand):
                     success.append(ignore)
             if len(success) > 0:
                 self.bot.storage["ignore_list"] = self.ignores
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source,
-                                                                  "Now ignoring: {}.".format(", ".join(success)))
+                self.replyPRIVMSG(server, source, "Now ignoring: {}.".format(", ".join(success)))
             if len(fail) > 0:
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source,
-                                                                  "Already ignored: {}.".format(", ".join(fail)))
+                self.replyPRIVMSG(server, source, "Already ignored: {}.".format(", ".join(fail)))
         elif command == "unignore":
             for ignore in params:
                 if ignore.lower() in self.ignores[networkName(self.bot, server)]:
@@ -77,9 +75,9 @@ class IgnoreCommand(BotCommand):
                     fail.append(ignore)
             if len(success) > 0:
                 self.bot.storage["ignore_list"] = self.ignores
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source,
-                                                                  "No longer ignoring: {}.".format(", ".join(success)))
+                self.replyPRIVMSG(server, source, "No longer ignoring: {}.".format(", ".join(success)))
             if len(fail) > 0:
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Not ignored: {}.".format(", ".join(fail)))
+                self.replyPRIVMSG(server, source, "Not ignored: {}.".format(", ".join(fail)))
+
 
 ignoreCommand = IgnoreCommand()

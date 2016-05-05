@@ -22,15 +22,16 @@ class PartCommand(BotCommand):
 
     def execute(self, server, source, command, params, data):
         if len(params) < 1 and "channel" not in data:
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Part what?")
+            self.replyPRIVMSG(server, source, "Part what?")
         elif len(params) < 1:
             self.bot.servers[server].outputHandler.cmdPART(source, "Leaving...")
         else:
             if params[0] not in self.bot.servers[server].channels:
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "I am not in {}".format(params[0]))
+                self.replyPRIVMSG(server, source, "I am not in {}".format(params[0]))
             elif len(params) == 1:
                 self.bot.servers[server].outputHandler.cmdPART(params[0], "Leaving...")
             else:
                 self.bot.servers[server].outputHandler.cmdPART(params[0], " ".join(params[1:]))
+
 
 partCommand = PartCommand()

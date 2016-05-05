@@ -43,10 +43,10 @@ class WordCounterCommand(BotCommand):
     def execute(self, server, source, command, params, data):
         self.commandUsed = True
         if "channel" not in data:
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Word counters can only be used in channels.")
+            self.replyPRIVMSG(server, source, "Word counters can only be used in channels.")
             return
         if len(params) < 1:
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "You didn't specify a word.")
+            self.replyPRIVMSG(server, source, "You didn't specify a word.")
             return
         network = networkName(self.bot, server)
         if network not in self.wordCounters:
@@ -56,35 +56,30 @@ class WordCounterCommand(BotCommand):
         word = params[0].lower()
         if command == "addwordcount":
             if word in self.wordCounters[network][source]:
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "A counter for \"{}\" already "
-                                                                          "exists.".format(word))
+                self.replyPRIVMSG(server, source, "A counter for \"{}\" already exists.".format(word))
             else:
                 self.wordCounters[network][source][word] = {}
                 self.bot.storage["wordcounts"] = self.wordCounters
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "A counter for \"{}\" has been "
-                                                                          "added.".format(word))
+                self.replyPRIVMSG(server, source, "A counter for \"{}\" has been added.".format(word))
         elif command == "remwordcount":
             if word in self.wordCounters[network][source]:
                 del self.wordCounters[network][source][word]
                 self.bot.storage["wordcounts"] = self.wordCounters
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "The counter for \"{}\" has been "
-                                                                          "removed.".format(word))
+                self.replyPRIVMSG(server, source, "The counter for \"{}\" has been removed.".format(word))
 
             else:
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "A counter for \"{}\" does not "
-                                                                          "exist.".format(word))
+                self.replyPRIVMSG(server, source, "A counter for \"{}\" does not exist.".format(word))
         elif command == "wordcount":
             self.commandUsed = True
             if word not in self.wordCounters[network][source]:
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "A counter for \"{}\" does not "
-                                                                          "exist.".format(word))
+                self.replyPRIVMSG(server, source, "A counter for \"{}\" does not exist.".format(word))
                 return
             total = sum(self.wordCounters[network][source][word].itervalues())
             result = "The word \"{}\" has been said {} times.".format(word, total)
             if result > 0:
                 top = max(self.wordCounters[network][source][word].iteritems(), key=operator.itemgetter(1))
                 result = "{} The top contributor is {} with {} times.".format(result, top[0], top[1])
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, result)
+            self.replyPRIVMSG(server, source, result)
 
     def countMessage(self, server, channel, user, body):
         self._countWords(networkName(self.bot, server), channel.name, user.nick, body)
@@ -108,5 +103,6 @@ class WordCounterCommand(BotCommand):
                 else:
                     self.wordCounters[server][source][word][user] = 1
                 self.bot.storage["wordcounts"] = self.wordCounters
+
 
 wordCounter = WordCounterCommand()

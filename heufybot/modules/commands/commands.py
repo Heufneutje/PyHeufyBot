@@ -21,7 +21,7 @@ class CommandsCommand(BotCommand):
         for moduleName, module in self.bot.moduleHandler.loadedModules.iteritems():
             if self.bot.moduleHandler.useModuleOnServer(moduleName, server) and isinstance(module, BotCommand):
                 commandsList += module.triggers()
-        msg = "Available commands: {}".format(", ".join(sorted(commandsList)))
-        self.bot.servers[server].outputHandler.cmdPRIVMSG(source, msg)
+        self.replyPRIVMSG(server, source, "Available commands: {}".format(", ".join(sorted(commandsList))))
+
 
 commandsCommand = CommandsCommand()

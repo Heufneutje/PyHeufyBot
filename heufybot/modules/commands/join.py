@@ -18,12 +18,13 @@ class JoinCommand(BotCommand):
 
     def execute(self, server, source, command, params, data):
         if len(params) < 1:
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Join what?")
+            self.replyPRIVMSG(server, source, "Join what?")
             return
 
         if len(params) > 1:
             self.bot.servers[server].outputHandler.cmdJOIN(params[0], params[1])
         else:
             self.bot.servers[server].outputHandler.cmdJOIN(params[0])
+
 
 joinCommand = JoinCommand()

@@ -24,13 +24,14 @@ class HelpCommand(BotCommand):
                 if isinstance(self.bot.moduleHandler.loadedModules[module], BotCommand):
                     commandModules.append(module)
             message = "Loaded command modules: {}".format(", ".join(sorted(commandModules)))
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, message)
+            self.replyPRIVMSG(server, source, message)
         else:
             helpText = self.bot.moduleHandler.runActionUntilValue("commandhelp", server, params[0])
             if helpText:
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, helpText)
+                self.replyPRIVMSG(server, source, helpText)
             else:
                 error = "No command modules or command triggers named \"{}\" were found.".format(params[0])
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, error)
+                self.replyPRIVMSG(server, source, error)
+
 
 helpCommand = HelpCommand()

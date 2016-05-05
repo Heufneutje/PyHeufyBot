@@ -19,13 +19,14 @@ class ChooseCommand(BotCommand):
 
     def execute(self, server, source, command, params, data):
         if len(params) < 1:
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Choose what?")
+            self.replyPRIVMSG(server, source, "Choose what?")
             return
         message = " ".join(params)
         if "," in message:
             options = message.split(",")
         else:
             options = params
-        self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Choice: {}".format(choice(options).strip()))
+        self.replyPRIVMSG(server, source, "Choice: {}".format(choice(options).strip()))
+
 
 chooseCommand = ChooseCommand()

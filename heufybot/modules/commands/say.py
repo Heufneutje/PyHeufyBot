@@ -32,18 +32,19 @@ class SayCommand(BotCommand):
 
     def execute(self, server, source, command, params, data):
         if command == "say" and len(params) < 1 or command == "sayto" and len(params) < 2:
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Say what?")
+            self.replyPRIVMSG(server, source, "Say what?")
             return
         if command == "do" and len(params) < 1 or command == "doto" and len(params) < 2:
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Do what?")
+            self.replyPRIVMSG(server, source, "Do what?")
             return
         if command == "say":
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, " ".join(params))
+            self.replyPRIVMSG(server, source, " ".join(params))
         elif command == "sayto":
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(params[0], " ".join(params[1:]))
+            self.replyPRIVMSG(server, params[0], " ".join(params[1:]))
         elif command == "do":
-            self.bot.servers[server].outputHandler.ctcpACTION(source, " ".join(params))
+            self.replyACTION(server, source, " ".join(params))
         elif command == "doto":
-            self.bot.servers[server].outputHandler.ctcpACTION(params[0], " ".join(params[1:]))
+            self.replyACTION(server, params[0], " ".join(params[1:]))
+
 
 sayCommand = SayCommand()

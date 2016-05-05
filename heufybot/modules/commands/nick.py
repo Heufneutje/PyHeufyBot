@@ -22,8 +22,9 @@ class NickCommand(BotCommand):
 
     def execute(self, server, source, command, params, data):
         if len(params) < 1:
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Change my nick to what?")
+            self.replyPRIVMSG(server, source, "Change my nick to what?")
         else:
             self.bot.servers[server].outputHandler.cmdNICK(params[0])
+
 
 nickCommand = NickCommand()

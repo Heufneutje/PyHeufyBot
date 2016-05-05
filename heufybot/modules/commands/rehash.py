@@ -23,8 +23,9 @@ class RehashCommand(BotCommand):
     def execute(self, server, source, command, params, data):
         try:
             self.bot.config.loadConfig()
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Rehashed the configuration successfully.")
+            self.replyPRIVMSG(server, source, "Rehashed the configuration successfully.")
         except ConfigError as e:
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, e)
+            self.replyPRIVMSG(server, source, e)
+
 
 rehashCommand = RehashCommand()

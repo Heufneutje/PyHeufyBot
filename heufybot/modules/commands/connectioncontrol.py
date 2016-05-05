@@ -32,7 +32,7 @@ class ConnectionControlCommands(BotCommand):
         message = None
         if command == "connect":
             if len(params) < 1:
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Connect where?")
+                self.replyPRIVMSG(server, source, "Connect where?")
                 return
             message = self.bot.connectServer(params[0])
         elif command == "disconnect":
@@ -61,6 +61,7 @@ class ConnectionControlCommands(BotCommand):
             else:
                 self.bot.restart(" ".join(params))
         if message:
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, message)
+            self.replyPRIVMSG(server, source, message)
+
 
 connectionControlCommands = ConnectionControlCommands()

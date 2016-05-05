@@ -29,7 +29,7 @@ class NowPlayingCommand(BotCommand):
 
     def execute(self, server, source, command, params, data):
         if not self.lastfmKey:
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "No Last.fm API key was found.")
+            self.replyPRIVMSG(server, source, "No Last.fm API key was found.")
             return
 
         if networkName(self.bot, server) not in self.links:
@@ -67,7 +67,7 @@ class NowPlayingCommand(BotCommand):
                     if not link:
                         link = longLink
                     m = "\"{}\" by {} | {}".format(songTitle, artist, link)
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, m)
+            self.replyPRIVMSG(server, source, m)
         elif command == "nplink":
             if len(params) == 0:
                 m = "You must provide a LastFM name to link to your nickname."
@@ -75,6 +75,7 @@ class NowPlayingCommand(BotCommand):
                 self.links[networkName(self.bot, server)][data["user"].nick.lower()] = params[0].lower()
                 self.bot.storage["lastfm-links"] = self.links
                 m = "The nickname \"{}\" is now linked to LastFM name \"{}\"".format(data["user"].nick, params[0])
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, m)
+            self.replyPRIVMSG(server, source, m)
+
 
 npCommand = NowPlayingCommand()

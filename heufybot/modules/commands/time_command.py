@@ -34,17 +34,15 @@ class TimeCommand(BotCommand):
             lon = float(params[1])
             location = self.bot.moduleHandler.runActionUntilValue("geolocation-latlon", lat, lon)
             if not location:
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "I can't determine locations at the moment. "
-                                                                          "Try again later.")
+                self.replyPRIVMSG(server, source, "I can't determine locations at the moment. Try again later.")
                 return
             if not location["success"]:
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "I don't think that's even a location in "
-                                                                          "this multiverse...")
+                self.replyPRIVMSG(server, source, "I don't think that's even a location in this multiverse...")
                 return
             self._handleCommandWithLocation(server, source, location)
             return
         except (IndexError, ValueError):
-            pass # The user did not give a latlon, so continue using other methods
+            pass  # The user did not give a latlon, so continue using other methods
 
         # Try to determine the user's location from a nickname
         if self.bot.config.serverItemWithDefault(server, "use_userlocation", False):
@@ -61,12 +59,10 @@ class TimeCommand(BotCommand):
                 else:
                     location = self.bot.moduleHandler.runActionUntilValue("geolocation-place", userLoc["place"])
                 if not location:
-                    self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "I can't determine locations at the "
-                                                                              "moment. Try again later.")
+                    self.replyPRIVMSG(server, source, "I can't determine locations at the moment. Try again later.")
                     return
                 if not location["success"]:
-                    self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "I don't think that's even a location in "
-                                                                              "this multiverse...")
+                    self.replyPRIVMSG(server, source, "I don't think that's even a location in this multiverse...")
                     return
                 self._handleCommandWithLocation(server, source, location)
                 return
@@ -74,19 +70,16 @@ class TimeCommand(BotCommand):
         # Try to determine the location by the name of the place
         location = self.bot.moduleHandler.runActionUntilValue("geolocation-place", " ".join(params))
         if not location:
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "I can't determine locations at the moment. "
-                                                                      "Try again later.")
+            self.replyPRIVMSG(server, source, "I can't determine locations at the moment. Try again later.")
             return
         if not location["success"]:
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "I don't think that's even a location "
-                                                                      "in this multiverse...")
+            self.replyPRIVMSG(server, source, "I don't think that's even a location in this multiverse...")
             return
         self._handleCommandWithLocation(server, source, location)
 
     def _handleCommandWithLocation(self, server, source, location):
         formattedTime = self._getTime(location["latitude"], location["longitude"])
-        self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Location: {} | {}".format(location["locality"],
-                                                                                             formattedTime))
+        self.replyPRIVMSG(server, source, "Location: {} | {}".format(location["locality"], formattedTime))
 
     def _getTime(self, lat, lon):
         currentTime = timestamp(now())
@@ -117,5 +110,6 @@ class TimeCommand(BotCommand):
             return "{}rd".format(day)
         else:
             return "{}th".format(day)
+
 
 timeCommand = TimeCommand()

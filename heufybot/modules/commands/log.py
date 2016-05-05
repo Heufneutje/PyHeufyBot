@@ -21,7 +21,7 @@ class LogCommand(BotCommand):
 
     def execute(self, server, source, command, params, data):
         if "channel" not in data:
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "I don't keep logs for private messages.")
+            self.replyPRIVMSG(server, source, "I don't keep logs for private messages.")
             return
 
         basePath = self.bot.config.serverItemWithDefault(server, "logpath", "logs")
@@ -34,7 +34,7 @@ class LogCommand(BotCommand):
             try:
                 delta = int(params[0][1:])
             except ValueError:
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, error)
+                self.replyPRIVMSG(server, source, error)
                 return
             logDate = date.today() - timedelta(delta)
         else:
@@ -42,13 +42,13 @@ class LogCommand(BotCommand):
                 formattedDate = params[0].split("-")
                 logDate = date(int(formattedDate[0]), int(formattedDate[1]), int(formattedDate[2]))
             except (IndexError, ValueError):
-               self.bot.servers[server].outputHandler.cmdPRIVMSG(source, error)
-               return
+                self.replyPRIVMSG(server, source, error)
+                return
 
         strLogDate = logDate.strftime("%Y-%m-%d")
         logPath = os.path.join(basePath, network, source, "{}.log".format(strLogDate))
         if not os.path.exists(logPath):
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "I don't have that log.")
+            self.replyPRIVMSG(server, source, "I don't have that log.")
             return
 
         baseUrl = self.bot.config.serverItemWithDefault(server, "logurl", "irc.example.com")
@@ -56,8 +56,7 @@ class LogCommand(BotCommand):
         shortUrl = self.bot.moduleHandler.runActionUntilValue("shorten-url", url)
         if not shortUrl:
             shortUrl = url
-        msg = "Log for {0} on {1}: {2}".format(source, strLogDate, shortUrl)
+        self.replyPRIVMSG(server, source, "Log for {0} on {1}: {2}".format(source, strLogDate, shortUrl))
 
-        self.bot.servers[server].outputHandler.cmdPRIVMSG(source, msg)
 
 logCommand = LogCommand()

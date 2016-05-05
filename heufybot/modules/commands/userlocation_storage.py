@@ -15,23 +15,22 @@ class UserLocationStorage(BotCommand):
         return ["addloc", "remloc", "locimport", "locexport"]
 
     def actions(self):
-        return super(UserLocationStorage, self).actions() + [
-            ("userlocation", 1, self.lookUpLocation) ]
+        return super(UserLocationStorage, self).actions() + [ ("userlocation", 1, self.lookUpLocation) ]
 
     def lookUpLocation(self, server, source, user, displayErrors):
         if not self.bot.moduleHandler.useModuleOnServer(self.name, server):
             return
 
-        if networkName(self.bot, server) in self.locations and user.lower() in self.locations[networkName(self.bot, \
-                server)]:
+        if networkName(self.bot, server) in self.locations and user.lower() in self.locations[networkName(self.bot,
+                                                                                                          server)]:
             return {
                 "success": True,
                 "place": self.locations[networkName(self.bot, server)][user.lower()]
             }
         if displayErrors:
-            error =  "Your location is not registered. Register your location by using the \"addloc\" command or " \
-                     "provide a location."
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, error)
+            error = "Your location is not registered. Register your location by using the \"addloc\" command or " \
+                    "provide a location."
+            self.replyPRIVMSG(server, source, error)
             return {
                 "success": False
             }
@@ -55,33 +54,32 @@ class UserLocationStorage(BotCommand):
     def execute(self, server, source, command, params, data):
         if command == "addloc":
             if len(params) < 1:
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "What do you want to do with your location?")
+                self.replyPRIVMSG(server, source, "What do you want to do with your location?")
                 return
             if networkName(self.bot, server) not in self.locations:
                 self.locations[networkName(self.bot, server)] = {}
             self.locations[networkName(self.bot, server)][data["user"].nick.lower()] = " ".join(params)
             self.bot.storage["userlocations"] = self.locations
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Your location has been updated.")
+            self.replyPRIVMSG(server, source, "Your location has been updated.")
         elif command == "remloc":
             if data["user"].nick.lower() not in self.locations[networkName(self.bot, server)]:
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Your location is not registered!")
+                self.replyPRIVMSG(server, source, "Your location is not registered!")
             else:
                 del self.locations[networkName(self.bot, server)][data["user"].nick.lower()]
                 self.bot.storage["userlocations"] = self.locations
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Your location has been removed.")
+                self.replyPRIVMSG(server, source, "Your location has been removed.")
         elif command == "locimport":
             if len(params) < 1:
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Import locations from where?")
+                self.replyPRIVMSG(server, source, "Import locations from where?")
                 return
             if not os.path.isfile(params[0]):
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Import file doesn't exist.")
+                self.replyPRIVMSG(server, source, "Import file doesn't exist.")
                 return
             with open(params[0]) as importFile:
                 try:
                     j = json.load(importFile)
                 except ValueError as e:
-                    self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "An error occurred while reading the "
-                                                                              "import file: {0}.".format(e))
+                    self.replyPRIVMSG(server, source, "An error occurred while reading the import file: {0}.".format(e))
                     return
             if networkName(self.bot, server) not in self.locations:
                 self.locations[networkName(self.bot, server)] = {}
@@ -95,20 +93,20 @@ class UserLocationStorage(BotCommand):
             if skipped == 0:
                 msg = "Imported {} location(s).".format(len(j))
             else:
-                msg = "Imported {} location(s). Skipped {} location(s) because of a nickname conflict."\
+                msg = "Imported {} location(s). Skipped {} location(s) because of a nickname conflict." \
                     .format(len(j) - skipped, skipped)
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, msg)
+            self.replyPRIVMSG(server, source, msg)
         elif command == "locexport":
             if len(params) < 1:
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Export locations to where?")
+                self.replyPRIVMSG(server, source, "Export locations to where?")
                 return
             with open(params[0], "w") as exportFile:
                 if networkName(self.bot, server) not in self.locations:
-                    self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "No locations to export.")
+                    self.replyPRIVMSG(server, source, "No locations to export.")
                     return
                 locations = self.locations[networkName(self.bot, server)]
                 json.dump(locations, exportFile, sort_keys=True, indent=4)
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source,
-                                                                  "Exported {} location(s).".format(len(locations)))
+                self.replyPRIVMSG(server, source, "Exported {} location(s).".format(len(locations)))
+
 
 userLocStorage = UserLocationStorage()

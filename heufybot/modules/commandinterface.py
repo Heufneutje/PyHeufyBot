@@ -38,6 +38,15 @@ class BotCommand(BotModule):
                 return self.help
         return None
 
+    def replyPRIVMSG(self, server, source, message):
+        self.bot.servers[server].outputHandler.cmdPRIVMSG(source, message)
+
+    def replyNOTICE(self, server, source, message):
+        self.bot.servers[server].outputHandler.cmdNOTICE(source, message)
+
+    def replyACTION(self, server, source, message):
+        self.bot.servers[server].outputHandler.ctcpACTION(source, message)
+
     def _shouldExecute(self, server, source, user, command):
         if not self.bot.moduleHandler.useModuleOnServer(self.name, server):
             return False

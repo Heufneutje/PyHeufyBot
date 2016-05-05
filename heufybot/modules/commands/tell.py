@@ -3,7 +3,7 @@ from heufybot.channel import IRCChannel
 from heufybot.moduleinterface import IBotModule
 from heufybot.modules.commandinterface import BotCommand
 from heufybot.utils import networkName
-from heufybot.utils.timeutils import durationToTimedelta, now, strftimeWithTimezone,  timeDeltaString
+from heufybot.utils.timeutils import durationToTimedelta, now, strftimeWithTimezone, timeDeltaString
 from zope.interface import implements
 from datetime import datetime
 from fnmatch import fnmatch
@@ -56,13 +56,13 @@ class TellCommand(BotCommand):
     def execute(self, server, source, command, params, data):
         if command == "tell" or command == "tellafter":
             if len(params) == 0 or len(params) == 1:
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Tell who?")
+                self.replyPRIVMSG(server, source, "Tell who?")
                 return
             elif len(params) == 1 and command == "tellafter":
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Tell it when?")
+                self.replyPRIVMSG(server, source, "Tell it when?")
                 return
             elif len(params) == 1 or len(params) == 2 and command == "tellafter":
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Tell {} what?".format(params[0]))
+                self.replyPRIVMSG(server, source, "Tell {} what?".format(params[0]))
                 return
             sentTells = []
             if command == "tellafter":
@@ -74,8 +74,7 @@ class TellCommand(BotCommand):
                 date = now()
             for recep in params[0].split("&"):
                 if recep.lower() == self.bot.servers[server].nick.lower():
-                    self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Thanks for telling me that, {}."
-                                                                      .format(data["user"].nick))
+                    self.replyPRIVMSG(server, source, "Thanks for telling me that, {}.".format(data["user"].nick))
                     continue
                 message = {
                     "to": recep.lower(),
@@ -95,7 +94,7 @@ class TellCommand(BotCommand):
                                                                                    strftimeWithTimezone(date))
                 else:
                     m = "Okay, I'll tell {} that next time they speak.".format("&".join(sentTells))
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, m)
+                self.replyPRIVMSG(server, source, m)
             self.bot.storage["tells"] = self.tells
         elif command == "stells":
             if networkName(self.bot, server) not in self.tells:
@@ -106,17 +105,15 @@ class TellCommand(BotCommand):
                     tells.append(self._parseSentTell(tell))
             if len(tells) > 0:
                 for tell in tells:
-                    self.bot.servers[server].outputHandler.cmdNOTICE(data["user"].nick, tell)
+                    self.replyNOTICE(server, data["user"].nick, tell)
             else:
-                self.bot.servers[server].outputHandler.cmdNOTICE(data["user"].nick, "No undelivered messages sent by "
-                                                                                    "you were found.")
+                self.replyNOTICE(server, data["user"].nick, "No undelivered messages sent by you were found.")
         elif command == "rtell":
             if len(params) == 0:
-                self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "Remove what?")
+                self.replyPRIVMSG(server, source, "Remove what?")
                 return
             if networkName(self.bot, server) not in self.tells:
-                self.bot.servers[server].outputHandler.cmdNOTICE(data["user"].nick, "No tells matching \"{}\" were "
-                                                                                    "found.".format(params[0]))
+                self.replyNOTICE(server, data["user"].nick, "No tells matching \"{}\" were found.".format(params[0]))
                 return
             tells = [x for x in self.tells[networkName(self.bot, server)] if x["from"].lower() == data[
                 "user"].nick.lower()]
@@ -125,11 +122,10 @@ class TellCommand(BotCommand):
                     self.tells[networkName(self.bot, server)].remove(tell)
                     self.bot.storage["tells"] = self.tells
                     m = "Message \"{}\" was removed from the message database.".format(self._parseSentTell(tell))
-                    self.bot.servers[server].outputHandler.cmdNOTICE(data["user"].nick, m)
+                    self.replyNOTICE(server, data["user"].nick, m)
                     break
             else:
-                self.bot.servers[server].outputHandler.cmdNOTICE(data["user"].nick, "No tells matching \"{}\" were "
-                                                                                    "found.".format(params[0]))
+                self.replyNOTICE(server, data["user"].nick, "No tells matching \"{}\" were found.".format(params[0]))
 
     def _processTells(self, server, source, nick):
         if networkName(self.bot, server) not in self.tells:
@@ -149,9 +145,9 @@ class TellCommand(BotCommand):
                 pmTells.append(tell)
                 self.tells[networkName(self.bot, server)].remove(tell)
         for tell in chanTells:
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(source, self._parseTell(nick, tell))
+            self.replyPRIVMSG(server, source, self._parseTell(nick, tell))
         for tell in pmTells:
-            self.bot.servers[server].outputHandler.cmdPRIVMSG(nick, self._parseTell(nick, tell))
+            self.replyPRIVMSG(server, nick, self._parseTell(nick, tell))
         if len(chanTells) > 0 or len(pmTells) > 0:
             self.bot.storage["tells"] = self.tells
 
@@ -161,6 +157,9 @@ class TellCommand(BotCommand):
 
     def _parseSentTell(self, tell):
         return "{} < Sent to {} on {}, to be received on {} in {}.".format(tell["body"], tell["to"],
-               strftimeWithTimezone(tell["date"]), strftimeWithTimezone(tell["datetoreceive"]), tell["source"])
+                                                                           strftimeWithTimezone(tell["date"]),
+                                                                           strftimeWithTimezone(tell["datetoreceive"]),
+                                                                           tell["source"])
+
 
 tellCommand = TellCommand()

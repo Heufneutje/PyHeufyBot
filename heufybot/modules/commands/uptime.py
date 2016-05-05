@@ -20,6 +20,7 @@ class UptimeCommand(BotCommand):
     def execute(self, server, source, command, params, data):
         start = strftimeWithTimezone(self.bot.startTime)
         delta = timeDeltaString(now(), self.bot.startTime)
-        self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "I have been up since {} ({}).".format(start, delta))
+        self.replyPRIVMSG(server, source, "I have been up since {} ({}).".format(start, delta))
+
 
 uptimeCommand = UptimeCommand()
