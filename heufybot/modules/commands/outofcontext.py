@@ -14,7 +14,7 @@ class OutOfContextCommand(BotCommand):
     name = "OutOfContext"
 
     def triggers(self):
-        return ["ooc"]
+        return ["oocadd", "oocid", "ooclist", "oocrandom", "oocremove", "oocremoveid", "oocsearch", "oocsearchnick"]
 
     def actions(self):
         return super(OutOfContextCommand, self).actions() + [
@@ -22,28 +22,35 @@ class OutOfContextCommand(BotCommand):
             ("message-channel", 1, self.bufferMessage) ]
 
     def load(self):
-        self.help = "Commands: ooc (add/remove/search/searchnick/random/id/list) | The log of Out of Context quotes! " \
-                    "Without a subcommand this will post a link to the log."
-        self.commandHelp = {}
+        self.historySize = 30
+        self.help = "Commands: oocadd <quote>, oocid <quoteid>, ooclist (<search/searchnick <regex>), oocrandom, " \
+                    "oocremove <regex>, oocremoveid <quoteid>, search <regex>, searchnick <regex>"
+        self.commandHelp = {
+            "oocadd": "oocadd <quote> | Add a new quote to the OutOfContext log. The quote will be pulled from a {} "
+                      "line message buffer".format(self.historySize),
+            "oocid": "oocid <quoteid> | Look up the quote that has the given ID",
+            "ooclist": "ooclist (<search/searchnick <regex>) | Post the OutOfContext log to Paste.EE. A search regex "
+                       "can be provided to filter the list.",
+            "oocrandom": "oocrandom | Return a random quote from the OutOfContext log",
+            "oocremove": "oocremove <regex> | Remove a quote from the OutOfContext log.",
+            "oocremoveid": "oocremoveid <quoteid> | Remove the quote with the specified ID from the OutOfContext log.",
+            "oocsearch": "search <regex> | Look up quotes in the OutOfContext log. This search operation will look at "
+                         "the content of the quotes.",
+            "oocsearchnick": "searchnick <regex> | Look up quotes in the OutOfContext log. This search operation will "
+                             "look at the nick that said the quoted line."
+        }
         if "ooclog" not in self.bot.storage:
             self.bot.storage["ooclog"] = {}
         self.ooclog = self.bot.storage["ooclog"]
         self.messageBuffer = WeakKeyDictionary()
-        self.historySize = 30
 
     def execute(self, server, source, command, params, data):
         if networkName(self.bot, server) not in self.ooclog:
             self.ooclog[networkName(self.bot, server)] = {}
         if source not in self.ooclog[networkName(self.bot, server)]:
             self.ooclog[networkName(self.bot, server)][source] = []
-        if len(params) == 0:
-            params.append("list")
-        subcommand = params.pop(0).lower()
-        if subcommand not in ["add", "remove", "search", "searchnick", "random", "removeid", "id", "list"]:
-            self.replyPRIVMSG(server, source, "Invalid subcommand. Subcommands are add/remove/removeid/search/"
-                                              "searchnick/random/id/list.")
-            return
-        if subcommand == "add":
+
+        if command == "oocadd":
             if len(params) == 0:
                 self.replyPRIVMSG(server, source, "Add what?")
                 return
@@ -68,7 +75,7 @@ class OutOfContextCommand(BotCommand):
                     self.ooclog[networkName(self.bot, server)][source].append(quote)
                     self.bot.storage["ooclog"] = self.ooclog
                     self.replyPRIVMSG(server, source, "Quote \"{}\" was added to the log!".format(quote))
-        elif subcommand == "remove":
+        elif command == "oocremove":
             if len(params) == 0:
                 self.replyPRIVMSG(server, source, "Remove what?")
                 return
@@ -80,7 +87,7 @@ class OutOfContextCommand(BotCommand):
                 self.replyPRIVMSG(server, source, "Unable to remove quote, {} matches found.".format(len(matches)))
             else:
                 self._removeQuote(server, source, matches[0])
-        elif subcommand == "removeid":
+        elif command == "oocremoveid":
             if len(params) == 0 or not isNumber(params[0]):
                 self.replyPRIVMSG(server, source, "You didn't specify a valid ID.")
             else:
@@ -90,10 +97,10 @@ class OutOfContextCommand(BotCommand):
                     self._removeQuote(server, source, quotes[index])
                 else:
                     self.replyPRIVMSG(server, source, "That quote is not in the log.")
-        elif subcommand == "random":
+        elif command == "oocrandom":
             self.replyPRIVMSG(server, source, self._getQuote(server, source, "", False, -1))
-        elif subcommand == "searchnick" or subcommand == "search":
-            searchNick = subcommand == "searchnick"
+        elif command == "oocsearchnick" or command == "oocsearch":
+            searchNick = command == "oocsearchnick"
             if len(params) == 0:
                 quote = self._getQuote(server, source, data["user"].nick, searchNick, -1)
             elif len(params) == 1:
@@ -104,13 +111,13 @@ class OutOfContextCommand(BotCommand):
             else:
                 quote = self._getQuote(server, source, " ".join(params), searchNick, -1)
             self.replyPRIVMSG(server, source, quote)
-        elif subcommand == "id":
+        elif command == "oocid":
             if len(params) == 0 or not isNumber(params[0]):
                 quote = "You didn't specify a valid ID."
             else:
                 quote = self._getQuote(server, source, "", False, int(params[0]) - 1)
             self.replyPRIVMSG(server, source, quote)
-        elif subcommand == "list":
+        elif command == "ooclist":
             if len(params) > 0:
                 subsubcommand = params.pop(0).lower()
                 if subsubcommand == "searchnick":
