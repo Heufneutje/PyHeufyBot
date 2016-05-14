@@ -11,8 +11,7 @@ class WeatherCommand(BotCommand):
     implements(IPlugin, IBotModule)
 
     name = "Weather"
-    weatherBaseURL = "http://api.openweathermap.org/data/2.5/weather?"
-    forecastBastURL = "http://api.openweathermap.org/data/2.5/forecast/daily?"
+    weatherBaseURL = "http://api.wunderground.com/api"
 
     def triggers(self):
         return ["weather", "forecast"]
@@ -28,8 +27,8 @@ class WeatherCommand(BotCommand):
                         "latlon, place or user."
         }
         self.apiKey = None
-        if "openweathermap" in self.bot.storage["api-keys"]:
-            self.apiKey = self.bot.storage["api-keys"]["openweathermap"]
+        if "wunderground" in self.bot.storage["api-keys"]:
+            self.apiKey = self.bot.storage["api-keys"]["wunderground"]
 
     def execute(self, server, source, command, params, data):
         if not self.apiKey:
@@ -101,76 +100,61 @@ class WeatherCommand(BotCommand):
         self.replyPRIVMSG(server, source, "Location: {} | {}".format(location["locality"], weather))
 
     def _getWeather(self, lat, lon):
-        params = {
-            "lat": lat,
-            "lon": lon,
-            "appid": self.apiKey
-        }
-        result = self.bot.moduleHandler.runActionUntilValue("fetch-url", self.weatherBaseURL, params)
+        url = "{}/{}/conditions/q/{},{}.json".format(self.weatherBaseURL, self.apiKey, lat, lon)
+        result = self.bot.moduleHandler.runActionUntilValue("fetch-url", url)
         if not result:
             return "No weather for this location could be found at this moment. Try again later."
-        if not result.json()["cod"] == 200:
-            return "No weather for this location could be found."
-        return self._parseWeather(result.json())
+        j = result.json()
+        if "error" in j["response"]:
+            return "The weather API returned an error of type {}.".format(j["response"]["error"]["type"])
+        return self._parseWeather(j)
 
     def _getForecast(self, lat, lon):
-        params = {
-            "lat": lat,
-            "lon": lon,
-            "cnt": 4,
-            "appid": self.apiKey
-        }
-        result = self.bot.moduleHandler.runActionUntilValue("fetch-url", self.forecastBastURL, params)
+        url = "{}/{}/forecast/q/{},{}.json".format(self.weatherBaseURL, self.apiKey, lat, lon)
+        result = self.bot.moduleHandler.runActionUntilValue("fetch-url", url)
         if not result:
             return "No forecast for this location could be found at this moment. Try again later."
-        if not result.json()["cod"] == "200":
-            return "No forecast for this location could be found."
-        return self._parseForecast(result.json())
+        j = result.json()
+        if "error" in j["response"]:
+            return "The weather API returned an error of type {}.".format(j["response"]["error"]["type"])
+        return self._parseForecast(j)
 
     def _parseWeather(self, json):
-        tempK = float(json["main"]["temp"])
-        tempC = round((tempK - 273.15), 1)
-        tempF = round((tempK - 273.15) * 9 / 5 + 32, 1)
-        description = json["weather"][0]["description"].title()
-        if "humidity" in json["main"]:
-            humidity = "{}%".format(json["main"]["humidity"])
-        else:
-            humidity = "Unknown"
-        windspeed = json["wind"]["speed"]
-        windspeedMiles = round(windspeed * 2.236936, 1)
-        windspeedMs = round(windspeed, 1)
-
-        if "deg" in json["wind"]:
-            winddir = self._convertWindDegToCardinal(float(json["wind"]["deg"]))
-        else:
-            winddir = "Unknown"
-        latestUpdate = (timestamp(now()) - int(json["dt"])) / 60
+        cond = json["current_observation"]
+        tempC = cond["temp_c"]
+        tempF = cond["temp_f"]
+        feelslikeC = cond["feelslike_c"]
+        feelslikeF = cond["feelslike_f"]
+        description = cond["weather"]
+        humidity = cond["relative_humidity"]
+        winddir = cond["wind_dir"]
+        windspeedMiles = cond["wind_mph"]
+        windspeedMs = round(cond["wind_kph"] / 3.6, 1)
+        latestUpdate = (timestamp(now()) - int(cond["observation_epoch"])) / 60
         latestUpdateStr = "{} minute(s) ago".format(latestUpdate) if latestUpdate > 0 else "just now"
-        return "Temp: {}°C / {}°F | Weather: {} | Humidity: {} | Wind Speed: {} m/s / {} mph | Wind Direction: {} " \
-               "| Latest Update: {}.".format(tempC, tempF, description, humidity, windspeedMs, windspeedMiles,
-                                             winddir, latestUpdateStr)
+
+        tempDiff = float(tempC) - float(feelslikeC)
+        feelslikeStr = ""
+        if tempDiff > 3.0 or tempC < -3.0:
+            feelslikeStr = "(feels like {}°C / {}°F) ".format(feelslikeC, feelslikeF)
+
+        return "Temp: {}°C / {}°F {}| Weather: {} | Humidity: {} | Wind Speed: {} m/s / {} mph | " \
+               "Wind Direction: {} | Latest Update: {}.".format(tempC, tempF, feelslikeStr, description, humidity,
+                                                                windspeedMs, windspeedMiles, winddir, latestUpdateStr)
 
     def _parseForecast(self, json):
-        daysList = json["list"]
+        daysList = json["forecast"]["simpleforecast"]["forecastday"]
         formattedDays = []
         for x in range(0, len(daysList)):
             day = daysList[x]
-            date = datetime.fromtimestamp(int(day["dt"])).strftime("%A")
-            minK = float(day["temp"]["min"])
-            maxK = float(day["temp"]["max"])
-            minC = round((minK - 273.15), 1)
-            minF = round((minK - 273.15) * 9 / 5 + 32, 1)
-            maxC = round((maxK - 273.15), 1)
-            maxF = round((maxK - 273.15) * 9 / 5 + 32, 1)
-            description = day["weather"][0]["description"].title()
+            date = day["date"]["weekday"]
+            minC = day["low"]["celsius"]
+            minF = day["low"]["fahrenheit"]
+            maxC = day["high"]["celsius"]
+            maxF = day["high"]["fahrenheit"]
+            description = day["conditions"]
             formattedDays.append("{}: {} - {}°C, {} - {}°F, {}".format(date, minC, maxC, minF, maxF, description))
         return " | ".join(formattedDays)
-
-    def _convertWindDegToCardinal(self, degrees):
-        directions = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW",
-                      "NNW"]
-        i = int((degrees + 11.25) / 22.5)
-        return directions[i % 16]
 
 
 weatherCommand = WeatherCommand()
