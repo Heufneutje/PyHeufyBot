@@ -138,14 +138,14 @@ class WeatherCommand(BotCommand):
         if len(cond["estimated"]) > 0:
             estimate = cond["estimated"]["description"]
             return "Temp: {}°C / {}°F {}| Weather: {} | Humidity: {} | Wind Speed: {} m/s / {} mph | " \
-                   "Wind Direction: {} | {}.".format(tempC, tempF, feelslikeStr, description, humidity, windspeedMs,
+                   "Wind Direction: {} | {}".format(tempC, tempF, feelslikeStr, description, humidity, windspeedMs,
                                                      windspeedMiles, winddir, estimate)
 
         latestUpdate = (timestamp(now()) - int(cond["observation_epoch"])) / 60
         latestUpdateStr = "{} minute(s) ago".format(latestUpdate) if latestUpdate > 0 else "just now"
         return "Temp: {}°C / {}°F {}| Weather: {} | Humidity: {} | Wind Speed: {} m/s / {} mph | " \
-               "Wind Direction: {} | Latest Update: {}".format(tempC, tempF, feelslikeStr, description, humidity,
-                                                               windspeedMs, windspeedMiles, winddir, latestUpdateStr)
+               "Wind Direction: {} | Latest Update: {}.".format(tempC, tempF, feelslikeStr, description, humidity,
+                                                                windspeedMs, windspeedMiles, winddir, latestUpdateStr)
 
     def _parseForecast(self, json):
         daysList = json["forecast"]["simpleforecast"]["forecastday"]
