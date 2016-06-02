@@ -132,7 +132,7 @@ class WeatherCommand(BotCommand):
         windspeedMs = round(cond["wind_kph"] / 3.6, 1)
         tempDiff = float(tempC) - float(feelslikeC)
         feelslikeStr = ""
-        if tempDiff > 3.0 or tempC < -3.0:
+        if tempDiff > 3.0 or tempDiff < -3.0:
             feelslikeStr = "(feels like {}°C / {}°F) ".format(feelslikeC, feelslikeF)
 
         if len(cond["estimated"]) > 0:
