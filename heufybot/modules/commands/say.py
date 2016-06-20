@@ -37,14 +37,19 @@ class SayCommand(BotCommand):
         if command == "do" and len(params) < 1 or command == "doto" and len(params) < 2:
             self.replyPRIVMSG(server, source, "Do what?")
             return
+        if command == "say" or command == "do":
+            reply = " ".join(params).replace("\x01", "")
+        else:
+            reply = " ".join(params[1:]).replace("\x01", "")
+
         if command == "say":
-            self.replyPRIVMSG(server, source, " ".join(params))
+            self.replyPRIVMSG(server, source, reply)
         elif command == "sayto":
-            self.replyPRIVMSG(server, params[0], " ".join(params[1:]))
+            self.replyPRIVMSG(server, params[0], reply)
         elif command == "do":
-            self.replyACTION(server, source, " ".join(params))
+            self.replyACTION(server, source, reply)
         elif command == "doto":
-            self.replyACTION(server, params[0], " ".join(params[1:]))
+            self.replyACTION(server, params[0], reply)
 
 
 sayCommand = SayCommand()
