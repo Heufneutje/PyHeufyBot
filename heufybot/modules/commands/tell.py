@@ -152,8 +152,7 @@ class TellCommand(BotCommand):
             self.bot.storage["tells"] = self.tells
 
     def _parseTell(self, nick, tell):
-        t = "{}: {} < From {} ({} ago).".format(nick, tell["body"], tell["from"], timeDeltaString(now(), tell["date"]))
-        return t
+        return "{}: {} < From {} ({} ago).".format(nick, tell["body"], tell["from"], timeDeltaString(now(), tell["date"]))
 
     def _parseSentTell(self, tell):
         return "{} < Sent to {} on {}, to be received on {} in {}.".format(tell["body"], tell["to"],
