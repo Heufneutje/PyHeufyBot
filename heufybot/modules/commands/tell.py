@@ -87,7 +87,7 @@ class TellCommand(BotCommand):
                 if networkName(self.bot, server) not in self.tells:
                     self.tells[networkName(self.bot, server)] = []
                 self.tells[networkName(self.bot, server)].append(message)
-                sentTells.append(recep)
+                sentTells.append(recep.replace("/", " or "))
             if len(sentTells) > 0:
                 if command == "tellafter":
                     m = "Okay, I'll tell {} that when they speak after {}.".format("&".join(sentTells),
