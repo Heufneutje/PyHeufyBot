@@ -8,6 +8,7 @@ class IRCv3AccountNotify(BotModule):
 
     name = "AccountNotify"
     capName = "account-notify"
+    core = True
 
     def actions(self):
         return [ ("listcaps", 1, self.addToCapList),

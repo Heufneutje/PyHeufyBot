@@ -7,6 +7,7 @@ class IRCv3Cap(BotModule):
     implements(IPlugin, IBotModule)
 
     name = "Cap"
+    core = True
     capabilities = {}
     coreCapabilities = ["multi-prefix"]  # Enable multi-prefix by default since it's handled in the core
 

@@ -10,6 +10,7 @@ class IRCv3ExtendedJoin(BotModule):
 
     name = "ExtendedJoin"
     capName = "extended-join"
+    core = True
 
     def actions(self):
         return [ ("listcaps", 1, self.addToCapList),

@@ -8,6 +8,7 @@ class IRCv3SASL(BotModule):
     implements(IPlugin, IBotModule)
 
     name = "SASL"
+    core = True
     capName = "sasl"
     config = {}
 

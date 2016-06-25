@@ -13,6 +13,7 @@ class IRCv3StartTLS(BotModule):
     implements(IPlugin, IBotModule)
 
     name = "StartTLS"
+    core = True
     capName = "tls"
 
     def actions(self):
