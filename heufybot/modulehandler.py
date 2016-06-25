@@ -14,9 +14,7 @@ class ModuleHandler(object):
 
     def loadModule(self, name):
         for module in getPlugins(IBotModule, heufybot.modules):
-            if not module.name:
-                raise ModuleLoaderError("???", "Module did not provide a name.", ModuleLoadType.LOAD)
-            if module.name.lower() == name.lower():
+            if module.name and module.name.lower() == name.lower():
                 rebuild(importlib.import_module(module.__module__))
                 self._loadModuleData(module)
                 return module.name
@@ -113,12 +111,11 @@ class ModuleHandler(object):
         return properCaseName
 
     def loadAllModules(self):
-        requestedModules = self.bot.config.itemWithDefault("modules", [])
-        for module in getPlugins(IBotModule, heufybot.modules):
-            if module.core:
-                self.loadModule(module.name)
-
-        for module in requestedModules:
+        requestedModules = set(self.bot.config.itemWithDefault("modules", []))
+        coreModules = [module for module in getPlugins(IBotModule, heufybot.modules) if module.core]
+        if len([module for module in coreModules if not module.name]) > 0:
+            raise ModuleLoaderError("???", "One of the modules doesn't provide a name.", ModuleLoadType.LOAD)
+        for module in requestedModules.union(set([module.name for module in coreModules])):
             try:
                 self.loadModule(module)
             except ModuleLoaderError as e:
