@@ -34,7 +34,10 @@ class ChannelLogger(BotModule):
         self._writeLog(server, source.name, message)
 
     def logJOIN(self, server, channel, user):
-        message = ">> {} ({}@{}) has joined {}".format(user.nick, user.ident, user.host, channel.name)
+        gecosPart = "({}) ".format(user.gecos) if user.gecos else ""
+        accountPart = "[{}] ".format(user.account) if user.account else ""
+        message = ">> {} ({}@{}) {}{}has joined {}".format(user.nick, user.ident, user.host, gecosPart,
+                                                           accountPart, channel.name)
         self._writeLog(server, channel.name, message)
 
     def logKICK(self, server, channel, kicker, kicked, reason):
