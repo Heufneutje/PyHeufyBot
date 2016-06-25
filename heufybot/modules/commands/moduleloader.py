@@ -52,7 +52,7 @@ class ModuleLoaderCommands(BotCommand):
                 if command == "load":
                     success.append(self.bot.moduleHandler.loadModule(module))
                 elif command == "unload":
-                    success.append(self.bot.moduleHandler.unloadModule(module))
+                    success.append(self.bot.moduleHandler.unloadModule(module, True))
                 elif command == "reload":
                     success.append(self.bot.moduleHandler.reloadModule(module))
                 elif command == "enable":

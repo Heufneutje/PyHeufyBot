@@ -63,11 +63,13 @@ class ModuleHandler(object):
 
         self.runGenericAction("moduleload", module.name)
 
-    def unloadModule(self, name):
+    def unloadModule(self, name, fullUnload = False):
         lowercaseMapping = dict((k.lower(), v) for k, v in self.loadedModules.iteritems())
         if name.lower() not in lowercaseMapping:
             raise ModuleLoaderError(name, "The module is not loaded.", ModuleLoadType.UNLOAD)
         module = lowercaseMapping[name.lower()]
+        if module.core and fullUnload:
+            raise ModuleLoaderError(name, "Core modules can never be unloaded.", ModuleLoadType.UNLOAD)
         module.unload()
         self.runGenericAction("moduleunload", module.name)
         for action in module.actions():
@@ -79,7 +81,7 @@ class ModuleHandler(object):
         return module.name
 
     def reloadModule(self, name):
-        self.unloadModule(name)
+        self.unloadModule(name, False)
         return self.loadModule(name)
 
     def enableModule(self, module, server):
@@ -112,6 +114,10 @@ class ModuleHandler(object):
 
     def loadAllModules(self):
         requestedModules = self.bot.config.itemWithDefault("modules", [])
+        for module in getPlugins(IBotModule, heufybot.modules):
+            if module.core:
+                self.loadModule(module.name)
+
         for module in requestedModules:
             try:
                 self.loadModule(module)
