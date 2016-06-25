@@ -4,7 +4,6 @@ from heufybot.moduleinterface import IBotModule
 from heufybot.modules.commandinterface import BotCommand
 from heufybot.utils.timeutils import now, timestamp
 from zope.interface import implements
-from datetime import datetime
 
 
 class WeatherCommand(BotCommand):
