@@ -42,7 +42,7 @@ class UpdateCommand(BotCommand):
             self.replyPRIVMSG(server, source, "I am already on the latest {} version.".format(updateChan))
             return
 
-        if updateChan == "stable":
+        if updateChan == "dev":
             returnCode = subprocess.check_call(["git", "merge"])
         else:
             returnCode = subprocess.check_call(["git", "merge", latestTag])
