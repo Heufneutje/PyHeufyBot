@@ -236,6 +236,12 @@
 # The password that will be sent to the authentication service.
 #nickserv_pass: null
 
+# update_channel: string (Update, default: "stable")
+# The update channel that will be used.  Possible values are "stable" and
+# "dev".  "stable" will pull the latest tag.  "dev" will pull the latest commit
+# on the master branch.
+#update_channel: "stable"
+
 # use_userlocation: boolean (Weather, default: false)
 # If this is enabled, some modules that can make use of user locations will
 # utilize this.
