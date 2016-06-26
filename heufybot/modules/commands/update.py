@@ -73,7 +73,7 @@ class UpdateCommand(BotCommand):
 def getChanges(compareLocation):
     output = subprocess.check_output(["git", "log", "--no-merges", "--pretty=format:%s", "..{}".format(
         compareLocation)])
-    return [s.strip() for s in output.splitlines()]
+    return ["{!r}".format(s.strip()) for s in output.splitlines()]
 
 
 updateCommand = UpdateCommand()
