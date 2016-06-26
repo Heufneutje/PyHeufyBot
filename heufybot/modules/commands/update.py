@@ -59,7 +59,8 @@ class UpdateCommand(BotCommand):
                               connection=server)
 
         if len(changes) > 10:
-            result = self.bot.moduleHandler.runActionUntilValue("post-paste", "Changelog", "\n".join(changes), 10)
+            result = self.bot.moduleHandler.runActionUntilValue("post-paste", "Changelog", "\n".join(list(reversed(
+                changes))), 10)
             if result:
                 changeStr = "Too many commits, list posted here: {}.".format(result)
             else:
