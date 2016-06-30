@@ -26,7 +26,6 @@ class IRCv3SASL(BotModule):
     def initAndAddToCapList(self, server, caps):
         username = self.bot.config.serverItemWithDefault(server, "sasl_username", None)
         if not username:
-            self.bot.log.warn("[{server}] No SASL username found. SASL cap will not be requested.", server=server)
             return
 
         password = self.bot.config.serverItemWithDefault(server, "sasl_password", None)
