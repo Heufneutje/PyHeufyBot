@@ -33,7 +33,6 @@ class HeufyBotConnection(irc.IRC):
         self.name = self.transport.addr[0]
         self.bot.log.info("[{connection}] Connection established.", connection=self.name)
         self.supportHelper.network = self.name
-        self.transport.fullDisconnect = False
         self.bot.servers[self.name] = self
 
         # Enable modules.
