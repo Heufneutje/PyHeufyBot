@@ -137,8 +137,8 @@ class WeatherCommand(BotCommand):
             latestUpdateStr = cond["estimated"]["description"]
         else:
             latestUpdate = (timestamp(now()) - int(cond["observation_epoch"])) / 60
-            latestUpdateStr = "Latest Update: ".format("{} minute(s) ago".format(latestUpdate)) if latestUpdate > 0 \
-                else "just now"
+            latestUpdateStr = "Latest Update: {}".format("{} minute(s) ago".format(latestUpdate) if latestUpdate > 0 \
+                else "just now")
 
         return "Temp: {}°C / {}°F {}| Weather: {} | Humidity: {} | Wind Speed: {} m/s / {} mph | " \
                "Wind Direction: {} | {}".format(tempC, tempF, feelslikeStr, description, humidity, windspeedMs,
