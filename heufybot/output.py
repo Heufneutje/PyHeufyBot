@@ -11,7 +11,7 @@ class OutputHandler(object):
         self.connection.sendMessage("JOIN", channel, key)
 
     def cmdKICK(self, channel, user, reason=""):
-        self.connection.sendMessage("KICK", channel, user, ":{}".format(reason))
+        self.connection.sendMessage("KICK", channel, user, reason)
 
     def cmdMODE(self, target, modes="", params=""):
         if params and isinstance(params, str):
@@ -25,33 +25,33 @@ class OutputHandler(object):
         self.connection.sendMessage("NICK", nick)
 
     def cmdNOTICE(self, target, message):
-        self.connection.sendMessage("NOTICE", target, ":{}".format(message))
+        self.connection.sendMessage("NOTICE", target, message)
 
     def cmdPART(self, channel, reason=""):
-        self.connection.sendMessage("PART", channel, ":{}".format(reason))
+        self.connection.sendMessage("PART", channel, reason)
 
     def cmdPASS(self, password):
-        self.connection.sendMessage("PASS", ":{}".format(password))
+        self.connection.sendMessage("PASS", password)
 
     def cmdPING(self, message):
-        self.connection.sendMessage("PING", ":{}".format(message))
+        self.connection.sendMessage("PING", message)
 
     def cmdPRIVMSG(self, target, message):
-        self.connection.sendMessage("PRIVMSG", target, ":{}".format(message))
+        self.connection.sendMessage("PRIVMSG", target, message)
 
     def cmdPONG(self, message):
-        self.connection.sendMessage("PONG", ":{}".format(message))
+        self.connection.sendMessage("PONG", message)
 
     def cmdTOPIC(self, channel, topic):
-        self.connection.sendMessage("TOPIC", channel, ":{}".format(topic))
+        self.connection.sendMessage("TOPIC", channel, topic)
 
     def cmdQUIT(self, reason):
-        self.connection.sendMessage("QUIT", ":{}".format(reason))
+        self.connection.sendMessage("QUIT", reason)
 
     def cmdUSER(self, ident, gecos):
         # RFC2812 allows usermodes to be set, but this isn't implemented much in IRCds at all.
         # Pass 0 for usermodes instead.
-        self.connection.sendMessage("USER", ident, "0", "*", ":{}".format(gecos))
+        self.connection.sendMessage("USER", ident, "0", "*", gecos)
 
     def cmdWHO(self, mask):
         if not mask:

@@ -54,7 +54,7 @@ class IRCv3Cap(BotModule):
             if self.capabilities[server]["initializing"]:
                 toRequest = " ".join(self.capabilities[server]["requested"])
                 self.bot.log.info("[{server}] Requesting capabilities: {caps}...", server=server, caps=toRequest)
-                self.bot.servers[server].sendMessage("CAP", "REQ", ":{}".format(toRequest))
+                self.bot.servers[server].sendMessage("CAP", "REQ", toRequest)
         elif params[1] == "ACK" or params[1] == "NAK":
             capList = _parseCapReply(params[2])
             self.capabilities[server]["requested"] = [x for x in self.capabilities[server]["requested"] if x not in
