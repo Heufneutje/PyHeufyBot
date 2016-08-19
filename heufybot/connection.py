@@ -1,6 +1,6 @@
 from twisted.internet.interfaces import ISSLTransport
-from heufybot.ircbase import IRCBase
 from heufybot.input import InputHandler
+from heufybot.ircbase import IRCBase
 from heufybot.output import OutputHandler
 from heufybot.supported import ISupport
 from heufybot.utils import isNumber
