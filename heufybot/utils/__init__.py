@@ -14,6 +14,9 @@ def isNumber(s):
         return False
 
 def parseUserPrefix(prefix):
+    if prefix is None:
+        prefix = ""
+
     if "!" in prefix:
         nick = prefix[:prefix.find("!")]
         ident = prefix[prefix.find("!") + 1:prefix.find("@")]
