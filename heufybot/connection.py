@@ -1,5 +1,5 @@
 from twisted.internet.interfaces import ISSLTransport
-from twisted.words.protocols import irc
+from heufybot.ircbase import IRCBase
 from heufybot.input import InputHandler
 from heufybot.output import OutputHandler
 from heufybot.supported import ISupport
@@ -7,7 +7,7 @@ from heufybot.utils import isNumber
 from weakref import WeakValueDictionary
 
 
-class HeufyBotConnection(irc.IRC):
+class HeufyBotConnection(IRCBase):
     def __init__(self, bot):
         self.bot = bot
         self.inputHandler = InputHandler(self)
@@ -56,9 +56,9 @@ class HeufyBotConnection(irc.IRC):
         self.outputHandler.cmdNICK(self.nick)
         self.outputHandler.cmdUSER(self.ident, self.gecos)
 
-    def handleCommand(self, command, prefix, params):
-        self.bot.log.debug("[{connection}] {prefix} {command} {params}", connection=self.name, prefix=prefix,
-                            command=command, params=" ".join(params))
+    def handleCommand(self, command, params, prefix, tags):
+        self.bot.log.debug("[{connection}] {tags} {prefix} {command} {params}", connection=self.name,
+                           tags=tags, prefix=prefix, command=command, params=" ".join(params))
         if isNumber(command):
             self.inputHandler.handleNumeric(command, prefix, params)
         else:
@@ -68,7 +68,7 @@ class HeufyBotConnection(irc.IRC):
         self.bot.moduleHandler.runGenericAction("sendcommand-{}".format(command), self.name, *parameter_list)
         self.bot.log.debug("[{connection}] {command} {params}",
                            connection=self.name, command=command, params=" ".join(parameter_list))
-        irc.IRC.sendMessage(self, command, *parameter_list, **prefix)
+        IRCBase.sendMessage(self, command, *parameter_list, **prefix)
 
     def disconnect(self, reason = "Quitting...", fullDisconnect = False):
         if fullDisconnect:
