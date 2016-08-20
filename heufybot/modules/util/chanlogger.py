@@ -95,10 +95,10 @@ class ChannelLogger(BotModule):
             user = IRCUser(self.bot.servers[server].nick, None, None)
         else:
             user = self.bot.servers[server].users[self.bot.servers[server].nick]
-        if body.startswith(":\x01ACTION"):
-            message = "* {} {}".format(user.nick, body[9:len(body) - 1])
+        if body.startswith("\x01ACTION"):
+            message = "* {} {}".format(user.nick, body[8:len(body) - 1])
         else:
-            message = "<{}{}> {}".format(source.getHighestStatusOfUser(user), user.nick, body[1:])
+            message = "<{}{}> {}".format(source.getHighestStatusOfUser(user), user.nick, body)
         self._writeLog(server, source.name, message)
 
     def _writeLog(self, server, target, message):
