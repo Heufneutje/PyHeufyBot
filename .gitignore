@@ -56,3 +56,4 @@ docs/_build/
 *.db
 dropin.cache
 !heufybot-example.yaml
+.idea/
