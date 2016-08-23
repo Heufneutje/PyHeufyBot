@@ -37,7 +37,9 @@ class IRCv3StartTLS(BotModule):
         self.bot.servers[server].transport.startTLS(ssl.CertificateOptions())
         if ISSLTransport.providedBy(self.bot.servers[server].transport):
             self.bot.servers[server].secureConnection = True
-        self.bot.log.info("[{server}] TLS handshake successful. Connection is now secure.", server=server)
+            self.bot.log.info("[{server}] TLS handshake successful. Connection is now secure.", server=server)
+        else:
+            self.bot.log.warn("[{server}] TLS handshake failed. Connection is still not secure!", server=server)
         self.bot.moduleHandler.runGenericAction("cap-handler-finished", server, self.capName)
         return True
 
