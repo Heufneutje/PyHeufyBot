@@ -2,6 +2,16 @@
 PyHeufyBot Changelog
 ====================
 
+0.7
+===
+**0.7.0**
+  * Added full IRCv3.1 compatibility.
+  * Added partial IRCv3.2 compatibility.
+  * Simplified sending replies from modules.
+  * Removed OoC subcommands until subcommands can be worked in properly.
+  * Added a URL shortening module and an updater module.
+  * Switched the weather command from OpenWeatherMap to Wunderground.
+
 0.6
 ===
 **0.6.0**
