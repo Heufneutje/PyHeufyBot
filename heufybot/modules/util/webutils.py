@@ -77,7 +77,7 @@ class WebUtils(BotModule):
             return None
 
     def shortenURL(self, url):
-        if url.startswith("http:"):
+        if url.startswith("http"):
             j = "{{\"longUrl\": \"{}\"}}".format(url)
         else:
             j = "{{\"longUrl\": \"http://{}/\"\}}".format(url)
