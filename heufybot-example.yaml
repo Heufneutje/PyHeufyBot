@@ -190,6 +190,10 @@
 # user when requested.  Requires WebUtils and GeoLocation to be loaded.
 #- Time
 
+# Update: Provides a command to update the bot to the latest release or master
+# branch commit.
+#- Update
+
 # Uptime: Enables the Uptime command, which tells the user how long the bot
 # has been running.
 #- Uptime
