@@ -34,7 +34,7 @@ def durationToTimedelta(durStr):
 	}
     seconds = 0
     count = []
-    for char in durStr:
+    for char in durStr.lower():
         if char.isdigit():
             count.append(char)
         else:
