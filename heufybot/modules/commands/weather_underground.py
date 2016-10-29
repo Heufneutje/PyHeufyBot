@@ -13,17 +13,20 @@ class WeatherUndergroundCommand(BotCommand):
     weatherBaseURL = "http://api.wunderground.com/api"
 
     def triggers(self):
-        return ["weather", "forecast"]
+        return ["astronomy", "forecast", "weather"]
 
     def load(self):
         self.help = "Commands: weather <lat> <lon>, weather <place>, weather <nickname>, forecast <lat> <lon>, " \
-                    "forecast <place>, forecast <nickname> | Get the current weather conditions or forecast for the " \
-                    "given latlon, place or user."
+                    "forecast <place>, forecast <nickname>, astronomy <lat> <lon>, astronomy <place>, astronomy " \
+                    "<nickname> | Get the current weather conditions, forecast or astronomy for the given latlon, " \
+                    "place or user."
         self.commandHelp = {
+            "astronomy": "astronomy <lat> <lon>, astronomy <place>, astronomy <nickname> | Get moon phase, sunrise and "
+                         "sunset times for the given latlon, place or user.",
+            "forecast": "forecast <lat> <lon>, forecast <place>, forecast <nickname> | Get the forecast for the given "
+                        "latlon, place or user.",
             "weather": "weather <lat> <lon>, weather <place>, weather <nickname> | Get the current weather condidions "
                        "for the given latlon, place or user.",
-            "forecast": "forecast <lat> <lon>, forecast <place>, forecast <nickname> | Get the forecast for the given "
-                        "latlon, place or user."
         }
         self.apiKey = None
         if "wunderground" in self.bot.storage["api-keys"]:
@@ -91,32 +94,26 @@ class WeatherUndergroundCommand(BotCommand):
         self._handleCommandWithLocation(server, source, command, location)
 
     def _handleCommandWithLocation(self, server, source, command, location):
-        weather = ""
-        if command == "weather":
-            weather = self._getWeather(location["latitude"], location["longitude"])
-        elif command == "forecast":
-            weather = self._getForecast(location["latitude"], location["longitude"])
-        self.replyPRIVMSG(server, source, "Location: {} | {}".format(location["locality"], weather))
-
-    def _getWeather(self, lat, lon):
-        url = "{}/{}/conditions/q/{},{}.json".format(self.weatherBaseURL, self.apiKey, lat, lon)
+        apiFunction = "conditions" if command == "weather" else command
+        url = "{}/{}/{}/q/{},{}.json".format(self.weatherBaseURL, self.apiKey, apiFunction, location["latitude"],
+                                             location["longitude"])
         result = self.bot.moduleHandler.runActionUntilValue("fetch-url", url)
+        output = None
         if not result:
-            return "No weather for this location could be found at this moment. Try again later."
-        j = result.json()
-        if "error" in j["response"]:
-            return "The weather API returned an error of type {}.".format(j["response"]["error"]["type"])
-        return _parseWeather(j)
-
-    def _getForecast(self, lat, lon):
-        url = "{}/{}/forecast/q/{},{}.json".format(self.weatherBaseURL, self.apiKey, lat, lon)
-        result = self.bot.moduleHandler.runActionUntilValue("fetch-url", url)
-        if not result:
-            return "No forecast for this location could be found at this moment. Try again later."
-        j = result.json()
-        if "error" in j["response"]:
-            return "The weather API returned an error of type {}.".format(j["response"]["error"]["type"])
-        return _parseForecast(j)
+            output = "No weather for this location could be found at this moment. Try again later."
+        else:
+            j = result.json()
+            if "error" in j["response"]:
+                output = "The Weather Underground API returned an error of type {}.".format(
+                         j["response"]["error"]["type"])
+            else:
+                if command == "weather":
+                    output = _parseWeather(j)
+                elif command == "forecast":
+                    output = _parseForecast(j)
+                elif command == "astronomy":
+                    output = _parseAstronomy(j)
+        self.replyPRIVMSG(server, source, "Location: {} | {}".format(location["locality"], output))
 
 
 def _parseWeather(json):
@@ -160,5 +157,22 @@ def _parseForecast(json):
         formattedDays.append("{}: {} - {}°C, {} - {}°F, {}".format(date, minC, maxC, minF, maxF, description))
     return " | ".join(formattedDays)
 
+def _parseAstronomy(json):
+    astr = json["moon_phase"]
+    phase = astr["phaseofMoon"]
+    sunrise = _getTimeString(astr["sunrise"]["hour"], astr["sunrise"]["minute"])
+    sunset = _getTimeString(astr["sunset"]["hour"], astr["sunset"]["minute"])
+    moonrise = _getTimeString(astr["moonrise"]["hour"], astr["moonrise"]["minute"])
+    moonset = _getTimeString(astr["moonset"]["hour"], astr["moonset"]["minute"])
+
+    return "Tonight's Moon Phase: {} | Sunrise: {}, Sunset: {} | Moonrise: {}, Moonset: {}".format(phase, sunrise,
+                                                                                                   sunset, moonrise,
+                                                                                                   moonset)
+
+def _getTimeString(hours, minutes):
+    hours = int(hours)
+    hour24 = "{}:{}".format(hours, minutes)
+    hour12 = "{}:{} {}".format(hours if hours < 13 else hours - 12, minutes, "AM" if hours < 13 else "PM")
+    return "{} ({})".format(hour24, hour12)
 
 weatherUndergroundCommand = WeatherUndergroundCommand()
