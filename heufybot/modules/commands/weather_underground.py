@@ -106,7 +106,7 @@ class WeatherUndergroundCommand(BotCommand):
         j = result.json()
         if "error" in j["response"]:
             return "The weather API returned an error of type {}.".format(j["response"]["error"]["type"])
-        return self._parseWeather(j)
+        return _parseWeather(j)
 
     def _getForecast(self, lat, lon):
         url = "{}/{}/forecast/q/{},{}.json".format(self.weatherBaseURL, self.apiKey, lat, lon)
@@ -116,47 +116,49 @@ class WeatherUndergroundCommand(BotCommand):
         j = result.json()
         if "error" in j["response"]:
             return "The weather API returned an error of type {}.".format(j["response"]["error"]["type"])
-        return self._parseForecast(j)
+        return _parseForecast(j)
 
-    def _parseWeather(self, json):
-        cond = json["current_observation"]
-        tempC = cond["temp_c"]
-        tempF = cond["temp_f"]
-        feelslikeC = cond["feelslike_c"]
-        feelslikeF = cond["feelslike_f"]
-        description = cond["weather"]
-        humidity = cond["relative_humidity"]
-        winddir = cond["wind_dir"]
-        windspeedMiles = cond["wind_mph"]
-        windspeedMs = round(cond["wind_kph"] / 3.6, 1)
-        feelslikeStr = ""
-        if abs(float(tempC) - float(feelslikeC)) > 3.0:
-            feelslikeStr = "(feels like {}°C / {}°F) ".format(feelslikeC, feelslikeF)
 
-        if len(cond["estimated"]) > 0:
-            latestUpdateStr = cond["estimated"]["description"]
-        else:
-            latestUpdate = (timestamp(now()) - int(cond["observation_epoch"])) / 60
-            latestUpdateStr = "Latest Update: {}".format("{} minute(s) ago".format(latestUpdate) if latestUpdate > 0 \
-                else "just now")
+def _parseWeather(json):
+    cond = json["current_observation"]
+    tempC = cond["temp_c"]
+    tempF = cond["temp_f"]
+    feelslikeC = cond["feelslike_c"]
+    feelslikeF = cond["feelslike_f"]
+    description = cond["weather"]
+    humidity = cond["relative_humidity"]
+    winddir = cond["wind_dir"]
+    windspeedMiles = cond["wind_mph"]
+    windspeedMs = round(cond["wind_kph"] / 3.6, 1)
+    feelslikeStr = ""
+    if abs(float(tempC) - float(feelslikeC)) > 3.0:
+        feelslikeStr = "(feels like {}°C / {}°F) ".format(feelslikeC, feelslikeF)
 
-        return "Temp: {}°C / {}°F {}| Weather: {} | Humidity: {} | Wind Speed: {} m/s / {} mph | " \
-               "Wind Direction: {} | {}".format(tempC, tempF, feelslikeStr, description, humidity, windspeedMs,
-                                                windspeedMiles, winddir, latestUpdateStr)
+    if len(cond["estimated"]) > 0:
+        latestUpdateStr = cond["estimated"]["description"]
+    else:
+        latestUpdate = (timestamp(now()) - int(cond["observation_epoch"])) / 60
+        latestUpdateStr = "Latest Update: {}".format("{} minute(s) ago".format(latestUpdate) if latestUpdate > 0 \
+                                                         else "just now")
 
-    def _parseForecast(self, json):
-        daysList = json["forecast"]["simpleforecast"]["forecastday"]
-        formattedDays = []
-        for x in range(0, len(daysList)):
-            day = daysList[x]
-            date = day["date"]["weekday"]
-            minC = day["low"]["celsius"]
-            minF = day["low"]["fahrenheit"]
-            maxC = day["high"]["celsius"]
-            maxF = day["high"]["fahrenheit"]
-            description = day["conditions"]
-            formattedDays.append("{}: {} - {}°C, {} - {}°F, {}".format(date, minC, maxC, minF, maxF, description))
-        return " | ".join(formattedDays)
+    return "Temp: {}°C / {}°F {}| Weather: {} | Humidity: {} | Wind Speed: {} m/s / {} mph | " \
+           "Wind Direction: {} | {}".format(tempC, tempF, feelslikeStr, description, humidity, windspeedMs,
+                                            windspeedMiles, winddir, latestUpdateStr)
+
+
+def _parseForecast(json):
+    daysList = json["forecast"]["simpleforecast"]["forecastday"]
+    formattedDays = []
+    for x in range(0, len(daysList)):
+        day = daysList[x]
+        date = day["date"]["weekday"]
+        minC = day["low"]["celsius"]
+        minF = day["low"]["fahrenheit"]
+        maxC = day["high"]["celsius"]
+        maxF = day["high"]["fahrenheit"]
+        description = day["conditions"]
+        formattedDays.append("{}: {} - {}°C, {} - {}°F, {}".format(date, minC, maxC, minF, maxF, description))
+    return " | ".join(formattedDays)
 
 
 weatherUndergroundCommand = WeatherUndergroundCommand()
