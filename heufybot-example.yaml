@@ -203,10 +203,10 @@
 # Addloc and Remloc commands.
 #- UserLocationStorage
 
-# Weather: Enables the Weather and Forecast commmands, which provide the
-# weather or forecast for a place or user when requested.  Requires WebUtils
-# and GeoLocation to be loaded.
-#- Weather
+# WeatherUnderground: Enables the Weather, Forecast and Astronomy commmands,
+# which provide the weather, forecast or sunrise/sunset for a place or user
+# when requested.  Requires WebUtils and GeoLocation to be loaded.
+#- WeatherUnderground
 
 # WordCounter: Enables the AddWordCount, RemWordCount and WordCount commands
 # for keeping track of how many times a certain word has been said in a

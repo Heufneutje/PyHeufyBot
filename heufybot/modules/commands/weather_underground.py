@@ -6,10 +6,10 @@ from heufybot.utils.timeutils import now, timestamp
 from zope.interface import implements
 
 
-class WeatherCommand(BotCommand):
+class WeatherUndergroundCommand(BotCommand):
     implements(IPlugin, IBotModule)
 
-    name = "Weather"
+    name = "WeatherUnderground"
     weatherBaseURL = "http://api.wunderground.com/api"
 
     def triggers(self):
@@ -159,4 +159,4 @@ class WeatherCommand(BotCommand):
         return " | ".join(formattedDays)
 
 
-weatherCommand = WeatherCommand()
+weatherUndergroundCommand = WeatherUndergroundCommand()
