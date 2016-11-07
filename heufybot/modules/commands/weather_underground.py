@@ -170,12 +170,12 @@ def _parseAstronomy(json):
                                                                                                    moonset)
 
 def _getTimeString(hours, minutes):
-    if isinstance(hours, int):
+    try:
         hours = int(hours)
         hour24 = "{}:{}".format(hours, minutes)
         hour12 = "{}:{} {}".format(hours if hours < 13 else hours - 12, minutes, "AM" if hours < 13 else "PM")
         return "{} ({})".format(hour24, hour12)
-
-    return "Unknown"
+    except ValueError:
+        return "Unknown"
 
 weatherUndergroundCommand = WeatherUndergroundCommand()
