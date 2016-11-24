@@ -4,15 +4,21 @@ import signal
 import subprocess
 
 
-class Timeout(Exception):
+class TimeoutException(Exception):
     """This is raised when a timeout occurs"""
+
+    def __init__(self):
+        self.message = "the requested operation has timed out"
+
+    def __str__(self):
+        return self.message
 
 
 class SignalTimeout(object):
     """Context manager that raises a Timeout if the inner block takes too long.
     Will even interrupt hard loops in C by raising from an OS signal."""
 
-    def __init__(self, timeout, signal=signal.SIGUSR1, to_raise=Timeout):
+    def __init__(self, timeout, signal=signal.SIGUSR1, to_raise=TimeoutException):
         self.timeout = float(timeout)
         self.signal = signal
         self.to_raise = to_raise

@@ -1,5 +1,13 @@
 from heufybot.moduleinterface import BotModule
+from heufybot.utils.dummycontextmanager import DummyContextManager
+from heufybot.utils.signaltimeout import TimeoutException
 from traceback import format_exc
+import sys
+
+if sys.platform != "win32":
+    from heufybot.utils.signaltimeout import SignalTimeout
+else:
+    SignalTimeout = None
 
 
 class BotCommand(BotModule):
@@ -19,10 +27,13 @@ class BotCommand(BotModule):
     def handleCommand(self, data):
         if self._shouldExecute(data["server"], data["source"], data["user"], data["command"]):
             try:
-                self.execute(data["server"], data["source"], data["command"].lower(), data["params"], data)
+                with SignalTimeout(5) if SignalTimeout is not None else DummyContextManager():
+                    self.execute(data["server"], data["source"], data["command"].lower(), data["params"], data)
+            except TimeoutException:
+                self.replyPRIVMSG(data["server"], data["source"], "The command timed out.")
             except Exception as ex:
                 error = "Python execution error while running command: {}: {}".format(type(ex).__name__, ex.message)
-                self.bot.servers[data["server"]].outputHandler.cmdPRIVMSG(data["source"], error)
+                self.replyPRIVMSG(data["server"], data["source"], error)
                 self.bot.log.failure("Error while running command:\n {ex}", ex=format_exc())
 
     def displayHelp(self, server, request):
