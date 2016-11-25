@@ -1,11 +1,18 @@
 from twisted.plugin import IPlugin
 from heufybot.channel import IRCChannel
 from heufybot.moduleinterface import BotModule, IBotModule
+from heufybot.utils.dummycontextmanager import DummyContextManager
+from heufybot.utils.signaltimeout import TimeoutException
 from zope.interface import implements
 from bs4 import BeautifulSoup
 from isodate import parse_duration
 from urlparse import urlparse
-import re, time
+import re, sys, time
+
+if sys.platform != "win32":
+    from heufybot.utils.signaltimeout import SignalTimeout as SignalTimeout
+else:
+    SignalTimeout = None
 
 
 class URLFollow(BotModule):
@@ -63,15 +70,19 @@ class URLFollow(BotModule):
         return None
 
     def _handleGeneric(self, url):
-        result = self.bot.moduleHandler.runActionUntilValue("fetch-url", url)
-        if not result or result.status_code != 200:
-            return None
-        parsed_uri = urlparse(result.url)
-        soup = BeautifulSoup(result.content)
-        title = soup.find("title").text.encode("utf-8", "ignore").replace("\r", "").replace("\n", " ")
-        if len(title) > 300:
-            title = title[:297] + "..."
-        return "[URL] {} (at host: {}).".format(title, parsed_uri.hostname)
+        with SignalTimeout(5) if SignalTimeout is not None else DummyContextManager():
+            try:
+                result = self.bot.moduleHandler.runActionUntilValue("fetch-url", url)
+                if not result or result.status_code != 200:
+                    return None
+                parsed_uri = urlparse(result.url)
+                soup = BeautifulSoup(result.content)
+                title = soup.find("title").text.encode("utf-8", "ignore").replace("\r", "").replace("\n", " ")
+                if len(title) > 300:
+                    title = title[:297] + "..."
+                return "[URL] {} (at host: {}).".format(title, parsed_uri.hostname)
+            except TimeoutException:
+                return "The operation timed out."
 
     def _handleYouTube(self, videoID):
         params = {
