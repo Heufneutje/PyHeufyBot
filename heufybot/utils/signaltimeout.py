@@ -18,9 +18,9 @@ class SignalTimeout(object):
     """Context manager that raises a Timeout if the inner block takes too long.
     Will even interrupt hard loops in C by raising from an OS signal."""
 
-    def __init__(self, timeout, signal=signal.SIGUSR1, to_raise=TimeoutException):
+    def __init__(self, timeout, signal=None, to_raise=TimeoutException):
         self.timeout = float(timeout)
-        self.signal = signal
+        self.signal = signal if signal is not None else signal.SIGUSR1
         self.to_raise = to_raise
         self.old_handler = None
         self.proc = None
