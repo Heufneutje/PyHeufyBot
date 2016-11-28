@@ -1,9 +1,6 @@
-class DummyContextManager():
-    def __init__(self):
+class DummyContextManager(object):
+    def __enter__(self, *params):
         pass
 
-    def __enter__(self):
-        pass
-
-    def __exit__(self):
+    def __exit__(self, *params):
         pass
