@@ -60,7 +60,7 @@ class ModuleLoaderCommands(BotCommand):
                 elif command == "disable":
                     success.append(self.bot.moduleHandler.disableModule(module, server))
             except ModuleLoaderError as e:
-                failed.append(e)
+                failed.append(str(e))
         if len(success) > 0:
             action = None
             if command == "load":
