@@ -117,6 +117,9 @@ class WeatherUndergroundCommand(BotCommand):
 
 
 def _parseWeather(json):
+    if "current_observation" not in json:
+        return "No weather for this location could be found at this moment. Try again later."
+
     cond = json["current_observation"]
     tempC = cond["temp_c"]
     tempF = cond["temp_f"]
