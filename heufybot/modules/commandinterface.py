@@ -12,6 +12,7 @@ else:
 
 class BotCommand(BotModule):
     name = "UnknownCommand"
+    timeout = 5
 
     def actions(self):
         return [ ("botmessage", 1, self.handleCommand),
@@ -27,7 +28,7 @@ class BotCommand(BotModule):
     def handleCommand(self, data):
         if self._shouldExecute(data["server"], data["source"], data["user"], data["command"]):
             try:
-                with SignalTimeout(5) if SignalTimeout is not None else DummyContextManager():
+                with SignalTimeout(self.timeout) if SignalTimeout is not None else DummyContextManager():
                     self.execute(data["server"], data["source"], data["command"].lower(), data["params"], data)
             except TimeoutException:
                 self.replyPRIVMSG(data["server"], data["source"], "The command timed out.")
