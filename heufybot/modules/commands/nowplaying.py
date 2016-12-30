@@ -14,7 +14,7 @@ class NowPlayingCommand(BotCommand):
         return ["np", "nplink"]
 
     def load(self):
-        self.help = "Commands: np (<lastfmuser>), nplink <lastfmuser> |  Request your currently playing music (from " \
+        self.help = "Commands: np (<lastfmuser>), nplink <lastfmuser> | Request your currently playing music (from " \
                     "LastFM) or link your nickname to a LastFM account."
         self.commandHelp = {
             "np": "np (<lastfmuser>) | Request your currently playing music (from LastFM).",
@@ -29,7 +29,7 @@ class NowPlayingCommand(BotCommand):
 
     def execute(self, server, source, command, params, data):
         if not self.lastfmKey:
-            self.replyPRIVMSG(server, source, "No Last.fm API key was found.")
+            self.replyPRIVMSG(server, source, "No LastFM API key was found.")
             return
 
         if networkName(self.bot, server) not in self.links:
@@ -51,7 +51,7 @@ class NowPlayingCommand(BotCommand):
             }
             result = self.bot.moduleHandler.runActionUntilValue("fetch-url", url, params)
             if not result:
-                m = "An error occurred while retrieving data from last.fm."
+                m = "An error occurred while retrieving data from LastFM."
             else:
                 j = result.json()
                 if "error" in j and j["error"] == 6:
