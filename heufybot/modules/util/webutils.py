@@ -65,7 +65,7 @@ class WebUtils(BotModule):
             "expiration": expiration,
             "format": "json"
         }
-        result = self.postURL("http://paste.ee/api", values)
+        result = self.postURL("https://paste.ee/api", values)
         if not result:
             return None
         json = result.json()
