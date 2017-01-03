@@ -9,6 +9,7 @@ class UpdateCommand(BotCommand):
     implements(IPlugin, IBotModule)
 
     name = "Update"
+    timeout = 20
 
     def triggers(self):
         return ["update"]
