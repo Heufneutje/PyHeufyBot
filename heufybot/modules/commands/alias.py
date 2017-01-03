@@ -37,7 +37,7 @@ class AliasCommand(BotCommand):
             helpText = aliasDefinition["helptext"]
             if not helpText:
                 helpText = self._getAliasReplacementMessage(aliasName)
-                self.commandHelp[aliasName] = helpText
+            self.commandHelp[aliasName] = helpText
 
     def checkPermissions(self, server, source, user, command):
         if command in self.moduleTriggers and command != "showalias":
