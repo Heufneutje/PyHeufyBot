@@ -119,7 +119,7 @@ class AliasCommand(BotCommand):
         return True
 
     def _getAliasReplacementMessage(self, alias):
-        return "{!r} is aliased to {!r}".format(alias, self.aliases[alias]["replacement"])
+        return "{!r} is aliased to {!r}.".format(alias, self.aliases[alias]["replacement"])
 
     def _getAliasedMessage(self, server, source, user, command, params):
         if command.lower() not in self.aliases:
