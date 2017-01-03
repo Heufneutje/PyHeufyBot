@@ -113,7 +113,7 @@ class TellCommand(BotCommand):
                 self.replyPRIVMSG(server, source, "Remove what?")
                 return
             if networkName(self.bot, server) not in self.tells:
-                self.replyNOTICE(server, data["user"].nick, "No tells matching \"{}\" were found.".format(params[0]))
+                self.replyNOTICE(server, data["user"].nick, "No tells matching {!r} were found.".format(params[0]))
                 return
             tells = [x for x in self.tells[networkName(self.bot, server)] if x["from"].lower() == data[
                 "user"].nick.lower()]
@@ -121,11 +121,11 @@ class TellCommand(BotCommand):
                 if re.search(" ".join(params), tell["body"], re.IGNORECASE):
                     self.tells[networkName(self.bot, server)].remove(tell)
                     self.bot.storage["tells"] = self.tells
-                    m = "Message \"{}\" was removed from the message database.".format(self._parseSentTell(tell))
+                    m = "Message {!r} was removed from the message database.".format(self._parseSentTell(tell))
                     self.replyNOTICE(server, data["user"].nick, m)
                     break
             else:
-                self.replyNOTICE(server, data["user"].nick, "No tells matching \"{}\" were found.".format(params[0]))
+                self.replyNOTICE(server, data["user"].nick, "No tells matching {!r} were found.".format(params[0]))
 
     def _processTells(self, server, source, nick):
         if networkName(self.bot, server) not in self.tells:

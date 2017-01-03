@@ -84,8 +84,8 @@ class EventCommand(BotCommand):
             }
             self.events[networkName(self.bot, server)].append(event)
             self.bot.storage["events"] = self.events
-            m = "Event \"{}\" on date {} was added to the events database!".format(event["event"],
-                                                                                   strftimeWithTimezone(date))
+            m = "Event {!r} on date {} was added to the events database!".format(event["event"],
+                                                                                 strftimeWithTimezone(date))
             self.replyPRIVMSG(server, source, m)
         elif command == "timetill":
             if len(params) == 0:
@@ -95,12 +95,12 @@ class EventCommand(BotCommand):
             events.sort(key=lambda item: item["date"])
             for event in events:
                 if re.search(" ".join(params), event["event"], re.IGNORECASE):
-                    m = "{}'s event \"{}\" will occur in {}.".format(event["user"], event["event"], timeDeltaString(
+                    m = "{}'s event {!r} will occur in {}.".format(event["user"], event["event"], timeDeltaString(
                         event["date"], now()))
                     self.replyPRIVMSG(server, source, m)
                     break
             else:
-                m = "No events matching \"{}\" were found in the events database.".format(" ".join(params))
+                m = "No events matching {!r} were found in the events database.".format(" ".join(params))
                 self.replyPRIVMSG(server, source, m)
         elif command == "timesince":
             if len(params) == 0:
@@ -110,12 +110,12 @@ class EventCommand(BotCommand):
             events.sort(key=lambda item: item["date"], reverse=True)
             for event in events:
                 if re.search(" ".join(params), event["event"], re.IGNORECASE):
-                    m = "{}'s event \"{}\" occurred {} ago.".format(event["user"], event["event"], timeDeltaString(
+                    m = "{}'s event {!r} occurred {} ago.".format(event["user"], event["event"], timeDeltaString(
                         now(), event["date"]))
                     self.replyPRIVMSG(server, source, m)
                     break
             else:
-                m = "No events matching \"{}\" were found in the events database.".format(" ".join(params))
+                m = "No events matching {!r} were found in the events database.".format(" ".join(params))
                 self.replyPRIVMSG(server, source, m)
         elif command == "dateof":
             if len(params) == 0:
@@ -125,8 +125,8 @@ class EventCommand(BotCommand):
             events.sort(key=lambda item: item["date"])
             for event in events:
                 if re.search(" ".join(params), event["event"], re.IGNORECASE):
-                    m = "{}'s event \"{}\" will occur on {}.".format(event["user"], event["event"],
-                                                                     strftimeWithTimezone(event["date"]))
+                    m = "{}'s event {!r} will occur on {}.".format(event["user"], event["event"],
+                                                                   strftimeWithTimezone(event["date"]))
                     self.replyPRIVMSG(server, source, m)
                     break
             else:
@@ -134,12 +134,12 @@ class EventCommand(BotCommand):
                 events.sort(key=lambda item: item["date"], reverse=True)
                 for event in events:
                     if re.search(" ".join(params), event["event"], re.IGNORECASE):
-                        m = "{}'s event \"{}\" occurred on {}.".format(event["user"], event["event"],
-                                                                       strftimeWithTimezone(event["date"]))
+                        m = "{}'s event {!r} occurred on {}.".format(event["user"], event["event"],
+                                                                     strftimeWithTimezone(event["date"]))
                         self.replyPRIVMSG(server, source, m)
                         break
                 else:
-                    m = "No events matching \"{}\" were found in the events database.".format(" ".join(params))
+                    m = "No events matching {!r} were found in the events database.".format(" ".join(params))
                     self.replyPRIVMSG(server, source, m)
         elif command == "events":
             if len(params) == 0 or not isNumber(params[0]):
@@ -166,7 +166,7 @@ class EventCommand(BotCommand):
                 if re.search(" ".join(params), event["event"], re.IGNORECASE):
                     self.events[networkName(self.bot, server)].remove(event)
                     self.bot.storage["events"] = self.events
-                    m = "{}'s event \"{}\" with date {} has been removed from the events database.".format(
+                    m = "{}'s event {!r} with date {} has been removed from the events database.".format(
                         event["user"], event["event"], strftimeWithTimezone(event["date"]))
                     self.replyPRIVMSG(server, source, m)
                     break
@@ -178,12 +178,12 @@ class EventCommand(BotCommand):
                     if re.search(" ".join(params), event["event"], re.IGNORECASE):
                         self.events[networkName(self.bot, server)].remove(event)
                         self.bot.storage["events"] = self.events
-                        m = "{}'s event \"{}\" with date {} has been removed from the events database.".format(
+                        m = "{}'s event {!r} with date {} has been removed from the events database.".format(
                             event["user"], event["event"], strftimeWithTimezone(event["date"]))
                         self.replyPRIVMSG(server, source, m)
                         break
                 else:
-                    m = "No events matching \"{}\" by you were found in the events database.".format(" ".join(params))
+                    m = "No events matching {!r} by you were found in the events database.".format(" ".join(params))
                     self.replyPRIVMSG(server, source, m)
         elif command == "subevent" or command == "unsubevent":
             if networkName(self.bot, server) not in self.subscriptions:
@@ -215,7 +215,7 @@ class EventCommand(BotCommand):
             self.bot.storage["events"] = self.events
             for source in sources:
                 for event in events:
-                    m = "{}'s event \"{}\" is happening right now!".format(event["user"], event["event"])
+                    m = "{}'s event {!r} is happening right now!".format(event["user"], event["event"])
                     self.replyPRIVMSG(server, source, m)
 
     def _handleSubscription(self, server, source, subAction):

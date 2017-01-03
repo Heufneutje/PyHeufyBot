@@ -21,7 +21,7 @@ class Admin(BotModule):
         for adminHost in adminList:
             if fnmatch(user.fullUserPrefix(), adminHost):
                 return True
-        self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "You do not have the \"{}\" permission!"
+        self.bot.servers[server].outputHandler.cmdPRIVMSG(source, "You do not have the {!r} permission!"
                                                           .format(permission))
         return False
 

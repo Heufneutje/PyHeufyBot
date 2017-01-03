@@ -30,7 +30,7 @@ class HelpCommand(BotCommand):
             if helpText:
                 self.replyPRIVMSG(server, source, helpText)
             else:
-                error = "No command modules or command triggers named \"{}\" were found.".format(params[0])
+                error = "No command modules or command triggers named {!r} were found.".format(params[0])
                 self.replyPRIVMSG(server, source, error)
 
 

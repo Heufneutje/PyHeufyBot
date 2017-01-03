@@ -55,9 +55,9 @@ class NowPlayingCommand(BotCommand):
             else:
                 j = result.json()
                 if "error" in j and j["error"] == 6:
-                    m = "No user with the name \"{}\" could be found on LastFM.".format(name)
+                    m = "No user with the name {!r} could be found on LastFM.".format(name)
                 elif len(j["recenttracks"]["track"]) == 0:
-                    m = "No recently played music was found for user \"{}\"".format(name)
+                    m = "No recently played music was found for user {!r}".format(name)
                 else:
                     track = j["recenttracks"]["track"][0]
                     artist = track["artist"]["#text"].encode("utf-8", "ignore")
@@ -66,7 +66,7 @@ class NowPlayingCommand(BotCommand):
                     link = self.bot.moduleHandler.runActionUntilValue("shorten-url", longLink)
                     if not link:
                         link = longLink
-                    m = "\"{}\" by {} | {}".format(songTitle, artist, link)
+                    m = "{!r} by {} | {}".format(songTitle, artist, link)
             self.replyPRIVMSG(server, source, m)
         elif command == "nplink":
             if len(params) == 0:
@@ -74,7 +74,7 @@ class NowPlayingCommand(BotCommand):
             else:
                 self.links[networkName(self.bot, server)][data["user"].nick.lower()] = params[0].lower()
                 self.bot.storage["lastfm-links"] = self.links
-                m = "The nickname \"{}\" is now linked to LastFM name \"{}\"".format(data["user"].nick, params[0])
+                m = "The nickname {!r} is now linked to LastFM name {!r}".format(data["user"].nick, params[0])
             self.replyPRIVMSG(server, source, m)
 
 

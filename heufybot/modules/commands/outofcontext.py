@@ -80,7 +80,7 @@ class OutOfContextCommand(BotCommand):
                 else:
                     self.ooclog[networkName(self.bot, server)][source].append(quote)
                     self.bot.storage["ooclog"] = self.ooclog
-                    self.replyPRIVMSG(server, source, "Quote \"{}\" was added to the log!".format(quote))
+                    self.replyPRIVMSG(server, source, "Quote {!r} was added to the log!".format(quote))
         elif command == "oocremove":
             if len(params) == 0:
                 self.replyPRIVMSG(server, source, "Remove what?")
@@ -154,7 +154,7 @@ class OutOfContextCommand(BotCommand):
                 if re.search(regex, x[x.find(">") + 1:]):
                     matches.append(x)
         if len(matches) == 0:
-            return "No matches for \"{}\" found.".format(searchString)
+            return "No matches for {!r} found.".format(searchString)
         if index < 0 or index > len(matches) - 1:
             index = random.randint(0, len(matches) - 1)
         return "Quote #{}/{}: {}".format(index + 1, len(matches), matches[index])
@@ -177,7 +177,7 @@ class OutOfContextCommand(BotCommand):
                 if re.search(regex, x[x.find(">") + 1:]):
                     matches.append(x)
         if len(matches) == 0:
-            return "No matches for \"{}\" found.".format(searchString)
+            return "No matches for {!r} found.".format(searchString)
         result = self.bot.moduleHandler.runActionUntilValue("post-paste", "OoC Log", "\n".join(matches), 10)
         if not result:
             return "An error occurred. The PasteEE API seems to be down right now."
@@ -186,7 +186,7 @@ class OutOfContextCommand(BotCommand):
     def _removeQuote(self, server, source, quote):
         self.ooclog[networkName(self.bot, server)][source].remove(quote)
         self.bot.storage["ooclog"] = self.ooclog
-        self.replyPRIVMSG(server, source, "Quote \"{}\" was removed from the log!".format(quote))
+        self.replyPRIVMSG(server, source, "Quote {!r} was removed from the log!".format(quote))
 
     def bufferAction(self, server, source, user, body):
         if not self.bot.moduleHandler.useModuleOnServer(self.name, server):

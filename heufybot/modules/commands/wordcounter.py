@@ -56,26 +56,26 @@ class WordCounterCommand(BotCommand):
         word = params[0].lower()
         if command == "addwordcount":
             if word in self.wordCounters[network][source]:
-                self.replyPRIVMSG(server, source, "A counter for \"{}\" already exists.".format(word))
+                self.replyPRIVMSG(server, source, "A counter for {!r} already exists.".format(word))
             else:
                 self.wordCounters[network][source][word] = {}
                 self.bot.storage["wordcounts"] = self.wordCounters
-                self.replyPRIVMSG(server, source, "A counter for \"{}\" has been added.".format(word))
+                self.replyPRIVMSG(server, source, "A counter for {!r} has been added.".format(word))
         elif command == "remwordcount":
             if word in self.wordCounters[network][source]:
                 del self.wordCounters[network][source][word]
                 self.bot.storage["wordcounts"] = self.wordCounters
-                self.replyPRIVMSG(server, source, "The counter for \"{}\" has been removed.".format(word))
+                self.replyPRIVMSG(server, source, "The counter for {!r} has been removed.".format(word))
 
             else:
-                self.replyPRIVMSG(server, source, "A counter for \"{}\" does not exist.".format(word))
+                self.replyPRIVMSG(server, source, "A counter for {!r} does not exist.".format(word))
         elif command == "wordcount":
             self.commandUsed = True
             if word not in self.wordCounters[network][source]:
-                self.replyPRIVMSG(server, source, "A counter for \"{}\" does not exist.".format(word))
+                self.replyPRIVMSG(server, source, "A counter for {!r} does not exist.".format(word))
                 return
             total = sum(self.wordCounters[network][source][word].itervalues())
-            result = "The word \"{}\" has been said {} times.".format(word, total)
+            result = "The word {!r} has been said {} times.".format(word, total)
             if result > 0:
                 top = max(self.wordCounters[network][source][word].iteritems(), key=operator.itemgetter(1))
                 result = "{} The top contributor is {} with {} times.".format(result, top[0], top[1])
