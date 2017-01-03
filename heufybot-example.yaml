@@ -102,6 +102,10 @@
 # commands.  To be able to use any of these command modules, the CommandHandler
 # module MUST be loaded.
 
+# Alias: Enables the AddAlias, DelAlias, ShowAlias and SetAliasHelp commands to
+# allow for writing custom command aliases.
+#- Alias
+
 # Apathy: It does... things.  I can't be bothered to fill them out.  Find out
 # for yourself.
 #- Apathy
