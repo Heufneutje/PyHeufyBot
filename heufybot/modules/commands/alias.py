@@ -153,13 +153,13 @@ class AliasCommand(BotCommand):
     @staticmethod
     def _mangleReplacementPoints(string):
         # Replace alias replacement points with something that should never show up in messages/responses.
-        string = re.sub(r'\$([\w]+)', r'@D\1@', string)
+        string = re.sub(r"\$([\w]+)", r"@D\1@", string)
         return string
 
     @staticmethod
     def _unmangleReplacementPoints(string):
         # Replace the mangled replacement points with unmangled ones.
-        string = re.sub(r'@D([\w]+)@', r'$\1', string)
+        string = re.sub(r"@D([\w]+)@", r"$\1", string)
         return string
 
 
