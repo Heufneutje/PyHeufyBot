@@ -147,6 +147,9 @@ def _parseWeather(json):
 
 
 def _parseForecast(json):
+    if "forecast" not in json:
+        return "No forecast for this location could be found at this moment. Try again later."
+
     daysList = json["forecast"]["simpleforecast"]["forecastday"]
     formattedDays = []
     for x in range(0, len(daysList)):
