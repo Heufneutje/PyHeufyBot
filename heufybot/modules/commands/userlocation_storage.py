@@ -60,6 +60,7 @@ class UserLocationStorage(BotCommand):
                 self.locations[networkName(self.bot, server)] = {}
             self.locations[networkName(self.bot, server)][data["user"].nick.lower()] = " ".join(params)
             self.bot.storage["userlocations"] = self.locations
+            self.bot.moduleHandler.runGenericAction("userlocation-updated", data["user"].nick, " ".join(params))
             self.replyPRIVMSG(server, source, "Your location has been updated.")
         elif command == "remloc":
             if data["user"].nick.lower() not in self.locations[networkName(self.bot, server)]:
@@ -67,6 +68,7 @@ class UserLocationStorage(BotCommand):
             else:
                 del self.locations[networkName(self.bot, server)][data["user"].nick.lower()]
                 self.bot.storage["userlocations"] = self.locations
+                self.bot.moduleHandler.runGenericAction("userlocation-deleted", data["user"].nick)
                 self.replyPRIVMSG(server, source, "Your location has been removed.")
         elif command == "locimport":
             if len(params) < 1:
