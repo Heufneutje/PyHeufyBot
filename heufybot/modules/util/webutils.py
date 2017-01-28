@@ -14,6 +14,7 @@ class WebUtils(BotModule):
     def actions(self):
         return [ ("fetch-url", 1, self.fetchURL),
                  ("post-url", 1, self.postURL),
+                 ("delete-url", 1, self.deleteURL),
                  ("post-paste", 1, self.pasteEE),
                  ("shorten-url", 1, self.shortenURL) ]
 
