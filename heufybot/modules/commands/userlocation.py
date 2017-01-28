@@ -6,16 +6,16 @@ from zope.interface import implements
 import json, os.path
 
 
-class UserLocationStorage(BotCommand):
+class UserLocation(BotCommand):
     implements(IPlugin, IBotModule)
 
-    name = "UserLocationStorage"
+    name = "UserLocation"
 
     def triggers(self):
         return ["addloc", "remloc", "locimport", "locexport"]
 
     def actions(self):
-        return super(UserLocationStorage, self).actions() + [ ("userlocation", 1, self.lookUpLocation) ]
+        return super(UserLocation, self).actions() + [ ("userlocation", 1, self.lookUpLocation) ]
 
     def lookUpLocation(self, server, source, user, displayErrors):
         if not self.bot.moduleHandler.useModuleOnServer(self.name, server):
@@ -111,4 +111,4 @@ class UserLocationStorage(BotCommand):
                 self.replyPRIVMSG(server, source, "Exported {} location(s).".format(len(locations)))
 
 
-userLocStorage = UserLocationStorage()
+userLocStorage = UserLocation()
