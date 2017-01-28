@@ -31,9 +31,7 @@ class WebUtils(BotModule):
             headers.update(extraHeaders)
         try:
             request = requests.get(url, params=params, headers=headers, timeout=self.timeout)
-            pageType = request.headers["content-type"]
-            if not re.match("^(text/.*|application/((rss|atom|rdf)\+)?xml(;.*)?|application/(.*)json(;.*)?)$", pageType):
-                # Make sure we don't download any unwanted things
+            if not self.verifyPageType(request):
                 return None
             self.bot.log.debug(request.url)
             return request
@@ -47,15 +45,36 @@ class WebUtils(BotModule):
             headers.update(extraHeaders)
         try:
             request = requests.post(url, data=data, headers=headers, timeout=self.timeout)
-            pageType = request.headers["content-type"]
-            if not re.match("^(text/.*|application/((rss|atom|rdf)\+)?xml(;.*)?|application/(.*)json(;.*)?)$", pageType):
-                # Make sure we don't download any unwanted things
+            if not self.verifyPageType(request):
                 return None
             self.bot.log.debug(request.url)
             return request
         except (requests.RequestException, requests.ConnectionError):
             self.bot.log.failure("Error while posting to {url}:\n {ex}", url=url, ex=format_exc())
             return None
+
+    def deleteURL(self, url, extraHeaders = None):
+        headers = {"User-Agent": "Mozilla/5.0"}
+        if extraHeaders:
+            headers.update(extraHeaders)
+        try:
+            request = requests.delete(url, headers=headers, timeout=self.timeout)
+            if not self.verifyPageType(request):
+                return None
+            self.bot.log.debug(request.url)
+            return request
+        except (requests.RequestException, requests.ConnectionError):
+            self.bot.log.failure("Error while deleting from {url}:\n {ex}", url=url, ex=format_exc())
+            return None
+
+    @staticmethod
+    def verifyPageType(request):
+        pageType = request.headers["content-type"]
+        if not re.match("^(text/.*|application/((rss|atom|rdf)\+)?xml(;.*)?|application/(.*)json(;.*)?)$",
+                        pageType):
+            # Make sure we don't download any unwanted things
+            return False
+        return True
 
     def pasteEE(self, description, data, expiration):
         values = {
