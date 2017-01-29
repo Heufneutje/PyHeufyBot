@@ -32,7 +32,7 @@ class ChatmapCommand(BotCommand):
 
     def execute(self, server, source, command, params, data):
         if command == "chatmap":
-            self.replyNOTICE(server, source, "Desert Bus Chatmap: {}".format(self.chatmapBaseUrl))
+            self.replyPRIVMSG(server, source, "Desert Bus Chatmap: {}".format(self.chatmapBaseUrl))
             return
         if not self.apiKey:
             self.replyPRIVMSG(server, source, "No Desert Bus Chatmap API key found.")
