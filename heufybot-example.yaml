@@ -118,6 +118,11 @@
 # Restart commands to provide control over the bot's connections at runtime.
 #- ConnectionControl
 
+# DBChatmap: Enables the Chatmap, AddMap and RemMap commands, which provides
+# interaction with the Desert Bus community chat map. Requires WebUtils,
+# GeoLocation and UserLocation to be loaded.
+#- DBChatmap
+
 # Event: Enables the Event, TimeTill, TimeSince, DateOf, Events, REvent,
 # SubEvent and UnsubEvent commands to create and count down to certain events
 # that are happening, as well as subscribing to them.
