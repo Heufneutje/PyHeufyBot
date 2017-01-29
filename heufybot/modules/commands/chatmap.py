@@ -56,7 +56,7 @@ class ChatmapCommand(BotCommand):
         userloc = self.bot.moduleHandler.runActionUntilValue("geolocation-place", location)
         data = "{{ \"lat\": {}, \"lon\": {} }}".format(userloc["latitude"], userloc["longitude"])
         setResult = self.bot.moduleHandler.runActionUntilValue("post-url", url, data, extraHeaders)
-        if setResult.status_code == 204:
+        if not setResult or setResult.status_code == 204:
             return "Your location has been added to the chatmap."
         else:
             self.bot.log.warn(setResult)
