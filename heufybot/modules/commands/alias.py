@@ -10,7 +10,7 @@ class AliasCommand(BotCommand):
     implements(IPlugin, IBotModule)
 
     name = "Alias"
-    moduleTriggers = ["addalias", "delalias", "showalias", "setaliashelp"]
+    moduleTriggers = ["addalias", "delalias", "listaliases", "showalias", "setaliashelp"]
     aliases = {}
 
     def triggers(self):
@@ -82,6 +82,11 @@ class AliasCommand(BotCommand):
                     del self.commandHelp[alias]
                 self._syncAliases()
                 self.replyPRIVMSG(server, source, "Alias {!r} has been removed.".format(alias))
+        elif command == "listaliases":
+            if len(self.aliases) == 0:
+                self.replyPRIVMSG(server, source, "No aliases have been configured.")
+            else:
+                self.replyPRIVMSG(server, source, "Aliases: {}".format(". ".join(sorted(self.aliases.keys()))))
         elif command == "showalias":
             if len(params) < 1:
                 self.replyPRIVMSG(server, source, "Add help for which alias?")
