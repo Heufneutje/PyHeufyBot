@@ -124,6 +124,7 @@ class InputHandler(object):
         newNick = params[0]
         user.nick = newNick
         self.connection.users[newNick] = user
+        del self.connection.users[nick]
         for channel in self.connection.channels.itervalues():
             if nick in channel.users:
                 channel.users[newNick] = user
