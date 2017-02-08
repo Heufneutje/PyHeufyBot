@@ -254,7 +254,7 @@ class InputHandler(object):
         # 005: RPL_ISUPPORT
         tokens = {}
         # The first param is our prefix and the last one is ":are supported by this server"
-        for param in params[1:len(params) - 1]:
+        for param in params[1: -1]:
             keyValuePair = param.split("=")
             if len(keyValuePair) > 1:
                 tokens[keyValuePair[0]] = keyValuePair[1]
