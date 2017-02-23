@@ -4,7 +4,7 @@ from twisted.protocols.basic import LineOnlyReceiver
 # Taken from txircd:
 # https://github.com/ElementalAlchemist/txircd/blob/018e266c77c3161f268a854ffcfc4fd817e56eeb/txircd/ircbase.py
 class IRCBase(LineOnlyReceiver):
-    delimiter = "\n"  # Default to splitting by \n, and then we'll also split \r in the handler
+    delimiter = "\n" # Default to splitting by \n, and then we'll also split \r in the handler
 
     def lineReceived(self, data):
         for line in data.split("\r"):
@@ -16,7 +16,7 @@ class IRCBase(LineOnlyReceiver):
         line = line.replace("\0", "")
         if not line:
             return None, None, None, None
-
+        
         if line[0] == "@":
             if " " not in line:
                 return None, None, None, None
@@ -24,14 +24,14 @@ class IRCBase(LineOnlyReceiver):
             tags = self._parseTags(tagLine[1:])
         else:
             tags = {}
-
+        
         prefix = None
         if line[0] == ":":
             if " " not in line:
                 return None, None, None, None
             prefix, line = line.split(" ", 1)
             prefix = prefix[1:]
-
+        
         if " :" in line:
             linePart, lastParam = line.split(" :", 1)
         else:
@@ -39,7 +39,7 @@ class IRCBase(LineOnlyReceiver):
             lastParam = None
         if not linePart:
             return None, None, None, None
-
+        
         if " " in linePart:
             command, paramLine = linePart.split(" ", 1)
             params = paramLine.split(" ")
@@ -62,9 +62,6 @@ class IRCBase(LineOnlyReceiver):
                 escaped = False
                 valueChars = []
                 for char in escapedValue:
-                    if char == "\\":
-                        escaped = True
-                        continue
                     if escaped:
                         if char == "\\":
                             valueChars.append("\\")
@@ -79,6 +76,9 @@ class IRCBase(LineOnlyReceiver):
                         else:
                             valueChars.append(char)
                         escaped = False
+                        continue
+                    if char == "\\":
+                        escaped = True
                         continue
                     valueChars.append(char)
                 value = "".join(valueChars)
@@ -110,6 +110,8 @@ class IRCBase(LineOnlyReceiver):
                 for badChar in (" ", "\r", "\n", "\0"):
                     if badChar in param:
                         raise ValueError("Illegal character {!r} found in parameter {!r}".format(badChar, param))
+                if param and param[0] == ":":
+                    raise ValueError("Parameter {!r} formatted like a final parameter, but it isn't last".format(param))
             for badChar in ("\r", "\n", "\0"):
                 if badChar in params[-1]:
                     raise ValueError("Illegal character {!r} found in parameter {!r}".format(badChar, params[-1]))
@@ -134,9 +136,8 @@ class IRCBase(LineOnlyReceiver):
             else:
                 if "\0" in value:
                     raise ValueError("Illegal character '\\0' found in value for key {!r}".format(tag))
-                escapedValue = value.replace("\\", "\\\\").replace(";", "\\:").replace(" ", "\\s").replace("\r",
-                                                                                                           "\\r").replace(
-                    "\n", "\\n")
+                escapedValue = value.replace("\\", "\\\\").replace(";", "\\:").replace(" ", "\\s").replace("\r", "\\r") \
+                    .replace("\n", "\\n")
                 tagList.append("{}={}".format(tag, escapedValue))
         return ";".join(tagList)
 
