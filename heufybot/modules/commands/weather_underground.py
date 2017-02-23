@@ -13,20 +13,21 @@ class WeatherUndergroundCommand(BotCommand):
     weatherBaseURL = "http://api.wunderground.com/api"
 
     def triggers(self):
-        return ["astronomy", "forecast", "weather"]
+        return ["astronomy", "forecast", "walert", "weather"]
 
     def load(self):
-        self.help = "Commands: weather <lat> <lon>, weather <place>, weather <nickname>, forecast <lat> <lon>, " \
-                    "forecast <place>, forecast <nickname>, astronomy <lat> <lon>, astronomy <place>, astronomy " \
-                    "<nickname> | Get the current weather conditions, forecast or astronomy for the given latlon, " \
-                    "place or user."
+        self.help = "Commands: weather/forecast/astronomy/walert <lat> <lon>, weather/forecast/astronomy/walert " \
+                    "<place>, weather/forecast/astronomy/walert <nickname>, | Get the current weather conditions, " \
+                    "forecast, astronomy or weather alerts for the given latlon, place or user."
         self.commandHelp = {
-            "astronomy": "astronomy <lat> <lon>, astronomy <place>, astronomy <nickname> | Get moon phase, sunrise and "
+            "astronomy": "astronomy <lat> <lon>, astronomy <place>, astronomy <nickname> | Get moon phase, sunrise and " \
                          "sunset times for the given latlon, place or user.",
-            "forecast": "forecast <lat> <lon>, forecast <place>, forecast <nickname> | Get the forecast for the given "
+            "forecast": "forecast <lat> <lon>, forecast <place>, forecast <nickname> | Get the forecast for the given " \
                         "latlon, place or user.",
-            "weather": "weather <lat> <lon>, weather <place>, weather <nickname> | Get the current weather condidions "
-                       "for the given latlon, place or user.",
+            "walert": "walert <lat> <lon>, walert <place>, walert <nickname> | Get the weather alerts for the given " \
+                      "latlon, place or user.",
+            "weather": "weather <lat> <lon>, weather <place>, weather <nickname> | Get the current weather condidions " \
+                       "for the given latlon, place or user."
         }
         self.apiKey = None
         if "wunderground" in self.bot.storage["api-keys"]:
@@ -80,7 +81,10 @@ class WeatherUndergroundCommand(BotCommand):
                 if not location["success"]:
                     self.replyPRIVMSG(server, source, "I don't think that's even a location in this multiverse...")
                     return
-                self._handleCommandWithLocation(server, source, command, location)
+                if command == "walert":
+                    self._handleCommandWithLocation(server, source, "alerts", location)
+                else:
+                    self._handleCommandWithLocation(server, source, command, location)
                 return
 
         # Try to determine the location by the name of the place
@@ -113,6 +117,8 @@ class WeatherUndergroundCommand(BotCommand):
                     output = _parseForecast(j)
                 elif command == "astronomy":
                     output = _parseAstronomy(j)
+                elif command == "alerts":
+                    output = _parseAlert(j)
         self.replyPRIVMSG(server, source, "Location: {} | {}".format(location["locality"], output))
 
 
@@ -174,6 +180,17 @@ def _parseAstronomy(json):
     return "Tonight's Moon Phase: {} | Sunrise: {}, Sunset: {} | Moonrise: {}, Moonset: {}".format(phase, sunrise,
                                                                                                    sunset, moonrise,
                                                                                                    moonset)
+
+def _parseAlert(json):
+    alerts = json["alerts"]
+    if len(alerts) == 0:
+        return "No weather alerts were found."
+    alertType = alerts[0]["wtype_meteoalarm_name"]
+    level = alerts[0]["level_meteoalarm_name"]
+    description = alerts[0]["message"].encode("utf-8", "ignore")
+    if description.endswith(">)"): 
+        description = description[:-2] # Strip WUnderground weirdness.
+    return "Type: {} | Level: {} | {}".format(alertType, level, description)
 
 def _getTimeString(hours, minutes):
     try:

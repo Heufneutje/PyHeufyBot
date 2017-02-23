@@ -212,9 +212,10 @@
 # and Remloc commands.
 #- UserLocation
 
-# WeatherUnderground: Enables the Weather, Forecast and Astronomy commmands,
-# which provide the weather, forecast or sunrise/sunset for a place or user
-# when requested.  Requires WebUtils and GeoLocation to be loaded.
+# WeatherUnderground: Enables the Weather, Forecast, Astronomy and WAlert
+# commmands, which provide the weather, forecast, sunrise/sunset or weather
+# alerts for a place or user when requested.  Requires WebUtils and
+# GeoLocation to be loaded.
 #- WeatherUnderground
 
 # WordCounter: Enables the AddWordCount, RemWordCount and WordCount commands
