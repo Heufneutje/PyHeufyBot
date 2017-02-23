@@ -185,9 +185,19 @@ def _parseAlert(json):
     alerts = json["alerts"]
     if len(alerts) == 0:
         return "No weather alerts were found."
-    alertType = alerts[0]["wtype_meteoalarm_name"]
-    level = alerts[0]["level_meteoalarm_name"]
-    description = alerts[0]["message"].encode("utf-8", "ignore")
+    if "wtype_meteoalarm_name" in alerts[0]:
+        alertType = alerts[0]["wtype_meteoalarm_name"]
+    elif "description" in alerts[0]:
+        alertType = alerts[0]["description"]
+    elif "type" in alerts[0]:
+        alertType = alerts[0]["type"]
+    else:
+        alertType = "Unknown"
+    if "level_meteoalarm_name" in alerts[0]:
+        level = alerts[0]["level_meteoalarm_name"]
+    else:
+        level = "None"
+    description = alerts[0]["message"].encode("utf-8", "ignore").replace("\n", " ")
     if description.endswith(">)"): 
         description = description[:-2] # Strip WUnderground weirdness.
     return "Type: {} | Level: {} | {}".format(alertType, level, description)
