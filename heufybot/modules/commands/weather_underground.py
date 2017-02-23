@@ -56,7 +56,7 @@ class WeatherUndergroundCommand(BotCommand):
             if not location["success"]:
                 self.replyPRIVMSG(server, source, "I don't think that's even a location in this multiverse...")
                 return
-            self._handleCommandWithLocation(server, source, command, location)
+            self._handleCommandWithLocation(server, source, _getFeature(command), location)
             return
         except (IndexError, ValueError):
             pass  # The user did not give a latlon, so continue using other methods
@@ -81,10 +81,7 @@ class WeatherUndergroundCommand(BotCommand):
                 if not location["success"]:
                     self.replyPRIVMSG(server, source, "I don't think that's even a location in this multiverse...")
                     return
-                if command == "walert":
-                    self._handleCommandWithLocation(server, source, "alerts", location)
-                else:
-                    self._handleCommandWithLocation(server, source, command, location)
+                self._handleCommandWithLocation(server, source, _getFeature(command), location)
                 return
 
         # Try to determine the location by the name of the place
@@ -95,7 +92,7 @@ class WeatherUndergroundCommand(BotCommand):
         if not location["success"]:
             self.replyPRIVMSG(server, source, "I don't think that's even a location in this multiverse...")
             return
-        self._handleCommandWithLocation(server, source, command, location)
+        self._handleCommandWithLocation(server, source, _getFeature(command), location)
 
     def _handleCommandWithLocation(self, server, source, command, location):
         apiFunction = "conditions" if command == "weather" else command
@@ -210,5 +207,10 @@ def _getTimeString(hours, minutes):
         return "{} ({})".format(hour24, hour12)
     except ValueError:
         return "Unknown"
+
+def _getFeature(command):
+    if command == "walert":
+        return "alerts"
+    return command
 
 weatherUndergroundCommand = WeatherUndergroundCommand()
