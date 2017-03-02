@@ -1,4 +1,4 @@
-PyHeufyBot [![Ready](https://badge.waffle.io/heufneutje/pyheufybot.svg?label=ready&title=Ready)](https://waffle.io/heufneutje/pyheufybot) [![Python 3](https://pyup.io/repos/github/heufneutje/pyheufybot/python-3-shield.svg)](https://pyup.io/repos/github/heufneutje/pyheufybot/) [![Updates](https://pyup.io/repos/github/heufneutje/pyheufybot/shield.svg)](https://pyup.io/repos/github/heufneutje/pyheufybot/)
+PyHeufyBot [![Ready](https://badge.waffle.io/heufneutje/pyheufybot.svg?label=ready&title=Ready)](https://waffle.io/heufneutje/pyheufybot) [![Updates](https://pyup.io/repos/github/Heufneutje/PyHeufyBot/shield.svg)](https://pyup.io/repos/github/Heufneutje/PyHeufyBot/) [![Python 3](https://pyup.io/repos/github/Heufneutje/PyHeufyBot/python-3-shield.svg)](https://pyup.io/repos/github/Heufneutje/PyHeufyBot/)
 ==========
 
 A rewrite of my Java IRC bot [RE_HeufyBot](https://github.com/Heufneutje/RE_HeufyBot) in Python, 
