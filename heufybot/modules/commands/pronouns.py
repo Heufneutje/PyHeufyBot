@@ -25,7 +25,7 @@ class PronounsCommand(BotCommand):
                                                                                                           server)]:
             return {
                 "success": True,
-                "pronouns": self.pronouns[networkName(self.bot, server)][user.lower()]
+                "pronouns": self.pronstore[networkName(self.bot, server)][user.lower()]
             }
         if displayErrors:
             error = "User's pronouns have not been specified. Would you like to add your own, {}?".format(user)
@@ -69,8 +69,7 @@ class PronounsCommand(BotCommand):
                 return
             # usernames probably don't need more than 1 word, right?
             userpron = self.lookUpPronouns(server, source, params[0], True)
-            if not userpron["success"]:
-                return
-            self.replyPRIVMSG(server, source, "{} uses <{}> pronouns".format(params[0], userpron["pronouns"]))
+            if userpron["success"]:
+                self.replyPRIVMSG(server, source, "{} uses <{}> pronouns".format(params[0], userpron["pronouns"]))
 
 userProno = PronounsCommand()
