@@ -176,6 +176,10 @@
 # given channel.
 #- Part
 
+# Pronouns: Enables Pronouns commands, which are used for telling and asking 
+# user pronouns.
+#- Pronouns
+
 # Rehash: Enables the Rehash command, used to reload the configuration files.
 #- Rehash
 
