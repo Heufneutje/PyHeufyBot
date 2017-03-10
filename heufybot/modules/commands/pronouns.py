@@ -28,7 +28,8 @@ class PronounsCommand(BotCommand):
                 "pronouns": self.pronstore[networkName(self.bot, server)][user.lower()]
             }
         if displayErrors:
-            error = "User's pronouns have not been specified. Would you like to add your own, {}?".format(user)
+            error = "User's pronouns have not been specified. Your pronouns can be set with the \"setpron\" command, " \
+                    "{}".format(user)
             self.replyPRIVMSG(server, source, error)
             return {
                 "success": False
@@ -38,9 +39,9 @@ class PronounsCommand(BotCommand):
         self.help = "Commands: pronouns <user>, setpron <pronouns>, rmpron | "\
                     "Query the user's pronouns or specify your own."
         self.commandHelp = {
-            "pronouns": "pronouns <user> | Query user's pronouns",
+            "pronouns": "pronouns (<user>) | Query a given user's pronouns or your or your own if no user is given.",
             "setpron": "setpron <pronouns> | Set your own pronouns.",
-            "rmpron": "rmpron | Remove your pronouns for a mysterious unspeakable reason"
+            "rmpron": "rmpron | Remove your pronouns for a mysterious unspeakable reason."
         }
         if "pronouns" not in self.bot.storage:
             self.bot.storage["pronouns"] = {}
@@ -65,11 +66,11 @@ class PronounsCommand(BotCommand):
                 self.replyPRIVMSG(server, source, "Your pronouns have been removed.")
         elif command == "pronouns":
             if len(params) < 1:
-                self.replyPRIVMSG(server, source, "Whose pronouns do you wanna know?")
-                return
-            # usernames probably don't need more than 1 word, right?
-            userpron = self.lookUpPronouns(server, source, params[0], True)
+                lookup = data["user"].nick.lower()
+            else:
+                lookup = params[0]
+            userpron = self.lookUpPronouns(server, source, lookup, True)
             if userpron["success"]:
-                self.replyPRIVMSG(server, source, "{} uses <{}> pronouns".format(params[0], userpron["pronouns"]))
+                self.replyPRIVMSG(server, source, "{} uses <{}> pronouns".format(lookup, userpron["pronouns"]))
 
 userProno = PronounsCommand()
