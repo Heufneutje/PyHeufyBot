@@ -1,6 +1,5 @@
 from twisted.plugin import IPlugin
 from heufybot import __version__
-from heufybot.channel import IRCChannel
 from heufybot.moduleinterface import BotModule, IBotModule
 from heufybot.utils.timeutils import now, strftimeWithTimezone
 from zope.interface import implements

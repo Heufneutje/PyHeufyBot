@@ -1,7 +1,6 @@
 from twisted.plugin import IPlugin
 from heufybot.moduleinterface import BotModule, IBotModule
 from zope.interface import implements
-import logging
 
 
 class NickServIdentify(BotModule):

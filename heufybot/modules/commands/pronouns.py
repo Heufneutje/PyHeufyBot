@@ -3,7 +3,6 @@ from heufybot.moduleinterface import IBotModule
 from heufybot.modules.commandinterface import BotCommand
 from heufybot.utils import networkName
 from zope.interface import implements
-import json, os.path
 
 
 class PronounsCommand(BotCommand):

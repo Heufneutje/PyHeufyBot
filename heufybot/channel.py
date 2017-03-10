@@ -1,5 +1,4 @@
 from heufybot.utils import ModeType
-import logging
 
 
 class IRCChannel(object):
