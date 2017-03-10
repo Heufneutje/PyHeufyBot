@@ -273,3 +273,8 @@
 # The number of seconds to wait for the server to respond when using a web
 # request.
 #webrequest_timeout: 10
+
+# webrequest_trusted_hosts: list (WebUtils, default: empty list)
+# The hosts from which SSL/TLS certificates should always be accepted.
+# Wildcards are supported.
+#webrequest_trusted_hosts: []

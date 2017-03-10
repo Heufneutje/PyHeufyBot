@@ -2,6 +2,7 @@ from twisted.plugin import IPlugin
 from heufybot.moduleinterface import BotModule, IBotModule
 from traceback import format_exc
 from zope.interface import implements
+from fnmatch import fnmatch
 import re, requests
 
 
@@ -31,7 +32,8 @@ class WebUtils(BotModule):
         if extraHeaders:
             headers.update(extraHeaders)
         try:
-            request = requests.get(url, params=params, headers=headers, timeout=self.timeout)
+            request = requests.get(url, params=params, headers=headers, timeout=self.timeout,
+                                   verify=self._checkVerify(url))
             if not self.verifyPageType(request):
                 return None
             self.bot.log.debug(request.url)
@@ -45,7 +47,8 @@ class WebUtils(BotModule):
         if extraHeaders:
             headers.update(extraHeaders)
         try:
-            request = requests.post(url, data=data, headers=headers, timeout=self.timeout)
+            request = requests.post(url, data=data, headers=headers, timeout=self.timeout,
+                                    verify=self._checkVerify(url))
             if not self.verifyPageType(request):
                 return None
             self.bot.log.debug(request.url)
@@ -59,7 +62,7 @@ class WebUtils(BotModule):
         if extraHeaders:
             headers.update(extraHeaders)
         try:
-            request = requests.delete(url, headers=headers, timeout=self.timeout)
+            request = requests.delete(url, headers=headers, timeout=self.timeout, verify=self._checkVerify(url))
             if not self.verifyPageType(request):
                 return None
             self.bot.log.debug(request.url)
@@ -67,6 +70,12 @@ class WebUtils(BotModule):
         except (requests.RequestException, requests.ConnectionError):
             self.bot.log.failure("Error while deleting from {url}:\n {ex}", url=url, ex=format_exc())
             return None
+
+    def _checkVerify(self, url):
+        for host in self.bot.config.itemWithDefault("webrequest_trusted_hosts", []):
+            if fnmatch(url, host):
+                return False
+        return True
 
     @staticmethod
     def verifyPageType(request):
