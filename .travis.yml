@@ -4,3 +4,5 @@ python:
 install: 
   - "pip install pyflakes"
 script: pyflakes heufybot/
+notifications:
+  email: false
