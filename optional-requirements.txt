@@ -1,4 +1,4 @@
 beautifulsoup4==4.5.3
 isodate==0.5.4
-pyOpenSSL==16.2.0
+pyOpenSSL==17.0.0
 requests==2.13.0
