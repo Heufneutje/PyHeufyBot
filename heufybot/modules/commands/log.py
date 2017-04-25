@@ -25,7 +25,7 @@ class LogCommand(BotCommand):
             return
 
         basePath = self.bot.config.serverItemWithDefault(server, "logpath", "logs")
-        error = "The date specified is invalid. Make sure you use -<numberofdays> or <yyyy-mm-dd>."
+        error = "The date specified is invalid. Make sure you use -<numberofdays>, <yyyy/mm/dd>, or <yyyy-mm-dd>."
         network = self.bot.servers[server].supportHelper.network
 
         if len(params) < 1:
@@ -39,8 +39,14 @@ class LogCommand(BotCommand):
             logDate = date.today() - timedelta(delta)
         else:
             try:
-                formattedDate = params[0].split("-")
-                logDate = date(int(formattedDate[0]), int(formattedDate[1]), int(formattedDate[2]))
+                for symbol in ["/", "-"]:
+                    if symbol in params[0]:
+                        formattedDate = params[0].split(symbol)
+                        logDate = date(int(formattedDate[0]), int(formattedDate[1]), int(formattedDate[2]))
+                        break
+                if logDate is None:
+                    self.replyPRIVMSG(server, source, error)
+                    return
             except (IndexError, ValueError):
                 self.replyPRIVMSG(server, source, error)
                 return
