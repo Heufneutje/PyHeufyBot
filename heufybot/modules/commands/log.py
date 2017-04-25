@@ -39,6 +39,7 @@ class LogCommand(BotCommand):
             logDate = date.today() - timedelta(delta)
         else:
             try:
+                logDate = None
                 for symbol in ["/", "-"]:
                     if symbol in params[0]:
                         formattedDate = params[0].split(symbol)
