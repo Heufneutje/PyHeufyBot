@@ -1,2 +1,2 @@
 PyYAML==3.12
-Twisted==17.1.0
+Twisted==17.5.0
