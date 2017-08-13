@@ -80,7 +80,7 @@ class OutOfContextCommand(BotCommand):
                 else:
                     self.ooclog[networkName(self.bot, server)][source].append(quote)
                     self.bot.storage["ooclog"] = self.ooclog
-                    self.replyPRIVMSG(server, source, "Quote {!r} was added to the log!".format(quote))
+                    self.replyPRIVMSG(server, source, "Quote '{}' was added to the log!".format(quote))
         elif command == "oocremove":
             if len(params) == 0:
                 self.replyPRIVMSG(server, source, "Remove what?")
@@ -186,7 +186,7 @@ class OutOfContextCommand(BotCommand):
     def _removeQuote(self, server, source, quote):
         self.ooclog[networkName(self.bot, server)][source].remove(quote)
         self.bot.storage["ooclog"] = self.ooclog
-        self.replyPRIVMSG(server, source, "Quote {!r} was removed from the log!".format(quote))
+        self.replyPRIVMSG(server, source, "Quote '{}' was removed from the log!".format(quote))
 
     def bufferAction(self, server, source, user, body):
         if not self.bot.moduleHandler.useModuleOnServer(self.name, server):
