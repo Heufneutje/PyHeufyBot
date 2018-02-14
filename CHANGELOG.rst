@@ -2,6 +2,16 @@
 PyHeufyBot Changelog
 ====================
 
+0.8
+===
+**0.8.0**
+  * Allow slashes in log dates.
+  * Added a pronouns module.
+  * Added a weather alert command.
+  * Added a command alias module.
+  * Added a Desert Bus chatmap module.
+  * Added an option to accept untrusted SSL certificates.
+
 0.7
 ===
 **0.7.0**
