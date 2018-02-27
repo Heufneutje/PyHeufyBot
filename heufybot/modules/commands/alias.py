@@ -40,7 +40,7 @@ class AliasCommand(BotCommand):
             self.commandHelp[aliasName] = helpText
 
     def checkPermissions(self, server, source, user, command):
-        if command in self.moduleTriggers and command != "showalias":
+        if command in self.moduleTriggers and command not in ["listaliases", "showalias"]:
             return not self.bot.moduleHandler.runActionUntilFalse("checkadminpermission", server, source, user, "alias")
         return True
 
