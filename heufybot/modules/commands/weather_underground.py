@@ -158,6 +158,7 @@ def _parseWeather(json):
     winddir = cond["wind_dir"]
     windspeedMiles = cond["wind_mph"]
     windspeedMs = round(cond["wind_kph"] / 3.6, 1)
+    stationID = cond["station_id"]
     feelslikeStr = ""
     if abs(float(tempC) - float(feelslikeC)) > 3.0:
         feelslikeStr = "(feels like {}°C / {}°F) ".format(feelslikeC, feelslikeF)
@@ -170,8 +171,9 @@ def _parseWeather(json):
                                                          else "just now")
 
     return "Temp: {}°C / {}°F {}| Weather: {} | Humidity: {} | Wind Speed: {} m/s / {} mph | " \
-           "Wind Direction: {} | {}".format(tempC, tempF, feelslikeStr, description, humidity, windspeedMs,
-                                            windspeedMiles, winddir, latestUpdateStr)
+            "Wind Direction: {} | Station ID: {} | {}.".format(tempC, tempF, feelslikeStr, description, humidity,
+                                                               windspeedMs,  windspeedMiles, winddir, stationID,
+                                                               latestUpdateStr)
 
 
 def _parseForecast(json):
