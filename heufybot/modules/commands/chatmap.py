@@ -21,9 +21,9 @@ class ChatmapCommand(BotCommand):
         self.help = "Commands: chatmap, addmap, remmap | View the Desert Bus Chatmap or add or remove your location to" \
                     " or from it."
         self.commandHelp = {
-            "chatmap": "View the Desert Bus Chatmap.",
-            "addmap": "Add your location to the Desert Bus Chatmap. Your location needs to already exist in storage.",
-            "remmap": "Remove your location from the Desert Bus Chatmap"
+            "chatmap": "chatmap | View the Desert Bus Chatmap.",
+            "addmap": "addmap | Add your location to the Desert Bus Chatmap. Your location needs to already exist in storage.",
+            "remmap": "remmap | Remove your location from the Desert Bus Chatmap."
         }
 
         self.apiKey = None
