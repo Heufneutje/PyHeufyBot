@@ -19,7 +19,7 @@ class ApathyCommand(BotCommand):
     def beLazy(self, data):
         if not self.bot.moduleHandler.useModuleOnServer(self.name, data["server"]):
             return
-        if random.randint(0, 500) == 0 and len(self.insults) > 0:
+        if random.randint(0, 750) == 0 and len(self.insults) > 0:
             insult = random.choice(self.insults).replace("<nick>", data["user"].nick)
             self.replyPRIVMSG(data["server"], data["source"], insult)
             data.clear()
