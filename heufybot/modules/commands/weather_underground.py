@@ -85,7 +85,12 @@ class WeatherUndergroundCommand(BotCommand):
                 return
 
         # Try to determine the location by the name of the place
-        location = self.bot.moduleHandler.runActionUntilValue("geolocation-place", " ".join(params))
+        place = " ".join(params)
+        if place.startswith("pws:") and command in ["weather", "forecast"]:
+            place = place[4:]
+            location = { "success": True, "pws": place, "locality": "Weather Station {}".format(place) }
+        else:
+            location = self.bot.moduleHandler.runActionUntilValue("geolocation-place", place)
         if not location:
             self.replyPRIVMSG(server, source, "I can't determine locations at the moment. Try again later.")
             return
@@ -96,7 +101,10 @@ class WeatherUndergroundCommand(BotCommand):
 
     def _handleCommandWithLocation(self, server, source, command, location):
         apiFunction = "conditions" if command == "weather" else command
-        url = "{}/{}/{}/q/{},{}.json".format(self.weatherBaseURL, self.apiKey, apiFunction, location["latitude"],
+        if "pws" in location:
+            url = "{}/{}/{}/q/pws:{}.json".format(self.weatherBaseURL, self.apiKey, apiFunction, location["pws"])
+        else:
+            url = "{}/{}/{}/q/{},{}.json".format(self.weatherBaseURL, self.apiKey, apiFunction, location["latitude"],
                                              location["longitude"])
         result = self.bot.moduleHandler.runActionUntilValue("fetch-url", url)
         output = None
