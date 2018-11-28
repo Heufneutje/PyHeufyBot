@@ -5,12 +5,17 @@ from zope.interface import implements
 from os import walk
 from time import strftime
 import os.path, re
+try:
+    import re2
+except ImportError:
+    import re as re2
 
 
 class LogsearchCommand(BotCommand):
     implements(IPlugin, IBotModule)
 
     name = "LogSearch"
+    timeout = 0
 
     def triggers(self):
         return ["firstseen", "lastseen", "lastsaw", "firstsaid", "lastsaid"]
@@ -60,9 +65,9 @@ class LogsearchCommand(BotCommand):
 
     def _search(self, searchTerms, logPath, files, searchForNick, includeToday, reverse):
         if searchForNick:
-            pattern = re.compile(r".*<(.?{})> .*".format(searchTerms), re.IGNORECASE)
+            pattern = re2.compile(r"^\[[^]]+\]\s+<(.?{})>\s+.*".format(searchTerms), re.IGNORECASE)
         else:
-            pattern = re.compile(r".*<.*> .*({}).*".format(searchTerms), re.IGNORECASE)
+            pattern = re2.compile(r".*<.*> .*({}).*".format(searchTerms), re.IGNORECASE)
         found = None
 
         if not includeToday:
