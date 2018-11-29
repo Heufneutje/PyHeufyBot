@@ -37,7 +37,6 @@ class LogsearchCommand(BotCommand):
             self.replyPRIVMSG(server, source, "Search what?")
             return
 
-        self.replyPRIVMSG(server, source ,"Searching the logs. Please wait...")
         basePath = self.bot.config.serverItemWithDefault(server, "logpath", "logs")
         if self.bot.servers[server].supportHelper.network:
             network = self.bot.servers[server].supportHelper.network
