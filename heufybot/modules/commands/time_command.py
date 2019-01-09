@@ -19,8 +19,18 @@ class TimeCommand(BotCommand):
         self.help = "Commands: time <lat> <lon>, time <place>, time <nickname> | Get the current local time for the " \
                     "given latlon, place or user."
         self.commandHelp = {}
+        
+        self.googleKey = None
+        if "api-keys" not in self.bot.storage:
+            self.bot.storage["api-keys"] = {}
+        if "google" in self.bot.storage["api-keys"]:
+            self.googleKey = self.bot.storage["api-keys"]["google"]
 
     def execute(self, server, source, command, params, data):
+        if not self.googleKey:
+            self.replyPRIVMSG(server, source, "No API key found.")
+            return
+        
         # Use the user's nickname as a parameter if none were given
         if len(params) == 0:
             params.append(data["user"].nick)
@@ -85,7 +95,8 @@ class TimeCommand(BotCommand):
         currentTime = timestamp(now())
         params = {
             "location": "{},{}".format(lat, lon),
-            "timestamp": currentTime
+            "timestamp": currentTime,
+            "key": self.googleKey
         }
         result = self.bot.moduleHandler.runActionUntilValue("fetch-url", self.timeBaseURL, params)
         if not result:
