@@ -1,4 +1,4 @@
-import yaml
+from ruamel.yaml import YAML
 
 _required = ["servers"]
 
@@ -18,7 +18,8 @@ class Config(object):
     def _readConfig(self, fileName):
         try:
             with open(fileName, "r") as config:
-                configData = yaml.safe_load(config)
+                yaml = YAML()
+                configData = yaml.load(config)
                 if not configData:
                     configData = {}
         except Exception as e:
