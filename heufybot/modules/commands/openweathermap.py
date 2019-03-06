@@ -227,7 +227,7 @@ def _msToBft(windMs):
         32.6: 11,
         32.7: 12
     }
-    windSpeed = "N"
+    windSpeed = 0
     for maxSpeed in sorted(windSpeedTranslation.keys()):
         if windMs < maxSpeed:
             break
