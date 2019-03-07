@@ -213,19 +213,19 @@ def _msToMph(windMs):
 
 def _msToBft(windMs):
     windSpeedTranslation = {
-        0.2: 0,
-        1.5: 1,
-        3.3: 2,
-        5.4: 3,
-        7.9: 4,
-        10.7: 5,
-        13.8: 6,
-        17.1: 7,
-        20.7: 8,
-        24.4: 9,
-        28.4: 10,
-        32.6: 11,
-        32.7: 12
+        0.2: 1,
+        1.5: 2,
+        3.3: 3,
+        5.4: 4,
+        7.9: 5,
+        10.7: 6,
+        13.8: 7,
+        17.1: 8,
+        20.7: 9,
+        24.4: 10,
+        28.4: 11,
+        32.6: 12,
+        32.7: 13
     }
     windSpeed = 0
     for maxSpeed in sorted(windSpeedTranslation.keys()):
