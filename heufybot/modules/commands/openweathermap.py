@@ -135,7 +135,9 @@ def _parseWeather(json):
     humidity = main["humidity"]
 
     wind = json["wind"]
-    winddir = _getWindDirection(wind["deg"])
+    winddir = "Unknown"
+    if "deg" in wind:
+        winddir = _getWindDirection(wind["deg"])
     windspeedMs = round(wind["speed"], 1)
     windspeedMph = round(_msToMph(wind["speed"]), 1)
     windspeedBft = _msToBft(wind["speed"])
