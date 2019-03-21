@@ -129,6 +129,7 @@ class OpenWeatherMapCommand(BotCommand):
 
 def _parseWeather(json):
     description = json["weather"][0]["main"]
+    icon = _getWeatherIcon(json["weather"][0]["id"])
     main = json["main"]
     tempC = round(main["temp"], 1)
     tempF = round(_celsiusToFahrenheit(main["temp"]), 1)
@@ -156,8 +157,8 @@ def _parseWeather(json):
     else:
         dataAgeStr = "{} minute{} ago".format(dataAge, "s" if dataAge > 1 else "")
 
-    return "Temp: {}°C / {}°F | Weather: {} | Humidity: {}% | Wind Speed: {} m/s / {} mph / {} BFT | {}Wind " \
-           "Direction: {} | Latest Update: {}.".format(tempC, tempF, description, humidity, windspeedMs,
+    return "Temp: {}°C / {}°F | Weather: {}{} | Humidity: {}% | Wind Speed: {} m/s / {} mph / {} BFT | {}Wind " \
+           "Direction: {} | Latest Update: {}.".format(tempC, tempF, icon, description, humidity, windspeedMs,
                                                        windspeedMph, windspeedBft, gustStr, winddir, dataAgeStr)
 
 
@@ -172,7 +173,8 @@ def _parseForecast(json):
         maxC = round(day["temp"]["max"], 1)
         maxF = round(_celsiusToFahrenheit(day["temp"]["max"]), 1)
         description = day["weather"][0]["main"]
-        formattedDays.append("{}: {} - {}°C, {} - {}°F, {}".format(date, minC, maxC, minF, maxF, description))
+        icon = _getWeatherIcon(day["weather"][0]["id"])
+        formattedDays.append("{}: {} - {}°C, {} - {}°F, {}{}".format(date, minC, maxC, minF, maxF, icon, description))
     return " | ".join(formattedDays)
 
 
@@ -235,6 +237,23 @@ def _msToBft(windMs):
         else:
             windSpeed = windSpeedTranslation[maxSpeed]
     return windSpeed
+
+
+def _getWeatherIcon(conditionID):
+    icon = u""
+    if conditionID >= 200 and conditionID < 300:
+        icon = u"\u26A1"
+    elif conditionID >= 300 and conditionID < 600:
+        icon = u"\U0001F4A7"
+    elif conditionID >= 600 and conditionID < 700:
+        icon = u"\u2744"
+    elif conditionID >= 700 and conditionID < 800:
+        icon = u"\U0001F32B"
+    elif conditionID == 800:
+        icon = u"\u2600"
+    elif conditionID > 800:
+        icon = u"\u2601"
+    return icon.encode("utf-8")
 
 
 openWeatherMapCommand = OpenWeatherMapCommand()
