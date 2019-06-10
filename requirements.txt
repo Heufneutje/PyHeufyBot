@@ -1,2 +1,2 @@
 ruamel.yaml==0.15.97
-Twisted==19.2.0
+Twisted==19.2.1
