@@ -66,7 +66,7 @@ class NowPlayingCommand(BotCommand):
                     link = self.bot.moduleHandler.runActionUntilValue("shorten-url", longLink)
                     if not link:
                         link = longLink
-                    m = "{!r} by {} | {}".format(songTitle, artist, link)
+                    m = "'{}' by {} | {}".format(songTitle, artist, link)
             self.replyPRIVMSG(server, source, m)
         elif command == "nplink":
             if len(params) == 0:
