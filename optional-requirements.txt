@@ -1,4 +1,4 @@
-beautifulsoup4==4.8.0
+beautifulsoup4==4.8.1
 isodate==0.6.0
 pyOpenSSL==19.0.0
 requests==2.22.0
